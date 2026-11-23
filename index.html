@@ -682,7 +682,10 @@ header #reglages{margin-left:auto}
 .qj-corps{flex:1;min-width:0}
 .rail{flex:none;width:40px;display:flex;flex-direction:column;gap:14px;position:relative;padding-top:4px}
 .rail-bloc{display:flex;flex-direction:column;align-items:center;gap:11px;border:2px solid #3b2a18;border-radius:20px!important;padding:6px 0 8px;background:var(--fond)}
-.r-def{border-style:dashed;margin-top:10px}
+.rail-campagne{display:flex;flex-direction:column;align-items:center;padding:4px 0}
+html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!important;font-size:20px;background:radial-gradient(circle at 35% 28%,#fff6cf,#f2cf63 35%,#c8961f 70%,#7d5410);border:2px solid #6b4a0e;box-shadow:0 0 0 2px #f6dc85,0 0 10px rgba(242,190,60,.65),0 2px 3px rgba(0,0,0,.35)}
+.r-bulle-camp{border-color:#8a5f12!important;box-shadow:0 0 0 2px #f2cf63,3px 3px 0 rgba(0,0,0,.2)!important}
+.r-ico svg,.r-bulle b svg,.hab-ico svg{vertical-align:middle}
 .r-lbl{font-size:12px;color:var(--doux);line-height:1}
 .r-ico{width:32px;height:32px;padding:0;display:grid;place-items:center;font-size:18px;line-height:1;border-radius:50%!important;background:var(--carte);border:1px solid var(--trait);position:relative;cursor:pointer}
 .r-ico.sel{box-shadow:0 0 0 2px var(--or)}
@@ -944,32 +947,51 @@ function rail_() {
   var iso = isoJ(new Date()), pf = A.paliersFaits || {};
   var hab = A.habitudes.filter(function (h) { return h.moment !== 'Défi' && estQuotidienne(h); }), def = A.habitudes.filter(function (h) { return h.moment === 'Défi' && enCampagne_(h, iso); });
   if (!hab.length && !def.length) return '';
-  var ico = function (h) {
-    var fait = (A.coches[h.nom] || []).indexOf(iso) !== -1, p = fait && pf[h.nom] && pf[h.nom][iso];
-    return '<button class="r-ico' + (fait ? ' fait' : '') + (HAB_SEL === h.nom ? ' sel' : '') + '" data-hab="' + esc(h.nom) + '" aria-label="' + esc(h.nom) + '">' + esc(h.icone) + (p ? '<i>' + esc(court_(p)) + '</i>' : '') + '</button>';
+  var ico = function (h, cls) {
+    var fait = !!faitLe_(h, iso), p = fait && pf[h.nom] && pf[h.nom][iso];
+    return '<button class="r-ico' + (cls || '') + (fait ? ' fait' : '') + (HAB_SEL === h.nom ? ' sel' : '') + '" data-hab="' + esc(h.nom) + '" aria-label="' + esc(h.nom) + '">' + icone_(h) + (p ? '<i>' + esc(court_(p)) + '</i>' : '') + '</button>';
   };
-  var col = function (cls, lbl, l) { return l.length ? '<div class="rail-bloc ' + cls + '"><span class="r-lbl">' + lbl + '</span>' + l.map(ico).join('') + '</div>' : ''; };
-  return '<div class="rail">' + col('r-hab', '✦', hab) + col('r-def', '🎯', def) + bulle_(iso) + '</div>';
+  // la campagne du mois : une boule dorée tout en haut, dans sa propre bulle
+  var camp = def.length ? '<div class="rail-campagne">' + def.map(function (h) { return ico(h, ' campagne'); }).join('') + '</div>' : '';
+  var habs = hab.length ? '<div class="rail-bloc r-hab"><span class="r-lbl">✦</span>' + hab.map(function (h) { return ico(h); }).join('') + '</div>' : '';
+  return '<div class="rail">' + camp + habs + bulle_(iso) + '</div>';
 }
-// Campagne : un défi par mois, actif entre « Début campagne » et « Fin campagne » (onglet Habitudes) ; sans dates, il attend son tour.
+// Icônes dessinées (colonne « Icône » de l'onglet Habitudes) : « youtube-barre » = logo YouTube barré
+var ICONE_YT_BARRE = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="1.5" y="5" width="21" height="14" rx="4" fill="#e62117"/><path d="M10 8.8l5.2 3.2-5.2 3.2z" fill="#fff"/><path d="M3.5 20.5L20.5 3.5" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/><path d="M3.5 20.5L20.5 3.5" stroke="#1b1b1b" stroke-width="2.2" stroke-linecap="round"/></svg>';
+function icone_(h) { return /youtube/i.test(String(h.icone || '')) ? ICONE_YT_BARRE : esc(h.icone); }
+// Campagne : un défi par mois, actif entre « Début campagne » et « Fin campagne » (onglet Habitudes) ; le script lance la suivante le 1er.
 function enCampagne_(h, iso) { return !!h.debut && h.debut <= iso && (!h.fin || iso <= h.fin); }
 function hierIso_() { var d = new Date(); d.setDate(d.getDate() - 1); return isoJ(d); }
+function estHebdo_(h) { return /semaine/i.test(h.freq || '') || h.moment === 'Cette semaine'; }
+function lundiIso_(iso) { var d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return isoJ(d); }
+function finSemIso_(iso) { var d = new Date(lundiIso_(iso) + 'T12:00:00'); d.setDate(d.getDate() + 6); return isoJ(d); }
+// date de la coche qui compte pour ce jour (n'importe quel jour de la semaine pour un défi hebdomadaire)
+function faitLe_(h, iso) {
+  var c = (D.aventure.coches[h.nom] || []);
+  if (!estHebdo_(h)) return c.indexOf(iso) !== -1 ? iso : '';
+  var l = lundiIso_(iso), f = finSemIso_(iso); return c.filter(function (d) { return d >= l && d <= f; })[0] || '';
+}
 function bulle_(iso) {
   var A = D.aventure, h = HAB_SEL && A.habitudes.filter(function (x) { return x.nom === HAB_SEL; })[0]; if (!h) return '';
-  var fait = (A.coches[h.nom] || []).indexOf(iso) !== -1, p = fait && (A.paliersFaits || {})[h.nom] && A.paliersFaits[h.nom][iso];
+  var leJour = faitLe_(h, iso), fait = !!leJour, p = fait && (A.paliersFaits || {})[h.nom] && A.paliersFaits[h.nom][iso];
+  var hebdo = estHebdo_(h), defi = h.moment === 'Défi', info;
   var bts = (h.paliers && h.paliers.length)
     ? h.paliers.map(function (x) { return '<button data-palier="' + esc(x) + '" class="' + (p === x ? 'actif' : '') + '">' + esc(x) + '</button>'; }).join('')
-    : (fait ? '' : '<button data-palier="">✓ Accompli</button>');
-  var defi = h.moment === 'Défi', info;
+    : (fait ? '' : '<button data-palier="">✓ Accompli' + (hebdo ? ' cette semaine' : '') + '</button>');
   if (defi) {
-    var c = (A.coches[h.nom] || []).filter(function (d) { return d >= h.debut && d <= iso; }).length;
-    var tot = Math.round((new Date(iso) - new Date(h.debut)) / 864e5) + 1;
-    info = 'Campagne' + (h.fin ? ' jusqu’au ' + h.fin.slice(8) + '/' + h.fin.slice(5, 7) : '') + ' · ' + c + '/' + tot + ' jour' + (tot > 1 ? 's' : '') + ' réussi' + (c > 1 ? 's' : '') + ' · +' + (A.xpDiff[h.diff] || 10) + ' XP';
+    var c, tot, u;
+    if (hebdo) {
+      var sem = {}; (A.coches[h.nom] || []).forEach(function (d) { if (d >= h.debut && d <= iso) sem[lundiIso_(d)] = 1; });
+      c = Object.keys(sem).length; tot = Math.round((new Date(lundiIso_(iso)) - new Date(lundiIso_(h.debut))) / (7 * 864e5)) + 1; u = 'semaine';
+    } else {
+      c = (A.coches[h.nom] || []).filter(function (d) { return d >= h.debut && d <= iso; }).length; tot = Math.round((new Date(iso) - new Date(h.debut)) / 864e5) + 1; u = 'jour';
+    }
+    info = '🏆 Campagne' + (h.fin ? ' jusqu’au ' + h.fin.slice(8) + '/' + h.fin.slice(5, 7) : '') + ' · ' + (hebdo ? 'une fois par semaine' : 'chaque jour') + '<br>' + c + '/' + tot + ' ' + u + (tot > 1 ? 's' : '') + ' réussi' + (u === 'semaine' ? 'e' : '') + (c > 1 ? 's' : '') + ' · +' + (A.xpDiff[h.diff] || 10) + ' XP' + (fait && hebdo ? ' · ✓ fait cette semaine' : '');
   } else info = '+' + (A.xpDiff[h.diff] || 10) + ' XP' + (h.paliers && h.paliers.length ? ' pour 1 h' : '') + ' · −' + (A.penalite || 20) + ' XP si oubliée';
   var hier = hierIso_(), hierFait = (A.coches[h.nom] || []).indexOf(hier) !== -1;
-  var btHier = (!defi && new Date().getHours() < 12 && !hierFait) ? '<button data-palier="' + (h.paliers && h.paliers.length ? esc(h.paliers.indexOf('1 h') !== -1 ? '1 h' : h.paliers[0]) : '') + '" data-jour="' + hier + '" class="r-hier">✓ Fait hier</button>' : '';
-  return '<div class="r-bulle"><b>' + esc(h.icone) + ' ' + esc(h.nom.replace(/^Défi\s*:\s*/, '')) + '</b><span class="r-xp">' + info + '</span>'
-    + '<div class="r-bts">' + bts + (fait ? '<button data-annule="1" class="r-annule">Annuler</button>' : '') + btHier + '</div></div>';
+  var btHier = (!defi && !hebdo && new Date().getHours() < 12 && !hierFait) ? '<button data-palier="' + (h.paliers && h.paliers.length ? esc(h.paliers.indexOf('1 h') !== -1 ? '1 h' : h.paliers[0]) : '') + '" data-jour="' + hier + '" class="r-hier">✓ Fait hier</button>' : '';
+  return '<div class="r-bulle' + (defi ? ' r-bulle-camp' : '') + '"><b>' + icone_(h) + ' ' + esc(h.nom.replace(/^Défi\s*:\s*/, '')) + '</b><span class="r-xp">' + info + '</span>'
+    + '<div class="r-bts">' + bts + (fait ? '<button data-annule="1" data-jour="' + leJour + '" class="r-annule">Annuler</button>' : '') + btHier + '</div></div>';
 }
 function brancherRail_(z) {
   var re = function () { z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); };
@@ -2325,7 +2347,7 @@ function serie(h) {
 function carteHabitude(h, iso) {
   var faite = (D.aventure.coches[h.nom] || []).indexOf(iso) !== -1, hebdo = !estQuotidienne(h);
   var compte = hebdo ? '<span class="tag">' + cocheesSemaine(h) + '/' + objectifSemaine(h) + ' cette semaine</span>' : '';
-  return '<div class="habitude' + (faite ? ' faite' : '') + '" data-h="' + esc(h.nom) + '" data-iso="' + iso + '"><span class="hab-ico">' + esc(h.icone) + '</span><span class="hab-txt"><b>' + esc(h.nom) + '</b>'
+  return '<div class="habitude' + (faite ? ' faite' : '') + '" data-h="' + esc(h.nom) + '" data-iso="' + iso + '"><span class="hab-ico">' + (typeof icone_ === 'function' ? icone_(h) : esc(h.icone)) + '</span><span class="hab-txt"><b>' + esc(h.nom) + '</b>'
     + '<small>' + ['', 'facile', 'simple', 'moyen', 'difficile', 'épique'][h.diff] + ' · +' + (D.aventure.xpDiff[h.diff] || 10) + ' XP ' + compte + '</small></span><button class="hab-case" aria-label="Cocher">' + (faite ? '✔' : '') + '</button></div>';
 }
 function brancherHabitudes(zone) {
