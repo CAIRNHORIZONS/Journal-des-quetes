@@ -929,7 +929,7 @@ function nomCourt_(ch) { return String(ch).replace(/^(Le |La |Les |L')/, '').rep
 function iconeChap_(ch) { var l = (typeof LIEUX !== 'undefined' && LIEUX[String(ch).toLowerCase().trim()]) || null; return l ? l[2] : ch === 'Vie perso' ? '🍺' : ch === 'Quête principale' ? '⚜' : '📍'; }
 function elementsQJ_() {
   var A = D.aventure, iso = isoJ(new Date()), out = [];
-  ((A && A.quetes) || []).filter(function (q) { return q.jour === iso; }).forEach(function (q) {
+  ((A && A.quetes) || []).filter(function (q) { return q.jour === iso && q.type !== 'campus'; }).forEach(function (q) {
     out.push({ html: carteQueteJour(q), cat: CHAP_EVT[q.type] || 'Vie perso', heure: q.debut || '99:99', fait: q.fait,
       imp: q.fait ? 0 : q.gemmes ? 70 : q.poche ? 60 : 20, gain: q.gemmes ? q.gemmes / 10 : (q.montant || 0) });
   });
@@ -941,7 +941,7 @@ function elementsQJ_() {
 }
 function blocQuetesUnifie() {
   var tous = elementsQJ_(), A = D.aventure, iso = isoJ(new Date());
-  var att = ((A && A.quetes) || []).filter(function (q) { return q.jour < iso && !q.fait; });
+  var att = ((A && A.quetes) || []).filter(function (q) { return q.jour < iso && !q.fait && q.type !== 'campus'; });
   if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + grille_('<div class="aide">Rien de prévu aujourd’hui.</div>') + '</div>';
   var cats = []; tous.forEach(function (x) { if (cats.indexOf(x.cat) === -1) cats.push(x.cat); });
   if (QJ_CAT && cats.indexOf(QJ_CAT) === -1) QJ_CAT = '';
@@ -2364,7 +2364,7 @@ function majBandeau() {
   var e = etatRenommee(), P = D.palier || 20, pct = Math.max(2, Math.min(100, Math.round(100 * (e.moy - (e.n - 1) * P) / P)));
   var P = D.aventure && D.aventure.poches;
   b.innerHTML = '<span class="b-niv">' + e.n + '</span><span class="b-centre"><span class="b-rang">' + esc(RANGS[Math.min(e.n, RANGS.length - 1)]) + '</span><i class="b-xp"><u style="width:' + pct + '%"></u></i></span>'
-    + (P ? '<button class="b-or" id="b-tresor" aria-label="Trésor de l’Empire ce mois-ci">🏛️ ' + eurCourt(P.tresor.eurosMois !== undefined ? P.tresor.eurosMois : P.tresor.mois) + '</button><button class="b-or bourse" id="b-bourse" aria-label="Bourse ce mois-ci">👛 ' + eurCourt(P.bourse.eurosMois !== undefined ? P.bourse.eurosMois : P.bourse.mois) + '</button>' + ((P.tresor.ecus || 0) + (P.bourse.ecus || 0) ? '<button class="b-or ecu" id="b-gemmes" aria-label="Écus en attente">⚜ ' + Math.round((P.tresor.ecus || 0) + (P.bourse.ecus || 0)) + '</button>' : '') : '') + '<button class="b-bt" id="b-musique" aria-label="Musique">' + (Musique.voulue() ? '🎵' : '🔇') + '</button>';
+    + (P ? '<button class="b-or" id="b-tresor" aria-label="Trésor de l’Empire ce mois-ci">🏛️ ' + eurCourt(P.tresor.eurosMois !== undefined ? P.tresor.eurosMois : P.tresor.mois) + '</button>' + ((P.tresor.ecus || 0) ? '<button class="b-or ecu" id="b-gemmes" aria-label="Écus en attente">⚜ ' + Math.round(P.tresor.ecus || 0) + '</button>' : '') : '') + '<button class="b-bt" id="b-musique" aria-label="Musique">' + (Musique.voulue() ? '🎵' : '🔇') + '</button>';
   [ 'b-tresor', 'b-bourse', 'b-gemmes' ].forEach(function (id) { if ($(id)) $(id).onclick = function () { allerVue('tableau'); setTimeout(function () { var t = $('tresor-tab'); if (t) t.scrollIntoView({ behavior: 'smooth' }); }, 80); }; });
   $('b-musique').onclick = function () { Musique.basculer(); majBandeau(); };
   window.basculerStyle = function () { var px = document.documentElement.getAttribute('data-style') !== 'pixel'; document.documentElement.setAttribute('data-style', px ? 'pixel' : 'parchemin'); try { localStorage.setItem('journal-style', px ? 'pixel' : 'parchemin'); } catch (x) {} toast(px ? 'Style pixel 16 bits' : 'Style parchemin'); };
@@ -2464,7 +2464,7 @@ function vueDefis(A) {
   });
   var g = A.gagne || { detail: {}, n: {} }, d = g.detail || {};
   html += '<div class="carte"><div class="ch-titre">📜 D’où viennent tes pièces (depuis le 1er novembre)</div>'
-    + '<div class="serie"><span>🏛️ Trésor de l’Empire</span><b>🪙 ' + Math.round(d.tresor || 0) + '</b></div><div class="serie"><span>👛 Bourse</span><b>🪙 ' + Math.round(d.bourse || 0) + '</b></div>'
+    + '<div class="serie"><span>🏛️ Trésor de l’Empire</span><b>🪙 ' + Math.round(d.tresor || 0) + '</b></div><div class="serie"><span>🎓 Piscine du campus</span><b>🪙 ' + Math.round(d.bourse || 0) + '</b></div>'
     + '<div class="serie"><span>Relances scellées (' + ((g.n || {}).relances || 0) + ')</span><b>🪙 ' + (d.relances || 0) + '</b></div>'
     + (A.tresor.length ? '<div class="moment">Primes et achats</div>' + A.tresor.map(function (t) { return '<div class="serie"><span>' + esc(t.libelle) + '</span><b class="' + (t.or < 0 ? 'rouge' : '') + '">' + (t.or > 0 ? '+' : '') + t.or + '</b></div>'; }).join('') : '') + '</div>';
   return html;
@@ -2661,10 +2661,9 @@ function vueTresor(A) {
       + (Q.disponible !== Q.solde ? '<div class="aide" style="padding:0 12px">Disponible : ' + eur(Q.disponible) + ' (opérations en cours déduites)</div>' : '')
     : '<div class="aide" style="padding:0 12px">Solde Qonto indisponible pour l’instant.</div>')
     + (P.virementsAVerifier ? '<div class="qo-alerte">⚠ ' + P.virementsAVerifier + ' virement' + (P.virementsAVerifier > 1 ? 's' : '') + ' reçu' + (P.virementsAVerifier > 1 ? 's' : '') + ' sans séance associée : onglet « Virements Qonto » du tableau.</div>' : '<div class="qo-ok">✓ Tous les virements reçus sont rapprochés de leurs séances.</div>') + '</div>';
-  return guide('tresoriere', 'Chaque quête accomplie te rapporte des <b>écus</b> : de l’argent gagné, mais pas encore arrivé. Dès que le client paie (virement sur Qonto, carte, ou espèces marquées « ✓ Réglé »), ses écus deviennent des <b>euros</b>. Pour le campus, touche « Paie reçue » quand ton salaire arrive.')
+  return guide('tresoriere', 'Chaque quête accomplie te rapporte des <b>écus</b> : de l’argent gagné, mais pas encore arrivé. Dès que le client paie (virement sur Qonto, carte, ou espèces marquées « ✓ Réglé »), ses écus deviennent des <b>euros</b>. La piscine du campus, elle, n’est plus suivie : chaque séance terminée part directement en pièces d’or.')
     + qonto
     + bloc(P.tresor, 'Trésor de l’Empire', '🏛️', 'tresor', 'Cairn Horizons · ce qui est facturé')
-    + bloc(P.bourse, 'Ta Bourse', '👛', 'bourse', 'Salaire net · piscine du campus', P.bourse.ecus > 0 ? '<button class="pa-bt" id="paie-recue">💶 Paie reçue : changer les écus en euros</button>' : '')
     + (P.gemmes && P.gemmes.total ? '<div class="poche gemmes"><div class="po-tete"><span class="po-ico">💎</span><span><b>Gemmes du conseiller</b><small>600 par premier rendez-vous (R1) accompli</small></span></div><div class="po-mois"><b>' + P.gemmes.total + '</b><span>' + P.gemmes.r1 + ' R1 accompli' + (P.gemmes.r1 > 1 ? 's' : '') + '</span></div></div>' : '')
     + (P.derniers.length ? '<div class="carte"><div class="ch-titre">📜 Dernières quêtes validées</div>' + P.derniers.map(function (d) { return '<div class="serie"><span>' + esc(d.date) + ' · ' + esc(d.libelle) + '</span><b>' + (d.poche === 'Bourse' ? '👛 ' : '🏛️ ') + eur(d.montant).replace(' €', d.paye ? ' €' : ' écus') + '</b></div>'; }).join('') + '</div>' : '')
     + '<div class="carte"><div class="ch-titre">🪙 Pièces d’or : ' + A.or + '</div><div class="aide" style="padding:0 12px 10px">La monnaie de la boutique : 1 pièce par euro gagné, plus les primes des défis et des quêtes du mois, moins tes achats.</div></div>';
