@@ -836,6 +836,60 @@ html:is([data-esth="C"],[data-esth="Cn"]) main{position:relative;z-index:1}
 html:is([data-esth="C"],[data-esth="Cn"]) .vue.tourne{animation:tourne .45s ease-out;transform-origin:left center}
 @keyframes tourne{0%{opacity:0;transform:perspective(900px) rotateY(-28deg) translateX(14px)}100%{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){.vue.tourne,.sceau{animation:none!important}}
+
+/* ===== Manuscrit, 2e passe ===== */
+/* 1. sceaux de couleur (cases cochées et sceau qui tombe) */
+.sceau.sc-bleu{background:radial-gradient(circle at 35% 30%,#5a8ad8,#1f4a9a 55%,#0f2a5e 100%)}
+.sceau.sc-rouge{background:radial-gradient(circle at 35% 30%,#e0574a,#a3241a 55%,#6e140e 100%)}
+.sceau.sc-vert{background:radial-gradient(circle at 35% 30%,#6ab86a,#2f7a3a 55%,#1a4a22 100%)}
+.sceau.sc-or{background:radial-gradient(circle at 35% 30%,#ffe9a0,#d4a537 55%,#8a6410 100%);color:#5a3a12}
+html:is([data-esth="C"],[data-esth="Cn"]) [data-sceau="bleu"]:is(.faite,.fait) :is(.coche,.qj-case,.hab-case){background:radial-gradient(circle at 35% 30%,#5a8ad8,#1f4a9a 70%)!important;border-color:#1f4a9a!important;color:#e8f0ff!important}
+html:is([data-esth="C"],[data-esth="Cn"]) [data-sceau="rouge"]:is(.faite,.fait) :is(.coche,.qj-case,.hab-case){background:radial-gradient(circle at 35% 30%,#d24a3a,#8e1c14 70%)!important;border-color:#8e1c14!important;color:#ffe6b0!important}
+html:is([data-esth="C"],[data-esth="Cn"]) [data-sceau="vert"]:is(.faite,.fait) :is(.coche,.qj-case,.hab-case){background:radial-gradient(circle at 35% 30%,#6ab86a,#2f7a3a 70%)!important;border-color:#2f7a3a!important;color:#eaffea!important}
+html:is([data-esth="C"],[data-esth="Cn"]) [data-sceau="or"]:is(.faite,.fait) :is(.coche,.qj-case,.hab-case){background:radial-gradient(circle at 35% 30%,#ffe9a0,#d4a537 70%)!important;border-color:#8a6410!important;color:#5a3a12!important}
+html:is([data-esth="C"],[data-esth="Cn"]) [data-sceau="bleu"]:not(.faite):not(.fait) :is(.coche,.qj-case){border-color:#1f4a9a!important}
+html:is([data-esth="C"],[data-esth="Cn"]) [data-sceau="vert"]:not(.faite):not(.fait) :is(.coche,.qj-case){border-color:#2f7a3a!important}
+html:is([data-esth="C"],[data-esth="Cn"]) [data-sceau="or"]:not(.faite):not(.fait) :is(.coche,.qj-case){border-color:#b8860b!important}
+/* 2. annotations en marge */
+.annot{display:none}
+html:is([data-esth="C"],[data-esth="Cn"]) .annot{display:block;font:500 15px/1.1 "Dancing Script",cursive;color:#8a5a2a;transform:rotate(-2deg);margin-top:2px;font-style:normal}
+html[data-esth="Cn"] .annot{color:#d4a560}
+/* 3. page de garde */
+.page-garde{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#f6ebcf,#e2cc98 70%,#b89a62);animation:pgEntre .4s ease-out;cursor:pointer}
+html[data-esth="Cn"] .page-garde{background:radial-gradient(ellipse at 50% 40%,#3a2c1c,#1c140c 75%)}
+.page-garde.part{animation:pgPart .5s ease-in forwards}
+.pg-cadre{width:min(330px,84vw);padding:26px 18px;text-align:center;border:3px double #9a7a3a;outline:1px solid #9a7a3a;outline-offset:6px;color:#3b2a18}
+html[data-esth="Cn"] .pg-cadre{color:#f1e3c2}
+.pg-blason{width:70px;height:82px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
+.pg-titre{font:700 24px "Cinzel",serif;color:#7a1c1c;margin-top:8px}
+html[data-esth="Cn"] .pg-titre{color:#e8c46a}
+.pg-sous{font:italic 17px "EB Garamond",serif}
+.pg-orne{color:#9a7a3a;font-size:22px;margin:8px 0}
+.pg-date{font:600 20px "EB Garamond",serif;text-transform:capitalize}
+.pg-date small{display:block;font:500 14px "Cinzel",serif;text-transform:none;color:#8a6a3a}
+.pg-adage{margin-top:14px;font:500 21px/1.25 "Dancing Script",cursive;color:#5a3a12}
+html[data-esth="Cn"] .pg-adage{color:#e8d2a0}
+@keyframes pgEntre{from{opacity:0}to{opacity:1}}
+@keyframes pgPart{to{opacity:0;transform:perspective(900px) rotateY(-70deg);transform-origin:left center}}
+/* 4. livre d'heures */
+.heures{display:none}
+html:is([data-esth="C"],[data-esth="Cn"]) .heures{display:block;text-align:center;margin:-6px 0 10px;font:16px "EB Garamond",serif;color:#5a3a12}
+html:is([data-esth="C"],[data-esth="Cn"]) .heures b{font:700 17px "Cinzel",serif;color:#7a1c1c;letter-spacing:.05em}
+html[data-esth="Cn"] .heures{color:#e8d2a0}
+html[data-esth="Cn"] .heures b{color:#e8c46a}
+/* 5. signets de chapitre : la barre du bas devient des rubans qui dépassent de la page */
+html:is([data-esth="C"],[data-esth="Cn"]) nav{background:linear-gradient(#4a2e16,#2e1c0c)!important;border-top:3px solid #b8955a!important;padding:0 6px env(safe-area-inset-bottom);gap:6px;align-items:flex-start;overflow:visible}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button{position:relative;margin-top:-3px;padding:6px 2px 16px!important;color:#fff4d6!important;font-family:"Cinzel",serif!important;font-size:10px!important;letter-spacing:.02em;clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);box-shadow:none!important;border:0!important;transition:transform .2s,padding .2s;transform:translateY(-2px)}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button[data-vue="jour"]{background:linear-gradient(#a3241a,#7a1c1c)!important}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button[data-vue="tableau"]{background:linear-gradient(#2f5a9a,#1f3f72)!important}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button[data-vue="taches"]{background:linear-gradient(#c8961f,#8a6410)!important}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button[data-vue="sms"]{background:linear-gradient(#3f7a3a,#2a5226)!important}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button[data-vue="aventure"]{background:linear-gradient(#6a3a8a,#4a2464)!important}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button.actif{padding-bottom:24px!important;transform:translateY(0);filter:brightness(1.12)}
+html:is([data-esth="C"],[data-esth="Cn"]) nav button:not(.actif){filter:saturate(.75) brightness(.9)}
+/* 8. la plume du Scribe */
+html:is([data-esth="C"],[data-esth="Cn"]) .guide-bulle span.plume::after{content:"✒";margin-left:3px;font-style:normal;color:#5a3a12}
+html:is([data-esth="C"],[data-esth="Cn"]) .b-niv{font-family:"Cinzel",serif!important;font-weight:700;letter-spacing:-.02em}
 </style>
 </head>
 <body class="v-jour">
@@ -2515,6 +2569,132 @@ function tournerPage_(v) { if (!document.documentElement.dataset.esth || !v) ret
         var o = document.querySelector('.voile-reglages'); if (o) o.remove(); ouvrirReglages_();
       };
     });
+  };
+})();
+
+// =================== Manuscrit, 2e passe (24/11) ===================
+// Police cursive pour les annotations en marge
+(function () { if (document.getElementById('police-cursive')) return; var l = document.createElement('link'); l.id = 'police-cursive'; l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap'; document.head.appendChild(l); })();
+// 1. Sceaux de couleur selon le type : bleu = cours, rouge = CGPI, vert = vie perso, or = quête principale
+function couleurSceau_(el) {
+  if (!el) return 'vert';
+  var carte = el.closest('.qj, .tache, .habitude, .r-bulle, .rail');
+  if (!carte || carte.matches('.habitude, .r-bulle, .rail')) return 'vert';
+  var sec = '', n = +carte.dataset.n;
+  if (n && window.D && D.taches) { var t = D.taches.filter(function (x) { return x.n === n; })[0]; sec = t ? t.section : ''; }
+  else if (carte.dataset.cle && window.D && D.aventure) {
+    var q = (D.aventure.quetes || []).filter(function (x) { return x.cle === carte.dataset.cle; })[0], ty = q ? q.type : '';
+    if (/^(cours|sentinelle|elsport|natation|campus)$/.test(ty)) return 'bleu';
+    if (/^(cgp|r1)$/.test(ty)) return 'rouge';
+    return 'vert';
+  }
+  if (/qu[eê]te principale/i.test(sec) || carte.classList.contains('principale') || carte.classList.contains('etape')) return 'or';
+  if (/7 mers/i.test(sec)) return 'bleu';
+  if (/horizons ouverts/i.test(sec)) return 'rouge';
+  return 'vert';
+}
+function marquerSceaux_() {
+  document.querySelectorAll('.qj:not([data-sceau]), .tache:not([data-sceau])').forEach(function (el) { el.setAttribute('data-sceau', couleurSceau_(el)); });
+}
+var _poserSceauBase = poserSceau_;
+poserSceau_ = function (el) {
+  _poserSceauBase(el);
+  var s = document.querySelectorAll('.sceau'); s = s[s.length - 1]; if (s) s.classList.add('sc-' + couleurSceau_(el));
+  var carte = el && el.closest && el.closest('.qj, .tache'); if (carte) setTimeout(function () { annoter_(carte); }, 650);
+};
+// 2. Annotations en marge : « scellée le 24/11 » en écriture cursive à côté des quêtes faites
+function dateCourteMs_(d) { return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2); }
+function annoter_(el) {
+  if (!document.documentElement.dataset.esth || !el || el.querySelector('.annot')) return;
+  var t = el.querySelector('.qj-t, .titre'); if (!t) return;
+  t.insertAdjacentHTML('beforeend', '<i class="annot">scellée le ' + dateCourteMs_(new Date()) + '</i>');
+}
+function annotations_() { document.querySelectorAll('.qj.faite:not(:has(.annot)), .qj.fait:not(:has(.annot))').forEach(annoter_); }
+// 3. Page de garde (une fois par jour, 2 s, un toucher pour passer) : blason, date en toutes lettres, adage du jour
+var MS_ADAGES = ['Qui va doucement va sûrement.', 'Petit à petit, l’oiseau fait son nid.', 'À cœur vaillant, rien d’impossible.', 'Il n’est point de petite victoire.', 'Chaque jour, une pierre au rempart.', 'L’eau qui coule creuse la pierre.', 'Fais ce que dois, advienne que pourra.', 'Le temps bien employé est un trésor.', 'Mieux vaut un « fait » que deux « je ferai ».', 'Qui sème avec patience récolte avec joie.', 'La plume est l’épée du sage.', 'Tout vient à point à qui sait attendre… et agir.', 'On ne nage pas contre le courant : on l’apprivoise.', 'Une quête à la fois, et le royaume suit.'];
+var ROMAINS = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+function romain_(n) { n = Math.floor(+n); if (!n || n < 1) return String(n); var r = ''; ROMAINS.forEach(function (p) { while (n >= p[0]) { r += p[1]; n -= p[0]; } }); return r; }
+function pageDeGarde_() {
+  var oui = true, auj = isoJ(new Date()); try { oui = localStorage.getItem('journal-garde') !== 'non' && localStorage.getItem('journal-garde-vue') !== auj; } catch (e) {}
+  if (!oui || !document.documentElement.dataset.esth) return;
+  try { localStorage.setItem('journal-garde-vue', auj); } catch (e) {}
+  var d = new Date(), J = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'], M = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  var adage = MS_ADAGES[Math.floor(d.getTime() / 864e5) % MS_ADAGES.length];
+  var g = document.createElement('div'); g.className = 'page-garde';
+  g.innerHTML = '<div class="pg-cadre"><svg class="pg-blason" viewBox="0 0 60 70" aria-hidden="true"><path d="M5 5h50v28c0 18-12 28-25 34C17 61 5 51 5 33z" fill="#7a1c1c" stroke="#d4a537" stroke-width="3"/><path d="M30 12l4 10 10 1-8 7 3 10-9-6-9 6 3-10-8-7 10-1z" fill="#d4a537"/><text x="30" y="56" text-anchor="middle" font-family="Cinzel,serif" font-size="11" font-weight="700" fill="#f6ebcf">CH</text></svg>'
+    + '<div class="pg-titre">Le Journal des quêtes</div><div class="pg-sous">de Cairn Horizons</div><div class="pg-orne">❦</div>'
+    + '<div class="pg-date">' + J[d.getDay()] + ' ' + d.getDate() + ' ' + M[d.getMonth()] + '<small>en l’an ' + romain_(d.getFullYear()) + '</small></div>'
+    + '<div class="pg-adage">« ' + adage + ' »</div></div>';
+  document.body.appendChild(g);
+  var fin = function () { g.classList.add('part'); setTimeout(function () { g.remove(); }, 500); };
+  g.onclick = fin; setTimeout(fin, 2200);
+}
+// 4. Livre d'heures : sous la miniature, le mois et son travail ; et un détail de saison peint dans la miniature
+var MS_MOIS = [['Janvier', 'les festins au coin du feu'], ['Février', 'les veillées'], ['Mars', 'la taille de la vigne'], ['Avril', 'les jardins en fleurs'], ['Mai', 'la chevauchée'], ['Juin', 'la fenaison'], ['Juillet', 'la moisson'], ['Août', 'le battage du blé'], ['Septembre', 'les vendanges'], ['Octobre', 'les semailles'], ['Novembre', 'la glandée et les feuilles mortes'], ['Décembre', 'les fêtes de l’hiver']];
+function detailSaison_(m, rnd) {
+  var r = '', px = function (x, y, w, h, c) { r += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + c + '"/>'; }, i;
+  if (m === 10 || m === 9) for (i = 0; i < 26; i++) px(Math.floor(rnd() * 120), Math.floor(rnd() * 40), 1, 1, ['#d9822b', '#b5452a', '#e0b03a'][i % 3]); // feuilles qui tombent
+  else if (m === 8) for (i = 0; i < 6; i++) { var x = 8 + i * 19; px(x, 36, 1, 4, '#5a3a12'); px(x - 1, 35, 3, 2, '#6a2a6a'); px(x, 37, 1, 1, '#8a3a8a'); } // vignes
+  else if (m === 6 || m === 7) for (i = 0; i < 120; i += 2) px(i, 38 + (i % 4 === 0 ? 0 : 1), 1, 2, '#e0b84a'); // blés
+  else if (m === 5) for (i = 0; i < 8; i++) { var y = 35 + (i % 3); px(6 + i * 15, y, 4, 2, '#d8c070'); } // foin
+  else if (m === 3 || m === 4) for (i = 0; i < 30; i++) px(Math.floor(rnd() * 120), 37 + Math.floor(rnd() * 4), 1, 1, ['#f0a0c0', '#ffffff', '#f6d24a'][i % 3]); // fleurs
+  else if (m === 2) for (i = 0; i < 10; i++) px(Math.floor(rnd() * 120), 36 + Math.floor(rnd() * 3), 2, 1, '#7ab04a'); // bourgeons
+  else if (m === 11 || m === 0) { px(100, 28, 1, 8, '#3b2a18'); for (i = 0; i < 4; i++) px(98 + (i % 2) * 4, 26 - i * 2, 1, 1, ['#f6d24a', '#e0574a'][i % 2]); } // lanternes de fête
+  else if (m === 1) { px(60, 33, 3, 3, '#e8803a'); px(61, 31, 1, 2, '#f6d24a'); } // feu de veillée
+  return r;
+}
+function livreDHeures_() {
+  if (!document.documentElement.dataset.esth) return;
+  var m = new Date().getMonth();
+  document.querySelectorAll('.vue > .paysage:not([data-heures])').forEach(function (p) {
+    p.setAttribute('data-heures', '1');
+    var svg = p.querySelector('svg'); if (svg) svg.insertAdjacentHTML('beforeend', detailSaison_(m, hasard_('heures' + m)));
+    p.insertAdjacentHTML('afterend', '<div class="heures"><b>' + MS_MOIS[m][0] + '</b> · <i>' + MS_MOIS[m][1] + '</i></div>');
+  });
+}
+// 7. Chiffres romains pour les niveaux et les rangs
+function romains_() {
+  if (!document.documentElement.dataset.esth) return;
+  var b = document.querySelector('.b-niv'); if (b && /^\d+$/.test(b.textContent)) b.textContent = romain_(b.textContent);
+  document.querySelectorAll('.renommee, .arm-avatar, .rangs-galerie').forEach(function (z) {
+    var w = document.createTreeWalker(z, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) if (/([Nn]iveau)\s+(\d+)/.test(n.data)) n.data = n.data.replace(/([Nn]iveau)\s+(\d+)/g, function (_, a, c) { return a + ' ' + romain_(c); });
+  });
+}
+// 8. Le Scribe écrit : les phylactères apparaissent lettre à lettre, comme à la plume
+function plume_(el) {
+  var noeuds = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n, total = 0;
+  while ((n = w.nextNode())) { noeuds.push([n, n.data]); total += n.data.length; n.data = ''; }
+  if (!total) return;
+  var pas = Math.max(1, Math.ceil(total / 70)), i = 0, k = 0;
+  el.classList.add('plume');
+  var t = setInterval(function () {
+    for (var c = 0; c < pas && k < noeuds.length; c++) { var nd = noeuds[k]; nd[0].data = nd[1].slice(0, ++i); if (i >= nd[1].length) { k++; i = 0; } }
+    if (k >= noeuds.length) { clearInterval(t); el.classList.remove('plume'); }
+  }, 22);
+}
+function scribe_() {
+  if (!document.documentElement.dataset.esth) return;
+  document.querySelectorAll('.guide-bulle span:not([data-plume])').forEach(function (s) {
+    s.setAttribute('data-plume', '1');
+    var r = s.getBoundingClientRect(); if (r.top > window.innerHeight || r.bottom < 0) return; // seulement ce qui est à l'écran
+    plume_(s);
+  });
+}
+// Branchements
+(function () {
+  var main = document.querySelector('main'); if (!main) return;
+  var passe = function () { marquerSceaux_(); annotations_(); livreDHeures_(); romains_(); scribe_(); };
+  new MutationObserver(function () { clearTimeout(passe.t); passe.t = setTimeout(passe, 80); }).observe(main, { childList: true, subtree: true });
+  var bd = document.getElementById('bandeau'); if (bd) new MutationObserver(function () { setTimeout(romains_, 30); }).observe(bd, { childList: true, subtree: true });
+  setTimeout(passe, 150); setTimeout(pageDeGarde_, 50);
+  var _orig = ouvrirReglages_;
+  ouvrirReglages_ = function () {
+    _orig();
+    var p = document.querySelector('.panneau-reglages'); if (!p) return;
+    var g = true; try { g = localStorage.getItem('journal-garde') !== 'non'; } catch (e) {}
+    p.insertAdjacentHTML('beforeend', '<div class="ra-ligne"><span>Page de garde <small>une fois par jour</small></span><button data-ms2="garde" class="' + (g ? 'actif' : '') + '">' + (g ? '📖 Affichée' : 'Masquée') + '</button></div>');
+    p.querySelector('[data-ms2="garde"]').onclick = function (e) { e.stopPropagation(); try { localStorage.setItem('journal-garde', g ? 'non' : 'oui'); } catch (x) {} var o = document.querySelector('.voile-reglages'); if (o) o.remove(); ouvrirReglages_(); };
   };
 })();
 
