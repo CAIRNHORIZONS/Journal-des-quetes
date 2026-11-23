@@ -725,6 +725,10 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 .poche.rubis{background:#fbe9ec;border:2px solid #7a1022;border-radius:6px;padding:8px 10px;margin:8px 0}
 .art-bt.art-rubis{margin-left:6px;background:#fbe9ec;border-color:#7a1022;color:#7a1022}
 .art-bt.art-rubis[disabled]{opacity:.45;filter:grayscale(.6)}
+
+/* Rapports de l'Oracle et du Scribe : le bouton « Lu ✓ » reste toujours visible, même carte repliée (24/11) */
+.sms.carte.rapport .actions{display:flex!important}
+.sms.carte.rapport:not(.deplie) .rapport-txt{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 /* ===== C : manuscrit enluminé. Plus de cartes : une page de parchemin, enluminures, lettrines, sceaux de cire ===== */
 html:is([data-esth="C"],[data-esth="Cn"]){--texte:#3b2a18!important;--doux:#7a6448!important;--carte:#f3e5c4!important;--fond:#ead7ac!important;--trait:#c4a66e!important}
