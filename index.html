@@ -677,15 +677,28 @@ header #reglages{margin-left:auto}
 .qj.tache-jour .qj-t b{font-weight:700}
 .titre-argent{margin-top:22px}
 
-/* Bandeaux d'icônes (habitudes ✦, défis 🎯) et gestes */
-.bandes{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:4px 0 8px}
-.bande{display:inline-flex;align-items:center;gap:4px;border:2px solid #3b2a18;background:var(--fond);border-radius:6px!important;padding:3px 6px;cursor:pointer}
-.b-lbl{font-size:12px;color:var(--doux);margin-right:2px}
-.b-ico{width:30px;height:30px;display:grid;place-items:center;font-size:18px;border-radius:4px;background:var(--carte);border:1px solid var(--trait);position:relative}
-.b-ico.fait{background:linear-gradient(#557a3c,#33502a);border-color:#243a1c}
-.b-ico.fait::after{content:"✓";position:absolute;right:-3px;bottom:-4px;font:700 11px sans-serif;color:#fff;background:#2f7a3a;border-radius:50%;width:14px;height:14px;line-height:14px;text-align:center}
-.bande-ouverte{width:100%;border:2px solid #3b2a18;border-radius:6px;padding:4px 8px;background:var(--fond)}
-.bande-fermer{border:0;background:none;color:var(--doux);font:600 13px sans-serif;padding:2px 0}
+/* Rail d'icônes à gauche des quêtes du jour (habitudes en haut, défis plus bas) */
+.qj-grille{display:flex;gap:8px;align-items:flex-start;position:relative}
+.qj-corps{flex:1;min-width:0}
+.rail{flex:none;width:40px;display:flex;flex-direction:column;gap:14px;position:relative;padding-top:4px}
+.rail-bloc{display:flex;flex-direction:column;align-items:center;gap:11px;border:2px solid #3b2a18;border-radius:20px!important;padding:6px 0 8px;background:var(--fond)}
+.r-def{border-style:dashed;margin-top:10px}
+.r-lbl{font-size:12px;color:var(--doux);line-height:1}
+.r-ico{width:32px;height:32px;padding:0;display:grid;place-items:center;font-size:18px;line-height:1;border-radius:50%!important;background:var(--carte);border:1px solid var(--trait);position:relative;cursor:pointer}
+.r-ico.sel{box-shadow:0 0 0 2px var(--or)}
+.r-ico.fait{background:linear-gradient(#6c9a4c,#33502a);border-color:#243a1c}
+.r-ico.fait::after{content:"✓";position:absolute;right:-4px;top:-4px;font:700 10px sans-serif;color:#fff;background:#2f7a3a;border-radius:50%;width:14px;height:14px;line-height:14px;text-align:center}
+.r-ico i{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);font:700 9px/1 sans-serif;font-style:normal;background:#2f7a3a;color:#fff;border-radius:6px;padding:1px 3px;white-space:nowrap}
+.r-ico.eclat{animation:eclat .5s}
+@keyframes eclat{50%{transform:scale(1.35)}}
+.r-bulle{position:absolute;left:46px;z-index:6;width:min(250px,70vw);background:#fff;color:#111;border:2.5px solid #111;border-radius:14px!important;padding:8px 10px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
+.r-bulle::before{content:"";position:absolute;left:-12px;top:12px;border:6px solid transparent;border-right:10px solid #111;border-left:0}
+.r-bulle b{display:block;font-size:15px}
+.r-xp{font-size:12px;color:#666}
+.r-bts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.r-bts button{border:1px solid #3b2a18;background:#f6ecd4;color:#3b2a18;border-radius:999px!important;padding:6px 10px;font:700 14px "Atkinson Hyperlegible",sans-serif}
+.r-bts button.actif{background:#2f7a3a;color:#fff;border-color:#243a1c}
+.r-bts .r-annule{background:none;border-color:#8e1c14;color:#8e1c14;font-weight:600}
 .qj.geste-fait{box-shadow:inset 8px 0 0 #2f7a3a}.qj.geste-ignore,.tache.geste-report{box-shadow:inset -8px 0 0 #8e1c14}
 .qj,.tache{transition:transform .2s,opacity .25s}.ignoree{opacity:.15;transform:translateX(-60px)!important}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
@@ -886,7 +899,7 @@ function elementsQJ_() {
 function blocQuetesUnifie() {
   var tous = elementsQJ_(), A = D.aventure, iso = isoJ(new Date());
   var att = ((A && A.quetes) || []).filter(function (q) { return q.jour < iso && !q.fait; });
-  if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + bandes_() + '<div class="aide">Rien de prévu aujourd’hui.</div></div>';
+  if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + grille_('<div class="aide">Rien de prévu aujourd’hui.</div>') + '</div>';
   var cats = []; tous.forEach(function (x) { if (cats.indexOf(x.cat) === -1) cats.push(x.cat); });
   if (QJ_CAT && cats.indexOf(QJ_CAT) === -1) QJ_CAT = '';
   var liste = tous.filter(function (x) { return !QJ_CAT || x.cat === QJ_CAT; });
@@ -894,19 +907,18 @@ function blocQuetesUnifie() {
     : QJ_TRI === 'gain' ? function (a, b) { return (a.fait - b.fait) || (b.gain - a.gain) || (a.heure < b.heure ? -1 : 1); }
     : function (a, b) { return a.heure < b.heure ? -1 : a.heure > b.heure ? 1 : 0; });
   var tot = tous.filter(function (x) { return !x.fait && !x.urgent; }).reduce(function (s, x) { return s + (x.gain || 0); }, 0);
-  var html = '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + bandes_()
-    + '<div class="qj-barre"><span class="qj-l">Trier</span>' + [['heure', '⏰ Heure'], ['importance', '❗ Importance'], ['gain', '✨ Gain']].map(function (o) { return '<button data-tri="' + o[0] + '" class="' + (QJ_TRI === o[0] ? 'actif' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>'
+  var html = '<div class="qj-barre"><span class="qj-l">Trier</span>' + [['heure', '⏰ Heure'], ['importance', '❗ Importance'], ['gain', '✨ Gain']].map(function (o) { return '<button data-tri="' + o[0] + '" class="' + (QJ_TRI === o[0] ? 'actif' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>'
     + (cats.length > 1 ? '<div class="qj-barre cats"><button data-cat="" class="' + (!QJ_CAT ? 'actif' : '') + '">Tout · ' + tous.length + '</button>' + cats.map(function (c) { var n = tous.filter(function (x) { return x.cat === c; }).length; return '<button data-cat="' + esc(c) + '" class="' + (QJ_CAT === c ? 'actif' : '') + '">' + iconeChap_(c) + ' ' + esc(nomCourt_(c)) + ' · ' + n + '</button>'; }).join('') + '</div>' : '')
     + liste.map(function (x) { return x.html; }).join('');
   if (att.length) html += '<div class="moment">À valider (jours précédents)</div>' + att.map(function (q) { return carteQueteJour(q).replace('<span class="qj-h">', '<span class="qj-h"><i>' + q.jour.slice(8) + '/' + q.jour.slice(5, 7) + '</i>'); }).join('');
-  return html + '</div>';
+  return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + grille_(html) + '</div>';
 }
 function brancherQuetesUnifie() {
   var z = $('qj-unifie'); if (!z) return;
   z.querySelectorAll('[data-tri]').forEach(function (b) { b.onclick = function () { QJ_TRI = b.dataset.tri; try { localStorage.setItem('qj-tri', QJ_TRI); } catch (e) {} z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
   z.querySelectorAll('[data-cat]').forEach(function (b) { b.onclick = function () { QJ_CAT = b.dataset.cat; try { localStorage.setItem('qj-cat', QJ_CAT); } catch (e) {} z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
-  try { brancherQuetesJour(z); brancherHabitudes(z); } catch (e) {}
-  z.querySelectorAll('[data-bande]').forEach(function (b) { b.onclick = function () { BANDE_OUVERTE = BANDE_OUVERTE === b.dataset.bande ? '' : b.dataset.bande; z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
+  try { brancherQuetesJour(z); } catch (e) {}
+  brancherRail_(z);
   z.querySelectorAll('.qj').forEach(balayerQJ_);
   z.querySelectorAll('.tache-jour .coche').forEach(function (c) {
     c.onclick = function () {
@@ -918,18 +930,52 @@ function brancherQuetesUnifie() {
   });
 }
 
-// ---------- Bandeaux d'icônes : habitudes du jour et défis (toucher pour déplier et cocher) ----------
-var BANDE_OUVERTE = '';
-function bandes_() {
+// ---------- Rail d'icônes à gauche des quêtes du jour : habitudes (✦) en haut, défis (🎯) plus bas ----------
+// Toucher une icône ouvre une bulle : « ✓ Accompli », ou les paliers (20 min, 40 min, 1 h, 2 h) pour une habitude à paliers.
+var HAB_SEL = '';
+function court_(p) { return String(p).replace(/\s*min$/, '′').replace(/\s+/g, ''); }
+function grille_(corps) {
+  var r = rail_();
+  return r ? '<div class="qj-grille">' + r + '<div class="qj-corps">' + corps + '</div></div>' : corps;
+}
+function rail_() {
   var A = D.aventure; if (!A || !A.habitudes) return '';
-  var iso = isoJ(new Date()), fait = function (h) { return (A.coches[h.nom] || []).indexOf(iso) !== -1; };
+  var iso = isoJ(new Date()), pf = A.paliersFaits || {};
   var hab = A.habitudes.filter(function (h) { return h.moment !== 'Défi' && estQuotidienne(h); }), def = A.habitudes.filter(function (h) { return h.moment === 'Défi'; });
-  var bande = function (id, lbl, l) {
-    if (!l.length) return '';
-    if (BANDE_OUVERTE === id) return '<div class="bande-ouverte"><button class="bande-fermer" data-bande="' + id + '">' + lbl + ' ▲</button>' + l.map(function (h) { return carteHabitude(h, iso); }).join('') + '</div>';
-    return '<button class="bande" data-bande="' + id + '" aria-label="' + (id === 'hab' ? 'Habitudes du jour' : 'Défis du jour') + '"><span class="b-lbl">' + lbl + '</span>' + l.map(function (h) { return '<span class="b-ico' + (fait(h) ? ' fait' : '') + '">' + esc(h.icone) + '</span>'; }).join('') + '</button>';
+  if (!hab.length && !def.length) return '';
+  var ico = function (h) {
+    var fait = (A.coches[h.nom] || []).indexOf(iso) !== -1, p = fait && pf[h.nom] && pf[h.nom][iso];
+    return '<button class="r-ico' + (fait ? ' fait' : '') + (HAB_SEL === h.nom ? ' sel' : '') + '" data-hab="' + esc(h.nom) + '" aria-label="' + esc(h.nom) + '">' + esc(h.icone) + (p ? '<i>' + esc(court_(p)) + '</i>' : '') + '</button>';
   };
-  return '<div class="bandes">' + bande('hab', '✦', hab) + bande('def', '🎯', def) + '</div>';
+  var col = function (cls, lbl, l) { return l.length ? '<div class="rail-bloc ' + cls + '"><span class="r-lbl">' + lbl + '</span>' + l.map(ico).join('') + '</div>' : ''; };
+  return '<div class="rail">' + col('r-hab', '✦', hab) + col('r-def', '🎯', def) + bulle_(iso) + '</div>';
+}
+function bulle_(iso) {
+  var A = D.aventure, h = HAB_SEL && A.habitudes.filter(function (x) { return x.nom === HAB_SEL; })[0]; if (!h) return '';
+  var fait = (A.coches[h.nom] || []).indexOf(iso) !== -1, p = fait && (A.paliersFaits || {})[h.nom] && A.paliersFaits[h.nom][iso];
+  var bts = (h.paliers && h.paliers.length)
+    ? h.paliers.map(function (x) { return '<button data-palier="' + esc(x) + '" class="' + (p === x ? 'actif' : '') + '">' + esc(x) + '</button>'; }).join('')
+    : (fait ? '' : '<button data-palier="">✓ Accompli</button>');
+  return '<div class="r-bulle"><b>' + esc(h.icone) + ' ' + esc(h.nom.replace(/^Défi\s*:\s*/, '')) + '</b><span class="r-xp">+' + (A.xpDiff[h.diff] || 10) + ' XP' + (h.paliers && h.paliers.length ? ' pour 1 h' : '') + '</span>'
+    + '<div class="r-bts">' + bts + (fait ? '<button data-annule="1" class="r-annule">Annuler</button>' : '') + '</div></div>';
+}
+function brancherRail_(z) {
+  var re = function () { z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); };
+  z.querySelectorAll('[data-hab]').forEach(function (b) { b.onclick = function () { HAB_SEL = HAB_SEL === b.dataset.hab ? '' : b.dataset.hab; re(); }; });
+  var bu = z.querySelector('.r-bulle'), sel = z.querySelector('.r-ico.sel');
+  if (bu && sel) bu.style.top = Math.max(0, sel.offsetTop - 4) + 'px';
+  if (!bu) return;
+  bu.querySelectorAll('button').forEach(function (b) {
+    b.onclick = function () {
+      var A = D.aventure, nom = HAB_SEL, iso = isoJ(new Date()), c = A.coches[nom] = A.coches[nom] || [], pf = A.paliersFaits = A.paliersFaits || {};
+      var coche = !b.dataset.annule, palier = b.dataset.palier || '';
+      if (coche) { if (c.indexOf(iso) === -1) c.push(iso); if (palier) (pf[nom] = pf[nom] || {})[iso] = palier; }
+      else { if (c.indexOf(iso) !== -1) c.splice(c.indexOf(iso), 1); if (pf[nom]) delete pf[nom][iso]; }
+      HAB_SEL = ''; re();
+      var ic = z.querySelector('.r-ico[data-hab="' + nom.replace(/"/g, '\\"') + '"]'); if (ic && coche) { ic.classList.add('eclat'); }
+      appel('appCocherHabitude', [nom, iso, coche, palier], function (r) { if (r && r.xp && D.xpJours && D.xpJours.length) { D.xpJours[D.xpJours.length - 1] += r.xp; majRenommee(true); if (r.xp > 0) toast('+' + r.xp + ' XP'); } majBandeau(); });
+    };
+  });
 }
 // ---------- Glisser une quête du jour : à droite = accomplie, à gauche = ignorée ----------
 function balayerQJ_(el) {
