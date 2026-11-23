@@ -986,7 +986,8 @@ function bulle_(iso) {
     } else {
       c = (A.coches[h.nom] || []).filter(function (d) { return d >= h.debut && d <= iso; }).length; tot = Math.round((new Date(iso) - new Date(h.debut)) / 864e5) + 1; u = 'jour';
     }
-    info = '🏆 Campagne' + (h.fin ? ' jusqu’au ' + h.fin.slice(8) + '/' + h.fin.slice(5, 7) : '') + ' · ' + (hebdo ? 'une fois par semaine' : 'chaque jour') + '<br>' + c + '/' + tot + ' ' + u + (tot > 1 ? 's' : '') + ' réussi' + (u === 'semaine' ? 'e' : '') + (c > 1 ? 's' : '') + ' · +' + (A.xpDiff[h.diff] || 10) + ' XP' + (fait && hebdo ? ' · ✓ fait cette semaine' : '');
+    info = '🏆 Campagne' + (h.fin ? ' jusqu’au ' + h.fin.slice(8) + '/' + h.fin.slice(5, 7) : '') + ' · ' + (hebdo ? 'une fois par semaine' : 'chaque jour') + '<br>' + c + '/' + tot + ' ' + u + (tot > 1 ? 's' : '') + ' réussi' + (u === 'semaine' ? 'e' : '') + (c > 1 ? 's' : '') + ' · +' + (A.xpDiff[h.diff] || 10) + ' XP' + (fait && hebdo ? ' · ✓ fait cette semaine' : '')
+      + '<br>' + ((c - (fait ? 1 : 0)) < tot - 1 ? 'Bonus de ' + (A.xpCampagne || 500) + ' XP perdu (un ' + u + ' manqué)' : '🏆 100 % = +' + (A.xpCampagne || 500) + ' XP à la fin de la campagne');
   } else info = '+' + (A.xpDiff[h.diff] || 10) + ' XP' + (h.paliers && h.paliers.length ? ' pour 1 h' : '') + ' · −' + (A.penalite || 20) + ' XP si oubliée';
   var hier = hierIso_(), hierFait = (A.coches[h.nom] || []).indexOf(hier) !== -1;
   var btHier = (!defi && !hebdo && new Date().getHours() < 12 && !hierFait) ? '<button data-palier="' + (h.paliers && h.paliers.length ? esc(h.paliers.indexOf('1 h') !== -1 ? '1 h' : h.paliers[0]) : '') + '" data-jour="' + hier + '" class="r-hier">✓ Fait hier</button>' : '';
