@@ -720,6 +720,9 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 .tr-detail{border-top:2px dashed var(--trait);padding:8px 2px 4px}
 .tr-detail b{display:block;font-size:16px}.tr-detail small{color:var(--doux)}.tr-detail p{margin:6px 0 0;font-size:15px}.tr-equip{color:#5b350c}
 #v-tableau{padding-bottom:90px}
+
+.b-or.rubis{color:#ffb3c1}.ico-rubis{vertical-align:-2px}
+.poche.rubis{background:#fbe9ec;border:2px solid #7a1022;border-radius:6px;padding:8px 10px;margin:8px 0}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 </style>
 </head>
@@ -2312,6 +2315,7 @@ function ouvrirReglages_() {
   });
 }
 
+var ICONE_RUBIS = '<svg class="ico-rubis" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2h8l3 4-7 8-7-8z" fill="#c8102e"/><path d="M4 2l2 4h4l2-4M1 6h14M6 6l2 8 2-8" fill="none" stroke="#ff8fa3" stroke-width=".8"/><path d="M5 3l1 2" stroke="#fff" stroke-width="1" opacity=".8"/></svg>';
 
 // =================== L'AVENTURE : personnages pixel, bandeau, habitudes, défis, boutique, armurerie, quête du mois, expédition, musique ===================
 RANGS.push('Paladin', 'Seigneur des 7 mers', 'Légende du royaume');
@@ -2364,8 +2368,8 @@ function majBandeau() {
   var e = etatRenommee(), P = D.palier || 20, pct = Math.max(2, Math.min(100, Math.round(100 * (e.moy - (e.n - 1) * P) / P)));
   var P = D.aventure && D.aventure.poches;
   b.innerHTML = '<span class="b-niv">' + e.n + '</span><span class="b-centre"><span class="b-rang">' + esc(RANGS[Math.min(e.n, RANGS.length - 1)]) + '</span><i class="b-xp"><u style="width:' + pct + '%"></u></i></span>'
-    + (P ? '<button class="b-or" id="b-tresor" aria-label="Trésor de l’Empire ce mois-ci">🏛️ ' + eurCourt(P.tresor.eurosMois !== undefined ? P.tresor.eurosMois : P.tresor.mois) + '</button>' + ((P.tresor.ecus || 0) ? '<button class="b-or ecu" id="b-gemmes" aria-label="Écus en attente">⚜ ' + Math.round(P.tresor.ecus || 0) + '</button>' : '') : '') + '<button class="b-bt" id="b-musique" aria-label="Musique">' + (Musique.voulue() ? '🎵' : '🔇') + '</button>';
-  [ 'b-tresor', 'b-bourse', 'b-gemmes' ].forEach(function (id) { if ($(id)) $(id).onclick = function () { allerVue('tableau'); setTimeout(function () { var t = $('tresor-tab'); if (t) t.scrollIntoView({ behavior: 'smooth' }); }, 80); }; });
+    + (P ? '<button class="b-or" id="b-tresor" aria-label="Trésor de l’Empire ce mois-ci">🏛️ ' + eurCourt(P.tresor.eurosMois !== undefined ? P.tresor.eurosMois : P.tresor.mois) + '</button>' + (P.rubis ? '<button class="b-or rubis" id="b-rubis" aria-label="Rubis (piscine du campus)">' + ICONE_RUBIS + ' ' + P.rubis.total + '</button>' : '') + ((P.tresor.ecus || 0) ? '<button class="b-or ecu" id="b-gemmes" aria-label="Écus en attente">⚜ ' + Math.round(P.tresor.ecus || 0) + '</button>' : '') : '') + '<button class="b-bt" id="b-musique" aria-label="Musique">' + (Musique.voulue() ? '🎵' : '🔇') + '</button>';
+  [ 'b-tresor', 'b-bourse', 'b-gemmes', 'b-rubis' ].forEach(function (id) { if ($(id)) $(id).onclick = function () { allerVue('tableau'); setTimeout(function () { var t = $('tresor-tab'); if (t) t.scrollIntoView({ behavior: 'smooth' }); }, 80); }; });
   $('b-musique').onclick = function () { Musique.basculer(); majBandeau(); };
   window.basculerStyle = function () { var px = document.documentElement.getAttribute('data-style') !== 'pixel'; document.documentElement.setAttribute('data-style', px ? 'pixel' : 'parchemin'); try { localStorage.setItem('journal-style', px ? 'pixel' : 'parchemin'); } catch (x) {} toast(px ? 'Style pixel 16 bits' : 'Style parchemin'); };
 }
@@ -2661,9 +2665,10 @@ function vueTresor(A) {
       + (Q.disponible !== Q.solde ? '<div class="aide" style="padding:0 12px">Disponible : ' + eur(Q.disponible) + ' (opérations en cours déduites)</div>' : '')
     : '<div class="aide" style="padding:0 12px">Solde Qonto indisponible pour l’instant.</div>')
     + (P.virementsAVerifier ? '<div class="qo-alerte">⚠ ' + P.virementsAVerifier + ' virement' + (P.virementsAVerifier > 1 ? 's' : '') + ' reçu' + (P.virementsAVerifier > 1 ? 's' : '') + ' sans séance associée : onglet « Virements Qonto » du tableau.</div>' : '<div class="qo-ok">✓ Tous les virements reçus sont rapprochés de leurs séances.</div>') + '</div>';
-  return guide('tresoriere', 'Chaque quête accomplie te rapporte des <b>écus</b> : de l’argent gagné, mais pas encore arrivé. Dès que le client paie (virement sur Qonto, carte, ou espèces marquées « ✓ Réglé »), ses écus deviennent des <b>euros</b>. La piscine du campus, elle, ne rapporte que des XP, tout seuls, à la fin de chaque séance.')
+  return guide('tresoriere', 'Chaque quête accomplie te rapporte des <b>écus</b> : de l’argent gagné, mais pas encore arrivé. Dès que le client paie (virement sur Qonto, carte, ou espèces marquées « ✓ Réglé »), ses écus deviennent des <b>euros</b>. La piscine du campus, elle, se compte toute seule en <b>rubis</b> (un simple indicateur) et en XP, à la fin de chaque séance.')
     + qonto
     + bloc(P.tresor, 'Trésor de l’Empire', '🏛️', 'tresor', 'Cairn Horizons · ce qui est facturé')
+    + (P.rubis ? '<div class="poche rubis"><div class="po-tete"><span class="po-ico">' + ICONE_RUBIS.replace('width="14" height="14"', 'width="26" height="26"') + '</span><span><b>Rubis</b><small>Piscine du campus · 1 rubis par euro net · simple indicateur</small></span></div><div class="po-mois"><b>' + P.rubis.mois + '</b><span>ce mois-ci · ' + P.rubis.total + ' depuis le 1/11</span></div></div>' : '')
     + (P.gemmes && P.gemmes.total ? '<div class="poche gemmes"><div class="po-tete"><span class="po-ico">💎</span><span><b>Gemmes du conseiller</b><small>600 par premier rendez-vous (R1) accompli</small></span></div><div class="po-mois"><b>' + P.gemmes.total + '</b><span>' + P.gemmes.r1 + ' R1 accompli' + (P.gemmes.r1 > 1 ? 's' : '') + '</span></div></div>' : '')
     + (P.derniers.length ? '<div class="carte"><div class="ch-titre">📜 Dernières quêtes validées</div>' + P.derniers.map(function (d) { return '<div class="serie"><span>' + esc(d.date) + ' · ' + esc(d.libelle) + '</span><b>' + (d.poche === 'Bourse' ? '👛 ' : '🏛️ ') + eur(d.montant).replace(' €', d.paye ? ' €' : ' écus') + '</b></div>'; }).join('') + '</div>' : '')
     + '<div class="carte"><div class="ch-titre">🪙 Pièces d’or : ' + A.or + '</div><div class="aide" style="padding:0 12px 10px">La monnaie de la boutique : 1 pièce par euro gagné, plus les primes des défis et des quêtes du mois, moins tes achats.</div></div>';
