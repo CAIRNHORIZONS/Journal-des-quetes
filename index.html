@@ -729,6 +729,13 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 /* Rapports de l'Oracle et du Scribe : le bouton « Lu ✓ » reste toujours visible, même carte repliée (24/11) */
 .sms.carte.rapport .actions{display:flex!important}
 .sms.carte.rapport:not(.deplie) .rapport-txt{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.sms.carte.rapport{cursor:pointer}
+.sms.carte.rapport:not(.deplie) .rapport-txt::after{content:"";display:block}
+.sms.carte.rapport .titre::after{content:" ▾";color:var(--doux);font-size:.8em}
+.sms.carte.rapport.deplie .titre::after{content:" ▴"}
+.lire-suite{display:block;font-size:13px;color:var(--doux);margin:2px 0 4px}
+.sms.carte.rapport.deplie .lire-suite{display:none}
+.actions button.or{background:linear-gradient(#e0b84a,#b8860b);color:#3b2a18;border:1px solid #8a6410!important;font-family:"Cinzel",serif}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 /* ===== C : manuscrit enluminé. Plus de cartes : une page de parchemin, enluminures, lettrines, sceaux de cire ===== */
 html:is([data-esth="C"],[data-esth="Cn"]){--texte:#3b2a18!important;--doux:#7a6448!important;--carte:#f3e5c4!important;--fond:#ead7ac!important;--trait:#c4a66e!important}
@@ -2138,7 +2145,7 @@ function vuePresages() {
   liste.forEach(function (p) {
     if (p.source === 'Scribe') {
       html += '<div class="carte sms presage rapport" data-id="' + esc(p.id) + '"><div class="titre">📜 ' + esc(p.evenement) + '</div>'
-        + '<div class="rapport-txt">' + esc(p.extrait) + '</div><div class="actions choix"><button class="vert" data-a="ignorer">Lu ✓ (+10 XP)</button></div></div>';
+        + '<div class="rapport-txt">' + esc(p.extrait) + '</div>' + (String(p.extrait || '').length > 160 || String(p.extrait || '').split('\n').length > 4 ? '<span class="lire-suite">Toucher pour lire la suite ▾</span>' : '') + '<div class="actions choix"><button class="vert" data-a="ignorer">Lu ✓ (+10 XP)</button></div></div>';
       return;
     }
     if (p.trou) {
@@ -2174,7 +2181,7 @@ function vuePresages() {
           + (p.deManquante ? '<div class="avert-mail">⚠ ' + esc(p.deManquante) + ' n’est pas encore déclarée dans Gmail (Paramètres › Comptes › Envoyer des e-mails en tant que).</div>' : '') : '')
         + (p.email || p.fil ? '<label class="objet">Objet<input data-k="objet" value="' + esc(p.objet || ('Re : ' + p.evenement.replace(/^Répondre à\s*/i, ''))) + '"></label>' : '')
         + '<div class="dest">Pour ' + esc(p.contact) + (p.email || p.fil ? ' · 📧 ' + esc(p.email || 'réponse dans le fil du courriel') : (p.tel ? ' · ' + esc(p.tel) : ' · ⚠ numéro manquant')) + '</div></div>'
-        + '<div class="actions choix"><button class="vert" data-a="missive">' + (p.email || p.fil ? '📜 Envoyer le courriel' : '🕊️ Envoyer le messager') + '</button><button class="rougeb" data-a="ignorer">Ignorer</button></div>'
+        + '<div class="actions choix"><button class="vert" data-a="missive">' + (p.email || p.fil ? '📜 Envoyer le courriel' : '🕊️ Envoyer le messager') + '</button><button class="or" data-a="quete">⚔️ En faire une quête</button><button class="rougeb" data-a="ignorer">Ignorer</button></div>'
         + '<div class="aide">' + (p.email || p.fil ? 'Le courriel part tout de suite depuis ta boîte Gmail' : 'L’envoi part au prochain passage du pigeon') + ' (+10 XP).</div></div>';
       return;
     }
@@ -2215,6 +2222,7 @@ function vuePresages() {
         if (!champs.ordre.length) { toast('Touche au moins un client (1, 2, 3…)'); return; }
         c.querySelectorAll('textarea[data-t]').forEach(function (i) { champs.textes[i.dataset.t] = i.value; });
       }
+      if (a === 'quete' && c.querySelector('textarea[data-k="missive"]')) { var ev = (c.querySelector('.titre') || {}).textContent || ''; ev = ev.replace(/^\S+\s*/, '').replace(/^Répondre à\s*([^()]+?)\s*\((.*)\)\s*$/, 'Traiter la demande de $1 : $2').replace(/^Répondre à\s*/, 'Traiter la demande de '); var ti = prompt('Nom de la quête (la missive préparée sera gardée dans ses notes) :', ev); if (ti === null) return; champs.titre = ti; }
       var lu = a === 'ignorer' && c.classList.contains('rapport');
       if (a === 'faite' || a === 'missive' || a === 'trou' || lu) celebrer(c, b); else c.style.opacity = .4;
       appel('appPresage', [c.dataset.id, a, champs], function (r) {
@@ -2437,7 +2445,7 @@ document.addEventListener('click', function (e) {
   }
   var t = x.closest('.tache:not(.principale)'); if (t && x.closest('.titre, .corps, .meta')) { t.classList.toggle('deplie'); return; }
   var q = x.closest('.qj'); if (q && x.closest('.qj-t, .qj-h')) { q.classList.toggle('deplie'); return; }
-  var s = x.closest('.sms.carte'); if (s && x.closest('.titre, .apercu')) { s.classList.toggle('deplie'); return; }
+  var s = x.closest('.sms.carte'); if (s && x.closest('.titre, .apercu, .rapport-txt')) { s.classList.toggle('deplie'); return; }
   var g = x.closest('.guide'); if (g) { g.classList.toggle('deplie'); return; }
 });
 document.addEventListener('input', function (e) { if (e.target.id === 'rg') { var z = $('rg-res'); if (z) z.innerHTML = rechercheUnique_(e.target.value); } });
