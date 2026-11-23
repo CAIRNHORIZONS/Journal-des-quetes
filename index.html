@@ -676,6 +676,18 @@ header #reglages{margin-left:auto}
 .qj-barre button.actif{background:#3b2a18;color:#f3d58b;border-color:#3b2a18}
 .qj.tache-jour .qj-t b{font-weight:700}
 .titre-argent{margin-top:22px}
+
+/* Bandeaux d'icônes (habitudes ✦, défis 🎯) et gestes */
+.bandes{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:4px 0 8px}
+.bande{display:inline-flex;align-items:center;gap:4px;border:2px solid #3b2a18;background:var(--fond);border-radius:6px!important;padding:3px 6px;cursor:pointer}
+.b-lbl{font-size:12px;color:var(--doux);margin-right:2px}
+.b-ico{width:30px;height:30px;display:grid;place-items:center;font-size:18px;border-radius:4px;background:var(--carte);border:1px solid var(--trait);position:relative}
+.b-ico.fait{background:linear-gradient(#557a3c,#33502a);border-color:#243a1c}
+.b-ico.fait::after{content:"✓";position:absolute;right:-3px;bottom:-4px;font:700 11px sans-serif;color:#fff;background:#2f7a3a;border-radius:50%;width:14px;height:14px;line-height:14px;text-align:center}
+.bande-ouverte{width:100%;border:2px solid #3b2a18;border-radius:6px;padding:4px 8px;background:var(--fond)}
+.bande-fermer{border:0;background:none;color:var(--doux);font:600 13px sans-serif;padding:2px 0}
+.qj.geste-fait{box-shadow:inset 8px 0 0 #2f7a3a}.qj.geste-ignore,.tache.geste-report{box-shadow:inset -8px 0 0 #8e1c14}
+.qj,.tache{transition:transform .2s,opacity .25s}.ignoree{opacity:.15;transform:translateX(-60px)!important}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 </style>
 </head>
@@ -776,7 +788,6 @@ function vueJour() {
   if (!J) { v.innerHTML = '<div class="vide">Le tableau du jour n’a pas pu être dressé. Actualise dans un instant.</div>'; try { vueTableau(); } catch (e) {} return; }
   html += '<div class="jour-date">' + esc(J.date.charAt(0).toUpperCase() + J.date.slice(1)) + '</div>';
   html += '<div id="qj-unifie">' + blocQuetesUnifie() + '</div>';
-  html += blocHabitudesDuJour();
   // planning de demain
   var dem = J.agenda.filter(function (e) { return e.jour === 'dem'; });
   html += '<div class="carte agenda-jour"><div class="ch-titre">🗓️ Demain' + (J.demain ? ' <small class="doux">' + esc(J.demain) + '</small>' : '') + '</div>'
@@ -875,7 +886,7 @@ function elementsQJ_() {
 function blocQuetesUnifie() {
   var tous = elementsQJ_(), A = D.aventure, iso = isoJ(new Date());
   var att = ((A && A.quetes) || []).filter(function (q) { return q.jour < iso && !q.fait; });
-  if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div><div class="aide">Rien de prévu aujourd’hui.</div></div>';
+  if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + bandes_() + '<div class="aide">Rien de prévu aujourd’hui.</div></div>';
   var cats = []; tous.forEach(function (x) { if (cats.indexOf(x.cat) === -1) cats.push(x.cat); });
   if (QJ_CAT && cats.indexOf(QJ_CAT) === -1) QJ_CAT = '';
   var liste = tous.filter(function (x) { return !QJ_CAT || x.cat === QJ_CAT; });
@@ -883,7 +894,7 @@ function blocQuetesUnifie() {
     : QJ_TRI === 'gain' ? function (a, b) { return (a.fait - b.fait) || (b.gain - a.gain) || (a.heure < b.heure ? -1 : 1); }
     : function (a, b) { return a.heure < b.heure ? -1 : a.heure > b.heure ? 1 : 0; });
   var tot = tous.filter(function (x) { return !x.fait && !x.urgent; }).reduce(function (s, x) { return s + (x.gain || 0); }, 0);
-  var html = '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>'
+  var html = '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + bandes_()
     + '<div class="qj-barre"><span class="qj-l">Trier</span>' + [['heure', '⏰ Heure'], ['importance', '❗ Importance'], ['gain', '✨ Gain']].map(function (o) { return '<button data-tri="' + o[0] + '" class="' + (QJ_TRI === o[0] ? 'actif' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>'
     + (cats.length > 1 ? '<div class="qj-barre cats"><button data-cat="" class="' + (!QJ_CAT ? 'actif' : '') + '">Tout · ' + tous.length + '</button>' + cats.map(function (c) { var n = tous.filter(function (x) { return x.cat === c; }).length; return '<button data-cat="' + esc(c) + '" class="' + (QJ_CAT === c ? 'actif' : '') + '">' + iconeChap_(c) + ' ' + esc(nomCourt_(c)) + ' · ' + n + '</button>'; }).join('') + '</div>' : '')
     + liste.map(function (x) { return x.html; }).join('');
@@ -894,7 +905,9 @@ function brancherQuetesUnifie() {
   var z = $('qj-unifie'); if (!z) return;
   z.querySelectorAll('[data-tri]').forEach(function (b) { b.onclick = function () { QJ_TRI = b.dataset.tri; try { localStorage.setItem('qj-tri', QJ_TRI); } catch (e) {} z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
   z.querySelectorAll('[data-cat]').forEach(function (b) { b.onclick = function () { QJ_CAT = b.dataset.cat; try { localStorage.setItem('qj-cat', QJ_CAT); } catch (e) {} z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
-  try { brancherQuetesJour(z); } catch (e) {}
+  try { brancherQuetesJour(z); brancherHabitudes(z); } catch (e) {}
+  z.querySelectorAll('[data-bande]').forEach(function (b) { b.onclick = function () { BANDE_OUVERTE = BANDE_OUVERTE === b.dataset.bande ? '' : b.dataset.bande; z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
+  z.querySelectorAll('.qj').forEach(balayerQJ_);
   z.querySelectorAll('.tache-jour .coche').forEach(function (c) {
     c.onclick = function () {
       var el = c.closest('.qj'), n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0];
@@ -903,6 +916,51 @@ function brancherQuetesUnifie() {
       appel('appCocherTache', [n, t.tache], function (r) { accomplie(el, n, r); });
     };
   });
+}
+
+// ---------- Bandeaux d'icônes : habitudes du jour et défis (toucher pour déplier et cocher) ----------
+var BANDE_OUVERTE = '';
+function bandes_() {
+  var A = D.aventure; if (!A || !A.habitudes) return '';
+  var iso = isoJ(new Date()), fait = function (h) { return (A.coches[h.nom] || []).indexOf(iso) !== -1; };
+  var hab = A.habitudes.filter(function (h) { return h.moment !== 'Défi' && estQuotidienne(h); }), def = A.habitudes.filter(function (h) { return h.moment === 'Défi'; });
+  var bande = function (id, lbl, l) {
+    if (!l.length) return '';
+    if (BANDE_OUVERTE === id) return '<div class="bande-ouverte"><button class="bande-fermer" data-bande="' + id + '">' + lbl + ' ▲</button>' + l.map(function (h) { return carteHabitude(h, iso); }).join('') + '</div>';
+    return '<button class="bande" data-bande="' + id + '" aria-label="' + (id === 'hab' ? 'Habitudes du jour' : 'Défis du jour') + '"><span class="b-lbl">' + lbl + '</span>' + l.map(function (h) { return '<span class="b-ico' + (fait(h) ? ' fait' : '') + '">' + esc(h.icone) + '</span>'; }).join('') + '</button>';
+  };
+  return '<div class="bandes">' + bande('hab', '✦', hab) + bande('def', '🎯', def) + '</div>';
+}
+// ---------- Glisser une quête du jour : à droite = accomplie, à gauche = ignorée ----------
+function balayerQJ_(el) {
+  if (el.dataset.balaye) return; el.dataset.balaye = '1';
+  var x0 = null, y0 = 0, dx = 0, actif = false;
+  el.addEventListener('touchstart', function (e) { if (e.target.closest('button, a, input')) { x0 = null; return; } x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; actif = false; }, { passive: true });
+  el.addEventListener('touchmove', function (e) {
+    if (x0 === null) return; var x = e.touches[0].clientX - x0, y = e.touches[0].clientY - y0;
+    if (!actif && Math.abs(x) > 14 && Math.abs(x) > Math.abs(y) * 1.5) actif = true; if (!actif) return;
+    dx = x; el.style.transform = 'translateX(' + Math.max(-140, Math.min(140, dx)) + 'px)';
+    el.classList.toggle('geste-fait', dx > 70); el.classList.toggle('geste-ignore', dx < -70);
+  }, { passive: true });
+  el.addEventListener('touchend', function () {
+    if (!actif) { x0 = null; return; }
+    el.style.transform = ''; el.classList.remove('geste-fait', 'geste-ignore');
+    if (dx > 90) { var c = el.querySelector('.coche, .qj-case'); if (c && !el.classList.contains('faite')) c.click(); }
+    else if (dx < -90) ignorerQJ_(el);
+    actif = false; x0 = null;
+  });
+}
+function ignorerQJ_(el) {
+  try { navigator.vibrate && navigator.vibrate(10); } catch (e) {}
+  el.classList.add('ignoree');
+  var fin = function (r) { toast('🗑 ' + r.msg); setTimeout(function () { el.remove(); }, 250); };
+  if (el.classList.contains('tache-jour')) {
+    var n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0]; if (!t) return;
+    appel('appIgnorerTache', [n, t.tache], function (r) { D.taches = D.taches.filter(function (x) { return x.n !== n; }); fin(r); }, function () { el.classList.remove('ignoree'); });
+  } else {
+    var cle = el.dataset.cle;
+    appel('appIgnorerEvenement', [cle], function (r) { D.aventure.quetes = D.aventure.quetes.filter(function (q) { return q.cle !== cle; }); fin(r); }, function () { el.classList.remove('ignoree'); });
+  }
 }
 
 
@@ -986,7 +1044,7 @@ function balayerQuete(el) {
     el.style.transform = ''; el.classList.remove('geste-fait', 'geste-report');
     var n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0];
     if (t && dx > 90 && !el.classList.contains('embrase')) { vibrer(20); embraser(el, el.querySelector('.coche') || el); appel('appCocherTache', [n, t.tache], function (r) { accomplie(el, n, r); }); }
-    else if (t && dx < -90) { vibrer(10); menuReport(el, t); }
+    else if (t && dx < -90) { vibrer(10); el.classList.add('ignoree'); appel('appIgnorerTache', [n, t.tache], function (r) { toast('🗑 ' + r.msg); D.taches = D.taches.filter(function (x) { return x.n !== n; }); setTimeout(afficher, 300); }, function () { el.classList.remove('ignoree'); }); }
     actif = false; x0 = null;
   });
 }
