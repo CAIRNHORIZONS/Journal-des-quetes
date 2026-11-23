@@ -719,6 +719,7 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 .tr-nom{font:600 12px/1.2 "Atkinson Hyperlegible",sans-serif;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tr-detail{border-top:2px dashed var(--trait);padding:8px 2px 4px}
 .tr-detail b{display:block;font-size:16px}.tr-detail small{color:var(--doux)}.tr-detail p{margin:6px 0 0;font-size:15px}.tr-equip{color:#5b350c}
+#v-tableau{padding-bottom:90px}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 </style>
 </head>
@@ -828,7 +829,6 @@ function vueJour() {
     }).join('') : '<div class="vide">Rien dans l’agenda demain.</div>') + '</div>';
   v.innerHTML = html;
   v.querySelectorAll('[data-va]').forEach(function (b) { b.onclick = function () { allerVue(b.dataset.va); }; });
-  brancherTrophees_(v);
   v.querySelectorAll('.ev.cliquable').forEach(function (b) { b.onclick = function () { ouvrirFiche(b.dataset.titre); }; });
   brancherQuetesUnifie();
   if (false) v.querySelectorAll('.tache-jour .coche').forEach(function (c) {
@@ -884,9 +884,10 @@ function vueTableau() {
   html += '<div class="poles"><button class="pole" data-ouvrir="Les Horizons ouverts"><b>🔭 Patrimoine</b>' + (cgp.length ? esc(cgp[0].quand) + ' · ' + esc(cgp[0].titre) + (cgp.length > 1 ? '<em> +' + (cgp.length - 1) + ' rdv</em>' : '') : '<em>aucun rdv sous 7 jours</em>') + '<br><em>' + nbCh(['Les Horizons ouverts']) + ' quête(s)</em></button>'
     + '<button class="pole" data-ouvrir="Les Finances de la guilde"><b>💰 Appartements</b><em>' + nbCh(['Les Finances de la guilde']) + ' quête(s)</em></button>'
     + '<button class="pole" data-ouvrir="La Taverne des amis"><b>🍺 Vie perso</b><em>' + nbCh(['La Taverne des amis', 'La Place du bourg', 'La Classe d\'armes', 'La Diligence', 'L\'Orphelinat de l\'Empire']) + ' quête(s)</em></button></div>';
-  html += salleTrophees_();
   if (D.aventure && PO) html += '<h2 class="titre-argent"><span>L’argent</span><span></span></h2><div id="tresor-tab">' + vueTresor(D.aventure) + '</div>';
+  html += salleTrophees_(); // tout en bas du tableau de bord (demande de Cairn)
   v.innerHTML = html;
+  brancherTrophees_(v);
   v.querySelectorAll('[data-va]').forEach(function (b) { b.onclick = function () { allerVue(b.dataset.va); }; });
   v.querySelectorAll('[data-av]').forEach(function (b) { b.onclick = function () { allerVue('aventure'); ongletAventure(b.dataset.av); }; });
   v.querySelectorAll('[data-ouvrir]').forEach(function (b) { b.onclick = function () { allerVue('taches'); ouvrir(b.dataset.ouvrir); }; });
