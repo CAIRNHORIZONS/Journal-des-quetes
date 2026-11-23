@@ -662,6 +662,20 @@ html.saisie-ouverte .carte.saisie{position:fixed;left:10px;right:10px;bottom:cal
 .ra-ligne button{border:1px solid var(--trait);background:var(--carte);color:var(--texte);padding:6px 12px;border-radius:4px;font:600 15px sans-serif}
 .recherche-client{display:block!important}
 #v-taches:has(.chapitre-ouvert) > .paysage{display:none}
+/* Réglages (engrenage) */
+header #reglages{margin-left:auto}
+.voile-reglages{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:flex-end;padding:70px 10px 0}
+.panneau-reglages{width:min(360px,100%);background:var(--carte);color:var(--texte);border:3px solid #3b2a18;border-radius:6px;box-shadow:4px 4px 0 rgba(0,0,0,.35);padding:10px 12px}
+.pr-tete{display:flex;align-items:center;font:700 15px "Silkscreen","Cinzel",monospace;margin-bottom:6px}.pr-tete .pr-fermer{margin-left:auto;border:0;background:none;font-size:18px;color:var(--texte)}
+.panneau-reglages .ra-ligne{flex-wrap:wrap}.panneau-reglages .ra-ligne span{flex:1 1 100%;font-weight:700}.panneau-reglages .ra-ligne small{font-weight:400;color:var(--doux)}
+.panneau-reglages button.actif{background:linear-gradient(#a8742a,#7a4a12);color:#fff7e3;border-color:#5b350c}
+/* Quêtes du jour : tri et catégories */
+.qj-barre{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:6px 0 4px;align-items:center}.qj-barre::-webkit-scrollbar{display:none}
+.qj-barre .qj-l{font-size:12px;color:var(--doux);flex:none}
+.qj-barre button{flex:none;border:1px solid var(--trait);background:var(--carte);color:var(--texte);border-radius:999px!important;padding:5px 10px;font:600 13px "Atkinson Hyperlegible",sans-serif;white-space:nowrap}
+.qj-barre button.actif{background:#3b2a18;color:#f3d58b;border-color:#3b2a18}
+.qj.tache-jour .qj-t b{font-weight:700}
+.titre-argent{margin-top:22px}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 </style>
 </head>
@@ -761,13 +775,7 @@ function vueJour() {
   var v = $('v-jour'), J = D.jour, html = '';
   if (!J) { v.innerHTML = '<div class="vide">Le tableau du jour n’a pas pu être dressé. Actualise dans un instant.</div>'; try { vueTableau(); } catch (e) {} return; }
   html += '<div class="jour-date">' + esc(J.date.charAt(0).toUpperCase() + J.date.slice(1)) + '</div>';
-  html += blocQuetesDuJour();
-  // quêtes du journal à boucler aujourd'hui (échéance du jour ou dépassée)
-  var qj = D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui); }).slice(0, 12);
-  if (qj.length) html += '<div class="carte quetes-jour ultimatums"><div class="ch-titre">📜 À boucler aujourd’hui <button class="lien-vue" data-va="taches">toutes ›</button></div>'
-    + qj.map(function (t) {
-      return '<div class="qj tache-jour" data-n="' + t.n + '"><button class="coche" aria-label="Fait"></button><span class="qj-t">' + esc(t.tache) + '<small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : '') + '</small></span></div>';
-    }).join('') + '</div>';
+  html += '<div id="qj-unifie">' + blocQuetesUnifie() + '</div>';
   html += blocHabitudesDuJour();
   // planning de demain
   var dem = J.agenda.filter(function (e) { return e.jour === 'dem'; });
@@ -779,7 +787,8 @@ function vueJour() {
   v.innerHTML = html;
   v.querySelectorAll('[data-va]').forEach(function (b) { b.onclick = function () { allerVue(b.dataset.va); }; });
   v.querySelectorAll('.ev.cliquable').forEach(function (b) { b.onclick = function () { ouvrirFiche(b.dataset.titre); }; });
-  v.querySelectorAll('.tache-jour .coche').forEach(function (c) {
+  brancherQuetesUnifie();
+  if (false) v.querySelectorAll('.tache-jour .coche').forEach(function (c) {
     c.onclick = function () {
       var el = c.closest('.qj'), n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0];
       if (!t || el.classList.contains('embrase')) return;
@@ -794,7 +803,6 @@ function vueTableau() {
   var v = $('v-tableau'), J = D.jour, html = ''; if (!v) return;
   if (!J) { v.innerHTML = '<div class="vide">Le tableau de bord n’a pas pu être dressé. Actualise dans un instant.</div>'; return; }
   var S = J.semaine, xpSem = (D.xpJours || []).slice(-7).reduce(function (a, b) { return a + b; }, 0), pct = Math.min(100, Math.round(100 * S.minutes / (S.plafond || 360)));
-  html += '<div class="recherche-client"><input id="rg" type="search" autocomplete="off" placeholder="🔍 Chercher une quête, un client, une missive…"><div id="rg-res"></div></div>';
   // à traiter
   var nbMiss = D.sms.filter(function (s) { return s.fenetre !== false && (s.statut === 'À valider' || s.statut === 'Erreur'); }).length;
   var pres = D.presages || [], nbTrous = pres.filter(function (p) { return p.trou; }).length, nbPres = pres.length - nbTrous;
@@ -815,7 +823,7 @@ function vueTableau() {
     + '<div class="ch"><b>' + xpSem + '</b><span>XP en 7 jours</span></div></div></div>';
   // coffres (Trésor de l'Empire, Bourse, Qonto)
   var PO = D.aventure && D.aventure.poches;
-  if (D.aventure && PO) html += '<div id="tresor-tab">' + vueTresor(D.aventure) + '</div>';
+
   if (false) html += '<button class="carte coffres" data-av="tresor"><span>🏛️ <b>' + eurCourt(PO.tresor.eurosMois || 0) + '</b> Trésor</span><span>👛 <b>' + eurCourt(PO.bourse.eurosMois || 0) + '</b> Bourse</span><span>⚜ <b>' + Math.round((PO.tresor.ecus || 0) + (PO.bourse.ecus || 0)) + '</b> écus</span>'
     + (PO.qonto ? '<span>🏦 <b>' + eurCourt(PO.qonto.solde) + '</b> Qonto</span>' : '') + '</button>';
   // à recevoir
@@ -833,6 +841,7 @@ function vueTableau() {
   html += '<div class="poles"><button class="pole" data-ouvrir="Les Horizons ouverts"><b>🔭 Patrimoine</b>' + (cgp.length ? esc(cgp[0].quand) + ' · ' + esc(cgp[0].titre) + (cgp.length > 1 ? '<em> +' + (cgp.length - 1) + ' rdv</em>' : '') : '<em>aucun rdv sous 7 jours</em>') + '<br><em>' + nbCh(['Les Horizons ouverts']) + ' quête(s)</em></button>'
     + '<button class="pole" data-ouvrir="Les Finances de la guilde"><b>💰 Appartements</b><em>' + nbCh(['Les Finances de la guilde']) + ' quête(s)</em></button>'
     + '<button class="pole" data-ouvrir="La Taverne des amis"><b>🍺 Vie perso</b><em>' + nbCh(['La Taverne des amis', 'La Place du bourg', 'La Classe d\'armes', 'La Diligence', 'L\'Orphelinat de l\'Empire']) + ' quête(s)</em></button></div>';
+  if (D.aventure && PO) html += '<h2 class="titre-argent"><span>L’argent</span><span></span></h2><div id="tresor-tab">' + vueTresor(D.aventure) + '</div>';
   v.innerHTML = html;
   v.querySelectorAll('[data-va]').forEach(function (b) { b.onclick = function () { allerVue(b.dataset.va); }; });
   v.querySelectorAll('[data-av]').forEach(function (b) { b.onclick = function () { allerVue('aventure'); ongletAventure(b.dataset.av); }; });
@@ -842,6 +851,57 @@ function vueTableau() {
   v.querySelectorAll('[data-regle]').forEach(function (b) { b.onclick = function () { menuRegle(b.closest('.imp'), b.dataset.regle, ''); }; });
   v.querySelectorAll('[data-rel]').forEach(function (b) {
     b.onclick = function () { b.disabled = true; b.textContent = '…'; appel('appRelancer', [b.dataset.rel], function (msg) { toast(msg); charger(); }); };
+  });
+}
+
+// ---------- Quêtes du jour : une seule liste, triée (heure, importance, gain) et filtrée par catégorie (chapitre) ----------
+var QJ_TRI = 'heure', QJ_CAT = '';
+try { QJ_TRI = localStorage.getItem('qj-tri') || 'heure'; QJ_CAT = localStorage.getItem('qj-cat') || ''; } catch (e) {}
+var CHAP_EVT = { cours: 'Le Royaume des 7 mers', sentinelle: 'Le Royaume des 7 mers', elsport: 'Le Royaume des 7 mers', natation: 'Le Royaume des 7 mers', campus: 'Le Royaume des 7 mers', cgp: 'Les Horizons ouverts', r1: 'Les Horizons ouverts', autre: 'Vie perso' };
+function nomCourt_(ch) { return String(ch).replace(/^(Le |La |Les |L')/, '').replace(/ du royaume$| de la guilde$| de l'Empire$| des amis$/, ''); }
+function iconeChap_(ch) { var l = (typeof LIEUX !== 'undefined' && LIEUX[String(ch).toLowerCase().trim()]) || null; return l ? l[2] : ch === 'Vie perso' ? '🍺' : ch === 'Quête principale' ? '⚜' : '📍'; }
+function elementsQJ_() {
+  var A = D.aventure, iso = isoJ(new Date()), out = [];
+  ((A && A.quetes) || []).filter(function (q) { return q.jour === iso; }).forEach(function (q) {
+    out.push({ html: carteQueteJour(q), cat: CHAP_EVT[q.type] || 'Vie perso', heure: q.debut || '99:99', fait: q.fait,
+      imp: q.fait ? 0 : q.gemmes ? 70 : q.poche ? 60 : 20, gain: q.gemmes ? q.gemmes / 10 : (q.montant || 0) });
+  });
+  D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui); }).forEach(function (t) {
+    out.push({ html: '<div class="qj tache-jour" data-n="' + t.n + '"><span class="qj-h">' + (t.retard ? '⚠' : '📜') + '</span><span class="qj-t"><b>' + esc(t.tache) + '</b><small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : ' · aujourd’hui') + '</small></span><button class="coche" aria-label="Fait"></button></div>',
+      cat: t.section, heure: '99:98', fait: false, imp: t.retard ? 100 : 80, gain: t.xp || 10, urgent: true });
+  });
+  return out;
+}
+function blocQuetesUnifie() {
+  var tous = elementsQJ_(), A = D.aventure, iso = isoJ(new Date());
+  var att = ((A && A.quetes) || []).filter(function (q) { return q.jour < iso && !q.fait; });
+  if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div><div class="aide">Rien de prévu aujourd’hui.</div></div>';
+  var cats = []; tous.forEach(function (x) { if (cats.indexOf(x.cat) === -1) cats.push(x.cat); });
+  if (QJ_CAT && cats.indexOf(QJ_CAT) === -1) QJ_CAT = '';
+  var liste = tous.filter(function (x) { return !QJ_CAT || x.cat === QJ_CAT; });
+  liste.sort(QJ_TRI === 'importance' ? function (a, b) { return b.imp - a.imp || (a.heure < b.heure ? -1 : 1); }
+    : QJ_TRI === 'gain' ? function (a, b) { return (a.fait - b.fait) || (b.gain - a.gain) || (a.heure < b.heure ? -1 : 1); }
+    : function (a, b) { return a.heure < b.heure ? -1 : a.heure > b.heure ? 1 : 0; });
+  var tot = tous.filter(function (x) { return !x.fait && !x.urgent; }).reduce(function (s, x) { return s + (x.gain || 0); }, 0);
+  var html = '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>'
+    + '<div class="qj-barre"><span class="qj-l">Trier</span>' + [['heure', '⏰ Heure'], ['importance', '❗ Importance'], ['gain', '✨ Gain']].map(function (o) { return '<button data-tri="' + o[0] + '" class="' + (QJ_TRI === o[0] ? 'actif' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>'
+    + (cats.length > 1 ? '<div class="qj-barre cats"><button data-cat="" class="' + (!QJ_CAT ? 'actif' : '') + '">Tout · ' + tous.length + '</button>' + cats.map(function (c) { var n = tous.filter(function (x) { return x.cat === c; }).length; return '<button data-cat="' + esc(c) + '" class="' + (QJ_CAT === c ? 'actif' : '') + '">' + iconeChap_(c) + ' ' + esc(nomCourt_(c)) + ' · ' + n + '</button>'; }).join('') + '</div>' : '')
+    + liste.map(function (x) { return x.html; }).join('');
+  if (att.length) html += '<div class="moment">À valider (jours précédents)</div>' + att.map(function (q) { return carteQueteJour(q).replace('<span class="qj-h">', '<span class="qj-h"><i>' + q.jour.slice(8) + '/' + q.jour.slice(5, 7) + '</i>'); }).join('');
+  return html + '</div>';
+}
+function brancherQuetesUnifie() {
+  var z = $('qj-unifie'); if (!z) return;
+  z.querySelectorAll('[data-tri]').forEach(function (b) { b.onclick = function () { QJ_TRI = b.dataset.tri; try { localStorage.setItem('qj-tri', QJ_TRI); } catch (e) {} z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
+  z.querySelectorAll('[data-cat]').forEach(function (b) { b.onclick = function () { QJ_CAT = b.dataset.cat; try { localStorage.setItem('qj-cat', QJ_CAT); } catch (e) {} z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
+  try { brancherQuetesJour(z); } catch (e) {}
+  z.querySelectorAll('.tache-jour .coche').forEach(function (c) {
+    c.onclick = function () {
+      var el = c.closest('.qj'), n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0];
+      if (!t || el.classList.contains('embrase')) return;
+      embraser(el, c);
+      appel('appCocherTache', [n, t.tache], function (r) { accomplie(el, n, r); });
+    };
   });
 }
 
@@ -1964,7 +2024,8 @@ var PAYSAGE_VUE = { 'v-jour': 'village', 'v-tableau': 'ville', 'v-taches': 'chat
 
 // ---------- Mode nuit automatique (20 h – 7 h) et taille du texte ----------
 function appliquerAffichage_() {
-  var h = new Date().getHours(); document.documentElement.classList.toggle('nuit', h >= 20 || h < 7);
+  var h = new Date().getHours(), mode = 'auto'; try { mode = localStorage.getItem('journal-nuit') || 'auto'; } catch (e) {}
+  document.documentElement.classList.toggle('nuit', mode === 'toujours' || (mode === 'auto' && (h >= 20 || h < 7)));
   var z = 1; try { z = Number(localStorage.getItem('journal-zoom')) || 1; } catch (e) {}
   document.documentElement.style.setProperty('--zoom', z);
 }
@@ -2004,8 +2065,7 @@ function retoucher_() {
       if (el.querySelector('.tag.retard') || el.classList.contains('revenu')) el.classList.add('urgent');
       if (!el.querySelector('.apercu')) { var ta = el.querySelector('textarea'), ti = el.querySelector('.titre'); if (ta && ti) ti.insertAdjacentHTML('afterend', '<div class="apercu">' + esc(String(ta.value).split('\n')[0].slice(0, 110)) + (String(ta.value).length > 110 ? '…' : '') + '</div>'); }
     });
-    var tb = $('v-tableau');
-    if (tb && tb.innerHTML && !tb.querySelector('.reglages-affichage')) tb.insertAdjacentHTML('beforeend', '<div class="carte reglages-affichage"><div class="ch-titre">⚙️ Affichage</div><div class="ra-ligne"><span>Taille du texte</span><button data-z="-0.05">A−</button><button data-z="0.05">A+</button></div><div class="ra-ligne"><span>Style</span><button data-style="1">🎨 ' + (document.documentElement.getAttribute('data-style') === 'pixel' ? 'Parchemin' : 'Pixel 16 bits') + '</button></div></div>');
+
   } catch (e) { console.error(e); }
   setTimeout(function () { RETOUCHE_ = false; }, 0);
 }
@@ -2042,6 +2102,37 @@ document.addEventListener('input', function (e) { if (e.target.id === 'rg') { va
   };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') document.documentElement.classList.remove('saisie-ouverte'); });
 })();
+
+// ---------- Réglages (engrenage en haut à droite) ----------
+(function () {
+  var r = $('rafraichir'); if (!r) return;
+  r.insertAdjacentHTML('beforebegin', '<button class="btn-ico" id="reglages" aria-label="Réglages">⚙️</button>');
+  $('reglages').onclick = ouvrirReglages_;
+})();
+function ouvrirReglages_() {
+  var vieux = document.querySelector('.voile-reglages'); if (vieux) { vieux.remove(); return; }
+  var nuit = 'auto'; try { nuit = localStorage.getItem('journal-nuit') || 'auto'; } catch (e) {}
+  var z = 1; try { z = Number(localStorage.getItem('journal-zoom')) || 1; } catch (e) {}
+  var px = document.documentElement.getAttribute('data-style') === 'pixel';
+  var o = document.createElement('div'); o.className = 'voile-reglages';
+  o.innerHTML = '<div class="panneau-reglages"><div class="pr-tete">⚙️ Réglages<button class="pr-fermer" aria-label="Fermer">✕</button></div>'
+    + '<div class="ra-ligne"><span>Taille du texte <small>' + Math.round(z * 100) + ' %</small></span><button data-pr="z-">A−</button><button data-pr="z+">A+</button></div>'
+    + '<div class="ra-ligne"><span>Style</span><button data-pr="style-pixel" class="' + (px ? 'actif' : '') + '">Pixel 16 bits</button><button data-pr="style-parchemin" class="' + (px ? '' : 'actif') + '">Parchemin</button></div>'
+    + '<div class="ra-ligne"><span>Mode nuit</span>' + [['auto', 'Auto (20 h–7 h)'], ['toujours', 'Toujours'], ['jamais', 'Jamais']].map(function (m) { return '<button data-pr="nuit-' + m[0] + '" class="' + (nuit === m[0] ? 'actif' : '') + '">' + m[1] + '</button>'; }).join('') + '</div>'
+    + '<div class="ra-ligne"><span>Musique</span><button data-pr="musique" class="' + (Musique.voulue() ? 'actif' : '') + '">' + (Musique.voulue() ? '🎵 Activée' : '🔇 Coupée') + '</button></div></div>';
+  document.body.appendChild(o);
+  o.onclick = function (e) { if (e.target === o || e.target.closest('.pr-fermer')) o.remove(); };
+  o.querySelectorAll('[data-pr]').forEach(function (b) {
+    b.onclick = function () {
+      var a = b.dataset.pr;
+      if (a === 'z-' || a === 'z+') changerTaille(a === 'z+' ? .05 : -.05);
+      else if (a.indexOf('style-') === 0) { var veut = a === 'style-pixel'; if ((document.documentElement.getAttribute('data-style') === 'pixel') !== veut && window.basculerStyle) basculerStyle(); }
+      else if (a.indexOf('nuit-') === 0) { try { localStorage.setItem('journal-nuit', a.slice(5)); } catch (e) {} appliquerAffichage_(); }
+      else if (a === 'musique') { Musique.basculer(); majBandeau(); }
+      o.remove(); ouvrirReglages_();
+    };
+  });
+}
 
 
 // =================== L'AVENTURE : personnages pixel, bandeau, habitudes, défis, boutique, armurerie, quête du mois, expédition, musique ===================
