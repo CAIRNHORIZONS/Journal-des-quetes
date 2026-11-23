@@ -585,6 +585,13 @@ button.grand{width:100%;padding:12px;font-size:16px;border-radius:4px}
 .qo-alerte{margin:6px 12px 0;padding:6px 8px;border:1px dashed var(--rouge);color:var(--rouge);font-size:13px}.qo-ok{margin:6px 12px 0;color:var(--vert);font-size:13px}
 .b-or.ecu{color:#f2c14e}
 :root[data-style="pixel"] .po-duo b,:root[data-style="pixel"] .qo-solde b{font-family:"Silkscreen","Pixelify Sans",monospace}
+/* six onglets en bas */
+nav button{font-size:10px;padding-left:1px;padding-right:1px}
+nav button b{font-size:19px}
+:root[data-style="pixel"] nav button{font-size:9px}
+.carte.coffres{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;width:100%;padding:10px 12px;text-align:left;font:inherit;color:var(--texte);cursor:pointer}
+.carte.coffres span{font-size:13px}.carte.coffres b{font-size:16px}
+.ultimatums .qj-t small em{color:var(--rouge);font-style:normal}
 </style>
 </head>
 <body class="v-jour">
@@ -592,6 +599,7 @@ button.grand{width:100%;padding:12px;font-size:16px;border-radius:4px}
 <main>
 <div id="renommee" class="renommee"></div>
   <section class="vue actif" id="v-jour"><div class="chargement">Le scribe déroule le parchemin…</div></section>
+  <section class="vue" id="v-tableau"></section>
   <section class="vue" id="v-taches"></section>
   <section class="vue" id="v-sms"></section>
   <section class="vue" id="v-resas"></section>
@@ -600,6 +608,7 @@ button.grand{width:100%;padding:12px;font-size:16px;border-radius:4px}
 </main>
 <nav>
   <button class="actif" data-vue="jour"><b>🏰</b>Aujourd’hui<span class="pastille" id="n-resas"></span></button>
+  <button data-vue="tableau"><b>📊</b>Tableau</button>
   <button data-vue="taches"><b>📜</b>Quêtes<span class="pastille" id="n-taches"></span></button>
   <button data-vue="sms"><b>🪶</b>Missives<span class="pastille" id="n-sms"></span></button>
   <button data-vue="presages"><b>🔮</b>Présages<span class="pastille" id="n-presages"></span></button>
@@ -644,7 +653,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', function () { 
 </script>
 <script>
 var LIBELLES = { 'Prêt à envoyer': 'Sceller et envoyer', 'Ignorer': 'Jeter au feu', 'Valider': 'Accepter', 'Refuser': 'Éconduire', 'Lu ✓': 'Missive lue', 'Répondre': 'Répondre' };
-var D = null, VUE = 'jour', TITRES = { jour: 'Aujourd’hui', taches: 'Journal des quêtes', sms: 'Missives à sceller', resas: 'Requêtes de voyageurs', presages: 'Présages du jour', aventure: 'L’aventure' };
+var D = null, VUE = 'jour', TITRES = { jour: 'Aujourd’hui', taches: 'Journal des quêtes', sms: 'Missives à sceller', resas: 'Requêtes de voyageurs', presages: 'Présages du jour', aventure: 'L’aventure', tableau: 'Tableau de bord' };
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { t.classList.remove('on'); }, 2600); }
@@ -676,11 +685,55 @@ var JOUR_DEMAIN = false;
 function allerVue(v) { var b = document.querySelector('nav button[data-vue="' + v + '"]'); if (b) b.click(); else { VUE = v; document.querySelectorAll('.vue').forEach(function (x) { x.classList.toggle('actif', x.id === 'v-' + v); }); document.body.className = 'v-' + v; $('titre').textContent = TITRES[v] || ''; window.scrollTo(0, 0); } }
 function hhmm(m) { return Math.floor(m / 60) + ' h' + (m % 60 ? String(m % 60).padStart(2, '0') : ''); }
 function vueJour() {
+  // Demande de Cairn (23/11) : « Aujourd'hui » = seulement les quêtes du jour, les habitudes du jour et le planning de demain ;
+  // les chiffres, les pôles et l'argent à recevoir sont dans le volet « Tableau de bord ».
   var v = $('v-jour'), J = D.jour, html = '';
-  if (!J) { v.innerHTML = '<div class="vide">Le tableau du jour n’a pas pu être dressé. Actualise dans un instant.</div>'; return; }
+  if (!J) { v.innerHTML = '<div class="vide">Le tableau du jour n’a pas pu être dressé. Actualise dans un instant.</div>'; try { vueTableau(); } catch (e) {} return; }
+  html += '<div class="jour-date">' + esc(J.date.charAt(0).toUpperCase() + J.date.slice(1)) + '</div>';
+  html += blocQuetesDuJour();
+  // quêtes du journal à boucler aujourd'hui (échéance du jour ou dépassée)
+  var qj = D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui); }).slice(0, 12);
+  if (qj.length) html += '<div class="carte quetes-jour ultimatums"><div class="ch-titre">📜 À boucler aujourd’hui <button class="lien-vue" data-va="taches">toutes ›</button></div>'
+    + qj.map(function (t) {
+      return '<div class="qj tache-jour" data-n="' + t.n + '"><button class="coche" aria-label="Fait"></button><span class="qj-t">' + esc(t.tache) + '<small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : '') + '</small></span></div>';
+    }).join('') + '</div>';
+  html += blocHabitudesDuJour();
+  // planning de demain
+  var dem = J.agenda.filter(function (e) { return e.jour === 'dem'; });
+  html += '<div class="carte agenda-jour"><div class="ch-titre">🗓️ Demain' + (J.demain ? ' <small class="doux">' + esc(J.demain) + '</small>' : '') + '</div>'
+    + (dem.length ? dem.map(function (e) {
+      return '<div class="ev ag-' + esc(e.agenda.toLowerCase()) + (e.agenda === 'Natation' && /^(CP|Muscu)\s/i.test(e.titre) ? ' cliquable' : '') + '" data-titre="' + esc(e.titre) + '"><span class="ev-h">' + (e.journee ? 'journée' : esc(e.debut) + '<small>' + esc(e.fin) + '</small>') + '</span>'
+        + '<span class="ev-t">' + esc(e.titre) + (e.lieu ? '<small>📍 ' + esc(e.lieu) + '</small>' : '') + '</span><span class="ev-a">' + esc(e.agenda) + '</span></div>';
+    }).join('') : '<div class="vide">Rien dans l’agenda demain.</div>') + '</div>';
+  v.innerHTML = html;
+  v.querySelectorAll('[data-va]').forEach(function (b) { b.onclick = function () { allerVue(b.dataset.va); }; });
+  v.querySelectorAll('.ev.cliquable').forEach(function (b) { b.onclick = function () { ouvrirFiche(b.dataset.titre); }; });
+  v.querySelectorAll('.tache-jour .coche').forEach(function (c) {
+    c.onclick = function () {
+      var el = c.closest('.qj'), n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0];
+      if (!t || el.classList.contains('embrase')) return;
+      embraser(el, c);
+      appel('appCocherTache', [n, t.tache], function (r) { accomplie(el, n, r); });
+    };
+  });
+  vueTableau();
+}
+
+function vueTableau() {
+  var v = $('v-tableau'), J = D.jour, html = ''; if (!v) return;
+  if (!J) { v.innerHTML = '<div class="vide">Le tableau de bord n’a pas pu être dressé. Actualise dans un instant.</div>'; return; }
   var S = J.semaine, xpSem = (D.xpJours || []).slice(-7).reduce(function (a, b) { return a + b; }, 0), pct = Math.min(100, Math.round(100 * S.minutes / (S.plafond || 360)));
-  html += '<div class="jour-date">' + esc(J.date.charAt(0).toUpperCase() + J.date.slice(1)) + '</div>'
-    + '<div class="recherche-client"><input id="rc" list="rc-liste" placeholder="🔍 Fiche d’un client…"><datalist id="rc-liste">' + (D.clients || []).map(function (c) { return '<option value="' + esc(c.nom) + '">'; }).join('') + '</datalist></div>';
+  html += '<div class="recherche-client"><input id="rc" list="rc-liste" placeholder="🔍 Fiche d’un client…"><datalist id="rc-liste">' + (D.clients || []).map(function (c) { return '<option value="' + esc(c.nom) + '">'; }).join('') + '</datalist></div>';
+  // à traiter
+  var nbMiss = D.sms.filter(function (s) { return s.fenetre !== false && (s.statut === 'À valider' || s.statut === 'Erreur'); }).length;
+  var pres = D.presages || [], nbTrous = pres.filter(function (p) { return p.trou; }).length, nbPres = pres.length - nbTrous;
+  var nbResas = D.resas.filter(function (r) { return r.statut === 'À valider'; }).length, puces = [];
+  if (nbMiss) puces.push('<button class="puce" data-va="sms">🪶 ' + nbMiss + ' missive' + (nbMiss > 1 ? 's' : '') + ' à sceller</button>');
+  if (nbPres) puces.push('<button class="puce" data-va="presages">🔮 ' + nbPres + ' présage' + (nbPres > 1 ? 's' : '') + '</button>');
+  if (nbTrous) puces.push('<button class="puce" data-va="presages">🕳️ ' + nbTrous + ' trou' + (nbTrous > 1 ? 's' : '') + ' à combler</button>');
+  if (nbResas) puces.push('<button class="puce" data-va="resas">🛡️ ' + nbResas + ' requête' + (nbResas > 1 ? 's' : '') + '</button>');
+  if (D.aventure) { var nbDefis = D.aventure.defis.filter(function (d) { return d.fait && !d.reclame; }).length; if (nbDefis) puces.push('<button class="puce" data-av="defis">📯 ' + nbDefis + ' prime' + (nbDefis > 1 ? 's' : '') + ' à réclamer</button>'); }
+  if (puces.length) html += '<div class="puces">' + puces.join('') + '</div>';
   // chiffres de la semaine
   html += '<div class="carte chiffres"><div class="ch-titre">⚖️ La semaine</div><div class="ch-grille">'
     + '<div class="ch"><b>' + hhmm(S.minutes) + '</b><span>de cours sur ' + hhmm(S.plafond) + '</span><i class="jauge' + (S.minutes > S.plafond ? ' trop' : '') + '"><u style="width:' + pct + '%"></u></i></div>'
@@ -689,67 +742,34 @@ function vueJour() {
     + '<div class="ch' + (S.du > 0 ? ' alerte' : '') + '"><b>' + String(S.du).replace('.', ',') + ' €</b><span>restent dus</span></div>'
     + '<div class="ch"><b>' + S.resasSite + '</b><span>réservation' + (S.resasSite > 1 ? 's' : '') + ' du site</span></div>'
     + '<div class="ch"><b>' + xpSem + '</b><span>XP en 7 jours</span></div></div></div>';
-  // à traiter
-  var nbMiss = D.sms.filter(function (s) { return s.fenetre !== false && (s.statut === 'À valider' || s.statut === 'Erreur'); }).length;
-  var pres = D.presages || [], nbTrous = pres.filter(function (p) { return p.trou; }).length, nbPres = pres.length - nbTrous;
-  var nbResas = D.resas.filter(function (r) { return r.statut === 'À valider'; }).length;
-  var puces = [];
-  if (nbMiss) puces.push('<button class="puce" data-va="sms">🪶 ' + nbMiss + ' missive' + (nbMiss > 1 ? 's' : '') + ' à sceller</button>');
-  if (nbPres) puces.push('<button class="puce" data-va="presages">🔮 ' + nbPres + ' présage' + (nbPres > 1 ? 's' : '') + '</button>');
-  if (nbTrous) puces.push('<button class="puce" data-va="presages">🕳️ ' + nbTrous + ' trou' + (nbTrous > 1 ? 's' : '') + ' à combler</button>');
-  if (nbResas) puces.push('<button class="puce" data-va="resas">🛡️ ' + nbResas + ' requête' + (nbResas > 1 ? 's' : '') + '</button>');
-  if (D.aventure) { var nbDefis = D.aventure.defis.filter(function (d) { return d.fait && !d.reclame; }).length; if (nbDefis) puces.push('<button class="puce" data-av="defis">📯 ' + nbDefis + ' prime' + (nbDefis > 1 ? 's' : '') + ' à réclamer</button>'); }
-  if (puces.length) html += '<div class="puces">' + puces.join('') + '</div>';
-  html += blocQuetesDuJour() + blocHabitudesDuJour();
-  // agenda
-  var evs = J.agenda.filter(function (e) { return e.jour === (JOUR_DEMAIN ? 'dem' : 'auj'); });
-  html += '<div class="carte agenda-jour"><div class="ch-titre">🗓️ <button class="onglet' + (JOUR_DEMAIN ? '' : ' actif') + '" data-j="0">Aujourd’hui</button><button class="onglet' + (JOUR_DEMAIN ? ' actif' : '') + '" data-j="1">Demain</button></div>'
-    + (evs.length ? evs.map(function (e) {
-      return '<div class="ev' + (e.passe ? ' passe' : '') + (e.agenda === 'Natation' && /^(CP|Muscu)\s/i.test(e.titre) ? ' cliquable' : '') + ' ag-' + esc(e.agenda.toLowerCase()) + '" data-titre="' + esc(e.titre) + '"><span class="ev-h">' + (e.journee ? 'journée' : esc(e.debut) + '<small>' + esc(e.fin) + '</small>') + '</span>'
-        + '<span class="ev-t">' + esc(e.titre) + (e.lieu ? '<small>📍 ' + esc(e.lieu) + '</small>' : '') + '</span><span class="ev-a">' + esc(e.agenda) + '</span></div>';
-    }).join('') : '<div class="vide">Rien dans l’agenda ' + (JOUR_DEMAIN ? 'demain' : 'aujourd’hui') + '.</div>') + '</div>';
-  // autres pôles : conseil en patrimoine, appartements, vie perso
-  var nbCh = function (l) { return D.taches.filter(function (t) { return !t.aVenir && l.indexOf(t.section) !== -1; }).length; };
-  var P = D.poles || {}, cgp = P.cgp || [];
-  html += '<div class="poles"><button class="pole" data-ouvrir="Les Horizons ouverts"><b>🔭 Patrimoine</b>' + (cgp.length ? esc(cgp[0].quand) + ' · ' + esc(cgp[0].titre) + (cgp.length > 1 ? '<em> +' + (cgp.length - 1) + ' rdv</em>' : '') : '<em>aucun rdv sous 7 jours</em>') + '<br><em>' + nbCh(['Les Horizons ouverts']) + ' quête(s)</em></button>'
-    + '<button class="pole" data-ouvrir="Les Finances de la guilde"><b>💰 Appartements</b><em>' + nbCh(['Les Finances de la guilde']) + ' quête(s)</em></button>'
-    + '<button class="pole" data-ouvrir="La Taverne des amis"><b>🍺 Vie perso</b><em>' + nbCh(['La Taverne des amis', 'La Place du bourg', 'La Classe d\'armes', 'La Diligence', 'L\'Orphelinat de l\'Empire']) + ' quête(s)</em></button></div>';
-  // quêtes du jour
-  var qj = D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui); }).slice(0, 10);
-  html += '<div class="carte quetes-jour"><div class="ch-titre">📜 Quêtes du jour <button class="lien-vue" data-va="taches">toutes ›</button></div>'
-    + (qj.length ? qj.map(function (t) {
-      return '<div class="qj" data-n="' + t.n + '"><button class="coche" aria-label="Fait"></button><span class="qj-t">' + esc(t.tache) + '<small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : '') + '</small></span></div>';
-    }).join('') : '<div class="vide">Aucune quête pressante aujourd’hui ⚜</div>') + '</div>';
-  // impayés
-  if (J.impayes && J.impayes.length) {
-    html += '<div class="carte impayes"><div class="ch-titre">💰 À recevoir</div>' + J.impayes.map(function (x) {
+  // coffres (Trésor de l'Empire, Bourse, Qonto)
+  var PO = D.aventure && D.aventure.poches;
+  if (PO) html += '<button class="carte coffres" data-av="tresor"><span>🏛️ <b>' + eurCourt(PO.tresor.eurosMois || 0) + '</b> Trésor</span><span>👛 <b>' + eurCourt(PO.bourse.eurosMois || 0) + '</b> Bourse</span><span>⚜ <b>' + Math.round((PO.tresor.ecus || 0) + (PO.bourse.ecus || 0)) + '</b> écus</span>'
+    + (PO.qonto ? '<span>🏦 <b>' + eurCourt(PO.qonto.solde) + '</b> Qonto</span>' : '') + '</button>';
+  // à recevoir
+  if ((J.impayes && J.impayes.length) || (J.factures || []).length) {
+    html += '<div class="carte impayes"><div class="ch-titre">💰 À recevoir</div>' + (J.impayes || []).map(function (x) {
       return '<div class="imp" data-id="' + esc(x.id) + '"><span class="imp-n cliquable" data-fiche="' + esc(x.id) + '">' + esc(x.nom) + '</span><b>' + String(x.du).replace('.', ',') + ' €</b>'
         + (x.relanceEnCours ? '<span class="tag">relance prête</span>' : '<button class="gris" data-rel="' + esc(x.id) + '">Relancer</button>')
         + '<button class="vert" data-regle="' + esc(x.id) + '">✓ Réglé</button></div>';
     }).join('') + ((J.factures || []).length ? '<div class="aide">Factures des structures (suivies à part, pas de relance par SMS) :</div>' + J.factures.map(function (x) {
       return '<div class="imp facture"><span class="imp-n">' + esc(x.nom) + '</span><b>' + String(x.du).replace('.', ',') + ' €</b><span class="tag">facture</span></div>'; }).join('') : '') + '</div>';
   }
+  // pôles : conseil en patrimoine, appartements, vie perso
+  var nbCh = function (l) { return D.taches.filter(function (t) { return !t.aVenir && l.indexOf(t.section) !== -1; }).length; };
+  var P = D.poles || {}, cgp = P.cgp || [];
+  html += '<div class="poles"><button class="pole" data-ouvrir="Les Horizons ouverts"><b>🔭 Patrimoine</b>' + (cgp.length ? esc(cgp[0].quand) + ' · ' + esc(cgp[0].titre) + (cgp.length > 1 ? '<em> +' + (cgp.length - 1) + ' rdv</em>' : '') : '<em>aucun rdv sous 7 jours</em>') + '<br><em>' + nbCh(['Les Horizons ouverts']) + ' quête(s)</em></button>'
+    + '<button class="pole" data-ouvrir="Les Finances de la guilde"><b>💰 Appartements</b><em>' + nbCh(['Les Finances de la guilde']) + ' quête(s)</em></button>'
+    + '<button class="pole" data-ouvrir="La Taverne des amis"><b>🍺 Vie perso</b><em>' + nbCh(['La Taverne des amis', 'La Place du bourg', 'La Classe d\'armes', 'La Diligence', 'L\'Orphelinat de l\'Empire']) + ' quête(s)</em></button></div>';
   v.innerHTML = html;
   v.querySelectorAll('[data-va]').forEach(function (b) { b.onclick = function () { allerVue(b.dataset.va); }; });
+  v.querySelectorAll('[data-av]').forEach(function (b) { b.onclick = function () { allerVue('aventure'); ongletAventure(b.dataset.av); }; });
   v.querySelectorAll('[data-ouvrir]').forEach(function (b) { b.onclick = function () { allerVue('taches'); ouvrir(b.dataset.ouvrir); }; });
   v.querySelectorAll('[data-fiche]').forEach(function (b) { b.onclick = function () { ouvrirFiche(b.dataset.fiche); }; });
-  v.querySelectorAll('.ev.cliquable').forEach(function (b) { b.onclick = function () { ouvrirFiche(b.dataset.titre); }; });
   var rc = $('rc'); if (rc) rc.onchange = function () { var c = (D.clients || []).filter(function (x) { return x.nom === rc.value; })[0]; if (c) { rc.value = ''; ouvrirFiche(c.id); } };
-  v.querySelectorAll('.onglet').forEach(function (b) { b.onclick = function () { JOUR_DEMAIN = b.dataset.j === '1'; vueJour(); }; });
-  v.querySelectorAll('.qj .coche').forEach(function (c) {
-    c.onclick = function () {
-      var el = c.closest('.qj'), n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0];
-      if (!t || el.classList.contains('embrase')) return;
-      embraser(el, c);
-      appel('appCocherTache', [n, t.tache], function (r) { accomplie(el, n, r); });
-    };
-  });
   v.querySelectorAll('[data-regle]').forEach(function (b) { b.onclick = function () { menuRegle(b.closest('.imp'), b.dataset.regle, ''); }; });
   v.querySelectorAll('[data-rel]').forEach(function (b) {
-    b.onclick = function () {
-      b.disabled = true; b.textContent = '…';
-      appel('appRelancer', [b.dataset.rel], function (msg) { toast(msg); charger(); });
-    };
+    b.onclick = function () { b.disabled = true; b.textContent = '…'; appel('appRelancer', [b.dataset.rel], function (msg) { toast(msg); charger(); }); };
   });
 }
 
@@ -2212,7 +2232,7 @@ document.querySelectorAll('nav button').forEach(function (b) {
 $('rafraichir').onclick = charger;
 document.addEventListener('visibilitychange', function () { if (!document.hidden) charger(); });
 (function () {
-  var m = location.search.match(/[?&]vue=(jour|taches|sms|presages|aventure)/);
+  var m = location.search.match(/[?&]vue=(jour|tableau|taches|sms|presages|aventure)/);
   if (m) setTimeout(function () { allerVue(m[1]); if (/saisie=1/.test(location.search)) setTimeout(function () { var z = $('nv-tache'); if (z) z.focus(); }, 300); }, 0);
   try { var g = JSON.parse(localStorage.getItem('journal-donnees') || 'null'); if (g && g.taches && !D) { D = g; afficher(); $('maj').textContent = 'gardé · ' + (g.maj || ''); } } catch (e) {}
 })();
