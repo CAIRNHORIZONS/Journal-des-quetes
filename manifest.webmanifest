@@ -1,0 +1,76 @@
+{
+ "name": "Journal des quêtes",
+ "short_name": "Quêtes",
+ "description": "Mes quêtes, missives et requêtes du jour",
+ "start_url": "./?vue=jour",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#e9dcbf",
+ "theme_color": "#24180d",
+ "lang": "fr",
+ "icons": [
+  {
+   "src": "icone-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icone-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icone-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Aujourd'hui",
+   "short_name": "Aujourd'hui",
+   "url": "./?vue=jour",
+   "icons": [
+    {
+     "src": "icone-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Nouvelle quête",
+   "short_name": "Nouvelle quête",
+   "url": "./?vue=taches&saisie=1",
+   "icons": [
+    {
+     "src": "icone-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Missives",
+   "short_name": "Missives",
+   "url": "./?vue=sms",
+   "icons": [
+    {
+     "src": "icone-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Présages",
+   "short_name": "Présages",
+   "url": "./?vue=presages",
+   "icons": [
+    {
+     "src": "icone-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
+ ]
+}
