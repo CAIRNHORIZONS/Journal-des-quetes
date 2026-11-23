@@ -698,6 +698,7 @@ header #reglages{margin-left:auto}
 .r-bts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .r-bts button{border:1px solid #3b2a18;background:#f6ecd4;color:#3b2a18;border-radius:999px!important;padding:6px 10px;font:700 14px "Atkinson Hyperlegible",sans-serif}
 .r-bts button.actif{background:#2f7a3a;color:#fff;border-color:#243a1c}
+.r-bts .r-hier{background:none;border-style:dashed;font-weight:600}
 .r-bts .r-annule{background:none;border-color:#8e1c14;color:#8e1c14;font-weight:600}
 .qj.geste-fait{box-shadow:inset 8px 0 0 #2f7a3a}.qj.geste-ignore,.tache.geste-report{box-shadow:inset -8px 0 0 #8e1c14}
 .qj,.tache{transition:transform .2s,opacity .25s}.ignoree{opacity:.15;transform:translateX(-60px)!important}
@@ -941,7 +942,7 @@ function grille_(corps) {
 function rail_() {
   var A = D.aventure; if (!A || !A.habitudes) return '';
   var iso = isoJ(new Date()), pf = A.paliersFaits || {};
-  var hab = A.habitudes.filter(function (h) { return h.moment !== 'Défi' && estQuotidienne(h); }), def = A.habitudes.filter(function (h) { return h.moment === 'Défi'; });
+  var hab = A.habitudes.filter(function (h) { return h.moment !== 'Défi' && estQuotidienne(h); }), def = A.habitudes.filter(function (h) { return h.moment === 'Défi' && enCampagne_(h, iso); });
   if (!hab.length && !def.length) return '';
   var ico = function (h) {
     var fait = (A.coches[h.nom] || []).indexOf(iso) !== -1, p = fait && pf[h.nom] && pf[h.nom][iso];
@@ -950,14 +951,25 @@ function rail_() {
   var col = function (cls, lbl, l) { return l.length ? '<div class="rail-bloc ' + cls + '"><span class="r-lbl">' + lbl + '</span>' + l.map(ico).join('') + '</div>' : ''; };
   return '<div class="rail">' + col('r-hab', '✦', hab) + col('r-def', '🎯', def) + bulle_(iso) + '</div>';
 }
+// Campagne : un défi par mois, actif entre « Début campagne » et « Fin campagne » (onglet Habitudes) ; sans dates, il attend son tour.
+function enCampagne_(h, iso) { return !!h.debut && h.debut <= iso && (!h.fin || iso <= h.fin); }
+function hierIso_() { var d = new Date(); d.setDate(d.getDate() - 1); return isoJ(d); }
 function bulle_(iso) {
   var A = D.aventure, h = HAB_SEL && A.habitudes.filter(function (x) { return x.nom === HAB_SEL; })[0]; if (!h) return '';
   var fait = (A.coches[h.nom] || []).indexOf(iso) !== -1, p = fait && (A.paliersFaits || {})[h.nom] && A.paliersFaits[h.nom][iso];
   var bts = (h.paliers && h.paliers.length)
     ? h.paliers.map(function (x) { return '<button data-palier="' + esc(x) + '" class="' + (p === x ? 'actif' : '') + '">' + esc(x) + '</button>'; }).join('')
     : (fait ? '' : '<button data-palier="">✓ Accompli</button>');
-  return '<div class="r-bulle"><b>' + esc(h.icone) + ' ' + esc(h.nom.replace(/^Défi\s*:\s*/, '')) + '</b><span class="r-xp">+' + (A.xpDiff[h.diff] || 10) + ' XP' + (h.paliers && h.paliers.length ? ' pour 1 h' : '') + '</span>'
-    + '<div class="r-bts">' + bts + (fait ? '<button data-annule="1" class="r-annule">Annuler</button>' : '') + '</div></div>';
+  var defi = h.moment === 'Défi', info;
+  if (defi) {
+    var c = (A.coches[h.nom] || []).filter(function (d) { return d >= h.debut && d <= iso; }).length;
+    var tot = Math.round((new Date(iso) - new Date(h.debut)) / 864e5) + 1;
+    info = 'Campagne' + (h.fin ? ' jusqu’au ' + h.fin.slice(8) + '/' + h.fin.slice(5, 7) : '') + ' · ' + c + '/' + tot + ' jour' + (tot > 1 ? 's' : '') + ' réussi' + (c > 1 ? 's' : '') + ' · +' + (A.xpDiff[h.diff] || 10) + ' XP';
+  } else info = '+' + (A.xpDiff[h.diff] || 10) + ' XP' + (h.paliers && h.paliers.length ? ' pour 1 h' : '') + ' · −' + (A.penalite || 20) + ' XP si oubliée';
+  var hier = hierIso_(), hierFait = (A.coches[h.nom] || []).indexOf(hier) !== -1;
+  var btHier = (!defi && new Date().getHours() < 12 && !hierFait) ? '<button data-palier="' + (h.paliers && h.paliers.length ? esc(h.paliers.indexOf('1 h') !== -1 ? '1 h' : h.paliers[0]) : '') + '" data-jour="' + hier + '" class="r-hier">✓ Fait hier</button>' : '';
+  return '<div class="r-bulle"><b>' + esc(h.icone) + ' ' + esc(h.nom.replace(/^Défi\s*:\s*/, '')) + '</b><span class="r-xp">' + info + '</span>'
+    + '<div class="r-bts">' + bts + (fait ? '<button data-annule="1" class="r-annule">Annuler</button>' : '') + btHier + '</div></div>';
 }
 function brancherRail_(z) {
   var re = function () { z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); };
@@ -967,7 +979,7 @@ function brancherRail_(z) {
   if (!bu) return;
   bu.querySelectorAll('button').forEach(function (b) {
     b.onclick = function () {
-      var A = D.aventure, nom = HAB_SEL, iso = isoJ(new Date()), c = A.coches[nom] = A.coches[nom] || [], pf = A.paliersFaits = A.paliersFaits || {};
+      var A = D.aventure, nom = HAB_SEL, iso = b.dataset.jour || isoJ(new Date()), c = A.coches[nom] = A.coches[nom] || [], pf = A.paliersFaits = A.paliersFaits || {};
       var coche = !b.dataset.annule, palier = b.dataset.palier || '';
       if (coche) { if (c.indexOf(iso) === -1) c.push(iso); if (palier) (pf[nom] = pf[nom] || {})[iso] = palier; }
       else { if (c.indexOf(iso) !== -1) c.splice(c.indexOf(iso), 1); if (pf[nom]) delete pf[nom][iso]; }
