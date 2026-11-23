@@ -2464,7 +2464,7 @@ function vueDefis(A) {
   });
   var g = A.gagne || { detail: {}, n: {} }, d = g.detail || {};
   html += '<div class="carte"><div class="ch-titre">📜 D’où viennent tes pièces (depuis le 1er novembre)</div>'
-    + '<div class="serie"><span>🏛️ Trésor de l’Empire</span><b>🪙 ' + Math.round(d.tresor || 0) + '</b></div><div class="serie"><span>🎓 Piscine du campus</span><b>🪙 ' + Math.round(d.bourse || 0) + '</b></div>'
+    + '<div class="serie"><span>🏛️ Trésor de l’Empire</span><b>🪙 ' + Math.round(d.tresor || 0) + '</b></div>'
     + '<div class="serie"><span>Relances scellées (' + ((g.n || {}).relances || 0) + ')</span><b>🪙 ' + (d.relances || 0) + '</b></div>'
     + (A.tresor.length ? '<div class="moment">Primes et achats</div>' + A.tresor.map(function (t) { return '<div class="serie"><span>' + esc(t.libelle) + '</span><b class="' + (t.or < 0 ? 'rouge' : '') + '">' + (t.or > 0 ? '+' : '') + t.or + '</b></div>'; }).join('') : '') + '</div>';
   return html;
@@ -2661,7 +2661,7 @@ function vueTresor(A) {
       + (Q.disponible !== Q.solde ? '<div class="aide" style="padding:0 12px">Disponible : ' + eur(Q.disponible) + ' (opérations en cours déduites)</div>' : '')
     : '<div class="aide" style="padding:0 12px">Solde Qonto indisponible pour l’instant.</div>')
     + (P.virementsAVerifier ? '<div class="qo-alerte">⚠ ' + P.virementsAVerifier + ' virement' + (P.virementsAVerifier > 1 ? 's' : '') + ' reçu' + (P.virementsAVerifier > 1 ? 's' : '') + ' sans séance associée : onglet « Virements Qonto » du tableau.</div>' : '<div class="qo-ok">✓ Tous les virements reçus sont rapprochés de leurs séances.</div>') + '</div>';
-  return guide('tresoriere', 'Chaque quête accomplie te rapporte des <b>écus</b> : de l’argent gagné, mais pas encore arrivé. Dès que le client paie (virement sur Qonto, carte, ou espèces marquées « ✓ Réglé »), ses écus deviennent des <b>euros</b>. La piscine du campus, elle, n’est plus suivie : chaque séance terminée part directement en pièces d’or.')
+  return guide('tresoriere', 'Chaque quête accomplie te rapporte des <b>écus</b> : de l’argent gagné, mais pas encore arrivé. Dès que le client paie (virement sur Qonto, carte, ou espèces marquées « ✓ Réglé »), ses écus deviennent des <b>euros</b>. La piscine du campus, elle, ne rapporte que des XP, tout seuls, à la fin de chaque séance.')
     + qonto
     + bloc(P.tresor, 'Trésor de l’Empire', '🏛️', 'tresor', 'Cairn Horizons · ce qui est facturé')
     + (P.gemmes && P.gemmes.total ? '<div class="poche gemmes"><div class="po-tete"><span class="po-ico">💎</span><span><b>Gemmes du conseiller</b><small>600 par premier rendez-vous (R1) accompli</small></span></div><div class="po-mois"><b>' + P.gemmes.total + '</b><span>' + P.gemmes.r1 + ' R1 accompli' + (P.gemmes.r1 > 1 ? 's' : '') + '</span></div></div>' : '')
