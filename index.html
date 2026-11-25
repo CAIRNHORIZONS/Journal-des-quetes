@@ -3036,7 +3036,7 @@ function ongletAventure(o) { if (o === 'salle') { ouvrirSalle(); return; } AV_ON
 function vueAventure() {
   var v = $('v-aventure'); if (!v) return;
   if (!D.aventure) { v.innerHTML = '<div class="vide">L’aventure se prépare… (installe la dernière version du script)</div>'; return; }
-  var A = D.aventure, O = [['habitudes', '✦ Habitudes'], ['defis', '📯 Primes'], ['boutique', '🪙 Boutique'], ['armurerie', '⚔️ Galerie'], ['mois', '⚜ Quête du mois'], ['expedition', '🧭 Expédition']];
+  var A = D.aventure, O = [['habitudes', '✦ Habitudes'], ['defis', '📯 Primes'], ['boutique', '🪙 Boutique'], ['armurerie', '⚔️ Galerie'], ['mois', '⚜ Quête du mois'], ['expedition', '🧭 Expédition'], ['salle', '🛡️ Salle d’arme']];
   var html = '<div class="av-onglets">' + O.map(function (o) { return '<button class="' + (o[0] === AV_ONGLET ? 'actif' : '') + '" data-o="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
   if (AV_ONGLET === 'tresor') AV_ONGLET = 'habitudes';
   if (AV_ONGLET === 'habitudes') html += vueHabitudes(A);
