@@ -3260,7 +3260,10 @@ function blocReleve(f) {
 // du Journal et y reste tant que tout n'est pas coché (on peut changer d'application ; « Plus tard » par appui long pour une urgence).
 var RITUELS = { 'Aube': { nom: 'Les Rites de l’aube', ico: '🌅' }, 'Crépuscule': { nom: 'Les Rituels du crépuscule', ico: '🌙' } };
 var XP_RITUEL = 30;
-function missions_(m) { var A = D.aventure; return A && A.habitudes ? A.habitudes.filter(function (h) { return h.moment === m; }) : []; }
+// ordre des missions voulu par Cairn (26/11), quel que soit l'ordre des lignes de l'onglet Habitudes
+var ORDRE_MISSIONS = { Aube: [/eau/i, /[ée]tirement|mobilit/i, /relire/i, /principale/i, /cgpi/i, /sac/i], 'Crépuscule': [/valider|reporter/i, /cours|[ée]cus/i, /sac|demain/i, /lire|journal|lecture/i] };
+function rangMission_(m, nom) { var l = ORDRE_MISSIONS[m] || []; for (var i = 0; i < l.length; i++) if (l[i].test(nom)) return i; return 99; }
+function missions_(m) { var A = D.aventure; return A && A.habitudes ? A.habitudes.filter(function (h) { return h.moment === m; }).sort(function (a, b) { return rangMission_(m, a.nom) - rangMission_(m, b.nom); }) : []; }
 function cocheeLe_(h, iso) { return ((D.aventure.coches || {})[h.nom] || []).indexOf(iso) !== -1; }
 function etatRituel_(m) { var l = missions_(m), iso = isoJ(new Date()), n = l.filter(function (h) { return cocheeLe_(h, iso); }).length; return { l: l, n: n, fini: l.length > 0 && n === l.length }; }
 function rouleauRituel_(m) {
