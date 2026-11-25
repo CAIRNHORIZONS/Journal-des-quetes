@@ -717,7 +717,11 @@ html.carte-visible .carte-bascule{background:var(--bleu-clair)}
 #fab-quete .fab-plus{position:absolute;right:4px;bottom:2px;width:20px;height:20px;border-radius:50%;background:#2f7a3a;color:#fff;font:700 16px/20px sans-serif;border:2px solid #fff}
 html.saisie-ouverte #fab-quete .fab-plus{background:#8e1c14;transform:rotate(45deg)}
 html:not(.saisie-ouverte) .carte.saisie{display:none}
-html.saisie-ouverte .carte.saisie{position:fixed;left:10px;right:10px;bottom:calc(144px + env(safe-area-inset-bottom));z-index:29;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+html.saisie-ouverte .carte.saisie{position:fixed;left:10px;right:10px;bottom:calc(144px + env(safe-area-inset-bottom));z-index:29;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.4);background-color:#f6ecd4!important;max-height:calc(100vh - 170px - env(safe-area-inset-bottom));overflow-y:auto}
+#voile-saisie{display:none}
+html.saisie-ouverte main{z-index:auto!important}
+html.saisie-ouverte #voile-saisie{display:block;position:fixed;inset:0;z-index:28;background:rgba(24,14,5,.88);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+html.saisie-ouverte,html.saisie-ouverte body{overflow:hidden;overscroll-behavior:contain}
 .expedition-ecran ~ #fab-quete{display:none}
 /* 9. Recherche unique */
 #rg{width:100%;padding:10px 12px;font-size:16px;border:2px solid #3b2a18;border-radius:4px;background:var(--carte);color:var(--texte)}
@@ -761,7 +765,7 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 .r-ico i{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);font:700 9px/1 sans-serif;font-style:normal;background:#2f7a3a;color:#fff;border-radius:6px;padding:1px 3px;white-space:nowrap}
 .r-ico.eclat{animation:eclat .5s}
 @keyframes eclat{50%{transform:scale(1.35)}}
-.r-bulle{position:absolute;left:46px;z-index:6;width:min(250px,70vw);background:#fff;color:#111;border:2.5px solid #111;border-radius:14px!important;padding:8px 10px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
+.r-bulle{scroll-margin:70px 0 150px;position:absolute;left:46px;z-index:6;width:min(250px,70vw);background:#fff;color:#111;border:2.5px solid #111;border-radius:14px!important;padding:8px 10px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}
 .r-bulle::before{content:"";position:absolute;left:-12px;top:12px;border:6px solid transparent;border-right:10px solid #111;border-left:0}
 .r-bulle b{display:block;font-size:15px}
 .r-xp{font-size:12px;color:#666}
@@ -968,6 +972,134 @@ html:is([data-esth="C"],[data-esth="Cn"]) nav button:not(.actif){filter:saturate
 /* 8. la plume du Scribe */
 html:is([data-esth="C"],[data-esth="Cn"]) .guide-bulle span.plume::after{content:"✒";margin-left:3px;font-style:normal;color:#5a3a12}
 html:is([data-esth="C"],[data-esth="Cn"]) .b-niv{font-family:"Cinzel",serif!important;font-weight:700;letter-spacing:-.02em}
+/* ===== Parchemins qui se déroulent (25/11) : bulle des habitudes et fenêtre « Nouvelle quête ». Jour : vélin clair ; nuit : parchemin à la chandelle ===== */
+:root{--pa-clair:#f7ebcf;--pa-fonce:#ead39f;--pa-tache:rgba(150,100,35,.16);--pa-bord:rgba(120,78,25,.45);--pa-pli:#cfae6e;--pa-encre:#3b2a18;--pa-doux:#7a6448;--pa-ligne:rgba(122,90,40,.22);
+  --rou-a:#7d5a26;--rou-b:#c49a58;--rou-c:#f3e2b8;--rou-d:#e0c58a}
+html.nuit,html[data-esth="Cn"]{--pa-clair:#6a5232;--pa-fonce:#46341f;--pa-tache:rgba(255,200,110,.12);--pa-bord:rgba(20,10,0,.6);--pa-pli:#5a4426;--pa-encre:#f1e3c2;--pa-doux:#c9b48a;--pa-ligne:rgba(240,210,150,.16);
+  --rou-a:#3a2812;--rou-b:#7a5a2c;--rou-c:#b8955a;--rou-d:#8a6a36}
+@keyframes paDeroule{from{clip-path:inset(-10px -14px calc(100% - 8px) -14px)}to{clip-path:inset(-10px -14px -14px -14px)}}
+@keyframes paRouleau{from{top:-7px}to{top:calc(100% - 7px)}}
+
+/* --- la bulle des habitudes devient un petit parchemin --- */
+html body .r-bulle{scroll-margin:190px 0 160px!important;background:none!important;border:0!important;box-shadow:none!important;padding:0!important;color:var(--pa-encre);filter:drop-shadow(2px 4px 3px rgba(40,20,5,.35));animation:paDeroule .45s cubic-bezier(.2,.8,.3,1) both}
+html body .r-bulle::before,html body .r-bulle::after{content:"";position:absolute;left:-8px;right:-8px;height:14px;border:0!important;border-radius:7px;z-index:2;
+  background:linear-gradient(var(--rou-a),var(--rou-b) 22%,var(--rou-c) 48%,var(--rou-d) 70%,var(--rou-a));box-shadow:0 2px 3px rgba(0,0,0,.3)}
+html body .r-bulle::before{top:-7px}
+html body .r-bulle::after{top:calc(100% - 7px);animation:paRouleau .45s cubic-bezier(.2,.8,.3,1) both}
+.rb-papier{position:relative;padding:16px 14px 16px 16px;
+  background:radial-gradient(ellipse at 18% 25%,var(--pa-tache),transparent 45%),radial-gradient(ellipse at 85% 75%,var(--pa-tache),transparent 50%),radial-gradient(circle at 60% 15%,var(--pa-tache),transparent 25%),linear-gradient(170deg,var(--pa-clair),var(--pa-fonce));
+  box-shadow:inset 0 0 14px var(--pa-bord);
+  clip-path:polygon(0 3px,2% 0,calc(100% - 16px) 0,100% 16px,99.3% 35%,100% 52%,99% 74%,100% 100%,16px 100%,0 calc(100% - 16px),.8% 70%,0 48%,1% 24%)}
+/* coins écornés : le pli du parchemin, en haut à droite et en bas à gauche */
+.rb-papier::before,.rb-papier::after{content:"";position:absolute;width:16px;height:16px;pointer-events:none}
+.rb-papier::before{top:0;right:0;background:linear-gradient(225deg,transparent 50%,var(--pa-pli) 50%,var(--pa-fonce));box-shadow:-1px 1px 2px rgba(0,0,0,.2)}
+.rb-papier::after{bottom:0;left:0;background:linear-gradient(45deg,transparent 50%,var(--pa-pli) 50%,var(--pa-fonce));box-shadow:1px -1px 2px rgba(0,0,0,.2)}
+.rb-papier>b{font-family:"Cinzel","EB Garamond",serif!important;color:var(--pa-encre)!important;font-size:16px!important}
+.rb-papier .r-xp{color:var(--pa-doux)!important;font-family:"EB Garamond",serif;font-size:14px}
+.rb-papier .r-bts button{background:rgba(255,250,235,.5);border-color:var(--rou-a)}
+html.nuit .rb-papier,html[data-esth="Cn"] .rb-papier{outline:1px solid rgba(232,190,110,.35);outline-offset:-4px}
+html.nuit .rb-papier .r-bts button,html[data-esth="Cn"] .rb-papier .r-bts button{background:rgba(0,0,0,.25);color:var(--pa-encre)}
+.r-bulle-camp .rb-papier{box-shadow:inset 0 0 14px var(--pa-bord),inset 0 0 0 2px #c8961f}
+html body .r-bulle-camp::before,html body .r-bulle-camp::after{background:linear-gradient(#6b4a0e,#c8961f 25%,#fff0b8 50%,#e0b440 72%,#6b4a0e)}
+
+/* --- la fenêtre « Nouvelle quête » : un grand parchemin qui se déroule, des lignes pour écrire --- */
+html.saisie-ouverte .carte.saisie{overflow:visible!important;max-height:none!important;border:0!important;border-radius:0!important;padding:22px 16px 20px!important;color:var(--pa-encre);
+  background:radial-gradient(ellipse at 15% 20%,var(--pa-tache),transparent 40%),radial-gradient(ellipse at 80% 85%,var(--pa-tache),transparent 45%),radial-gradient(circle at 55% 45%,var(--pa-tache),transparent 30%),linear-gradient(170deg,var(--pa-clair),var(--pa-fonce))!important;
+  box-shadow:inset 0 0 22px var(--pa-bord),0 10px 30px rgba(0,0,0,.5)!important;animation:paDeroule .5s cubic-bezier(.2,.8,.3,1) both}
+html.saisie-ouverte .carte.saisie::before,html.saisie-ouverte .carte.saisie::after{content:""!important;display:block!important;position:absolute;left:-10px;right:-10px;height:20px;margin:0!important;border-radius:10px;z-index:2;
+  background:linear-gradient(var(--rou-a),var(--rou-b) 22%,var(--rou-c) 48%,var(--rou-d) 70%,var(--rou-a))!important;box-shadow:0 3px 4px rgba(0,0,0,.35)}
+html.saisie-ouverte .carte.saisie::before{top:-10px}
+html.saisie-ouverte .carte.saisie::after{top:calc(100% - 10px);animation:paRouleau .5s cubic-bezier(.2,.8,.3,1) both}
+html.saisie-ouverte .carte.saisie textarea{background:repeating-linear-gradient(transparent 0 calc(1.5em - 1px),var(--pa-ligne) calc(1.5em - 1px) 1.5em)!important;background-attachment:local!important;
+  border:0!important;border-left:2px solid rgba(142,28,20,.35)!important;border-radius:0!important;box-shadow:none!important;outline:0;
+  font-family:"EB Garamond",serif!important;font-size:20px!important;line-height:1.5em!important;color:var(--pa-encre)!important;padding:2px 10px!important;min-height:min(9em,30vh)}
+html.saisie-ouverte .carte.saisie textarea::placeholder{color:var(--pa-doux);font-style:italic}
+html.saisie-ouverte .carte.saisie select{background:rgba(255,250,235,.45)!important;border:1px solid var(--rou-b)!important;color:var(--pa-encre)!important}
+html.saisie-ouverte.nuit .carte.saisie select,html[data-esth="Cn"].saisie-ouverte .carte.saisie select{background:rgba(0,0,0,.3)!important}
+html.saisie-ouverte .carte.saisie .micro{background:none!important;border:1px solid var(--rou-b)!important;border-radius:50%!important;width:46px;height:46px;padding:0!important}
+/* « Inscrire » : un sceau de cire rouge */
+html.saisie-ouverte .carte.saisie select{min-width:0;flex:1}
+html.saisie-ouverte .carte.saisie #nv-ok{font-size:15px;background:radial-gradient(circle at 35% 30%,#d0453a,#9c1f16 55%,#6e120c)!important;color:#fbe9c4!important;border:2px solid #5a0e09!important;border-radius:999px!important;
+  font-family:"Cinzel",serif;letter-spacing:.05em;padding:10px 14px!important;box-shadow:0 2px 0 #4a0a06,inset 0 1px 2px rgba(255,255,255,.3)}
+html.saisie-ouverte .carte.saisie .aide{color:var(--pa-doux)!important;font-family:"EB Garamond",serif;font-size:15px;font-style:italic}
+@media (prefers-reduced-motion:reduce){html body .r-bulle,html body .r-bulle::after,html.saisie-ouverte .carte.saisie,html.saisie-ouverte .carte.saisie::after{animation:none}}
+
+/* ===== Rituels (25/11) : parchemin roulé en tête et en fin des quêtes du jour ===== */
+.rituel-rouleau{display:flex;align-items:center;gap:10px;width:100%;margin:8px 0 12px;padding:12px 14px;text-align:left;cursor:pointer;position:relative;color:var(--pa-encre);border:0!important;border-radius:0!important;
+  background:radial-gradient(ellipse at 20% 30%,var(--pa-tache),transparent 50%),linear-gradient(170deg,var(--pa-clair),var(--pa-fonce))!important;box-shadow:inset 0 0 12px var(--pa-bord),0 3px 6px rgba(40,20,5,.3)}
+.rituel-rouleau::before,.rituel-rouleau::after{content:"";position:absolute;top:-4px;bottom:-4px;width:16px;border-radius:8px;
+  background:linear-gradient(90deg,var(--rou-a),var(--rou-b) 22%,var(--rou-c) 48%,var(--rou-d) 70%,var(--rou-a));box-shadow:0 2px 3px rgba(0,0,0,.3)}
+.rituel-rouleau::before{left:-8px}.rituel-rouleau::after{right:-8px}
+.rituel-rouleau .rr-ico{font-size:28px;line-height:1}
+.rituel-rouleau .rr-t{flex:1;min-width:0;display:block}
+.rituel-rouleau b{display:block;font:700 17px "Cinzel",serif;color:var(--pa-encre)}
+.rituel-rouleau small{display:block;font:italic 15px "EB Garamond",serif;color:var(--pa-doux)}
+.rr-jauge{display:block;height:6px;margin-top:6px;background:rgba(0,0,0,.15);border-radius:3px;overflow:hidden}
+.rr-jauge i{display:block;height:100%;background:linear-gradient(90deg,#c8961f,#f2cf63)}
+.rituel-rouleau.fini{opacity:.75;padding:8px 14px}
+.rituel-rouleau.fini b{font-size:15px}
+/* la quête principale du jour : sceau d'or */
+.qj.qp-jour{box-shadow:inset 4px 0 0 #c8961f;background:linear-gradient(90deg,rgba(242,207,99,.22),transparent 70%)}
+.qj.qp-jour .qj-t b::before{content:"⚜ ";color:#b8860b}
+
+/* l'écran du rituel : tout le Journal, jusqu'à ce que tout soit coché */
+html.rituel-ouvert,html.rituel-ouvert body{overflow:hidden}
+html.rituel-ouvert #fab-quete{display:none}
+.rituel-ecran{position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;padding:28px 14px calc(28px + env(safe-area-inset-bottom));background:rgba(24,14,5,.92);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.rituel-parchemin{position:relative;width:100%;max-width:520px;max-height:100%;overflow-y:auto;padding:26px 18px 18px;color:var(--pa-encre);
+  background:radial-gradient(ellipse at 15% 20%,var(--pa-tache),transparent 40%),radial-gradient(ellipse at 80% 85%,var(--pa-tache),transparent 45%),linear-gradient(170deg,var(--pa-clair),var(--pa-fonce));
+  box-shadow:inset 0 0 22px var(--pa-bord),0 10px 30px rgba(0,0,0,.5);animation:paDeroule .55s cubic-bezier(.2,.8,.3,1) both;border-top:12px solid var(--rou-b);border-bottom:12px solid var(--rou-b);border-image:linear-gradient(var(--rou-a),var(--rou-c) 50%,var(--rou-a)) 12 0}
+.rp-tete{display:flex;align-items:baseline;gap:8px;margin-bottom:12px;border-bottom:1px solid var(--pa-ligne);padding-bottom:8px}
+.rp-tete span{font-size:26px}.rp-tete b{flex:1;font:700 20px "Cinzel",serif}.rp-tete small{font:600 15px "EB Garamond",serif;color:var(--pa-doux)}
+.rp-mission{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px dashed var(--pa-ligne)}
+.rituel-ecran .rp-case{flex:none;width:36px;height:36px;border-radius:50%!important;border:2px solid var(--rou-a)!important;background:rgba(255,250,235,.4)!important;font:700 18px sans-serif;color:#fff;padding:0;display:grid;place-items:center}
+.rituel-ecran .rp-mission.faite .rp-case{background:radial-gradient(circle at 35% 30%,#d0453a,#9c1f16 55%,#6e120c)!important;border-color:#5a0e09!important}
+.rp-nom{flex:1;font:18px/1.3 "EB Garamond",serif}
+.rp-mission.faite .rp-nom{text-decoration:line-through;text-decoration-color:rgba(142,28,20,.6);color:var(--pa-doux)}
+.rp-mission em{font:italic 14px "EB Garamond",serif;color:var(--pa-doux);white-space:nowrap}
+.rp-aide{margin:2px 0 8px 46px;font:italic 15px "EB Garamond",serif;color:var(--pa-doux)}
+.rp-choix{display:flex;flex-direction:column;gap:6px;font-style:normal}
+.rp-choix button{text-align:left;border:1px solid var(--rou-b)!important;background:rgba(255,250,235,.45)!important;color:var(--pa-encre);border-radius:6px!important;padding:8px 10px}
+.rp-choix b{display:block;font:600 15px "Atkinson Hyperlegible",sans-serif}.rp-choix small{font:italic 13px "EB Garamond",serif;color:var(--pa-doux)}
+.rp-quetes{font-style:normal}
+.rp-q{display:flex;align-items:center;gap:6px;padding:5px 0}.rp-q span{flex:1;font:14px "Atkinson Hyperlegible",sans-serif;color:var(--pa-encre)}
+.rp-q button{flex:none;border:1px solid var(--rou-a)!important;background:rgba(255,250,235,.45)!important;color:var(--pa-encre);border-radius:999px!important;padding:5px 10px;font:700 13px "Atkinson Hyperlegible",sans-serif}
+html.nuit :is(.rp-choix button,.rp-q button,.rp-case),html[data-esth="Cn"] :is(.rp-choix button,.rp-q button,.rp-case){background:rgba(0,0,0,.25)!important}
+.rp-bonus{margin:14px 0 6px;text-align:center;font:italic 15px "EB Garamond",serif;color:var(--pa-doux)}
+.rp-pied{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.rp-fermer{background:radial-gradient(circle at 35% 30%,#d0453a,#9c1f16 55%,#6e120c)!important;color:#fbe9c4!important;border:2px solid #5a0e09!important;border-radius:999px!important;padding:10px 16px;font:700 15px "Cinzel",serif}
+.rp-plustard{border:1px dashed var(--pa-doux)!important;background:none!important;color:var(--pa-doux);border-radius:999px!important;padding:8px 14px;font:600 14px "Atkinson Hyperlegible",sans-serif;-webkit-user-select:none;user-select:none;position:relative;overflow:hidden}
+.rp-plustard small{font-weight:400}
+.rp-plustard.appui::after{content:"";position:absolute;left:0;bottom:0;height:3px;background:#8e1c14;animation:paAppui .8s linear forwards}
+@keyframes paAppui{from{width:0}to{width:100%}}
+.rp-reglages{font:600 13px "Atkinson Hyperlegible",sans-serif;color:var(--pa-doux);text-decoration:none}
+
+.ra-ambiances{flex-wrap:wrap}.ra-ambiances span{flex-basis:100%}
+
+/* Galerie des objets (26/11) */
+.pix{image-rendering:pixelated;display:block;margin:0 auto}
+.arm-case .pix{margin:2px auto 3px}
+.arm-case.portee{background:radial-gradient(circle,#4a3418 0%,#1a110a 75%);box-shadow:0 0 12px rgba(243,213,139,.55) inset}
+.arm-case.portee small{font-size:10px;line-height:1.15;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.galerie{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+@media(min-width:600px){.galerie{grid-template-columns:repeat(5,1fr)}}
+.gal-objet{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;background:linear-gradient(#3b2a18,#241810);border:2px solid #6b4a2a;border-radius:6px;color:#f3e3bd;cursor:pointer;min-width:0}
+.gal-objet .pix{filter:drop-shadow(0 2px 0 rgba(0,0,0,.45))}
+.gal-objet b{font-family:"Cinzel",serif;font-size:12px;line-height:1.2;text-align:center;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.gal-objet small{font-size:10px;color:#b99a6b}
+.gal-objet.portee{border-color:var(--or,#d9a52e);box-shadow:0 0 10px rgba(243,213,139,.45)}
+.gal-objet.portee::after{content:'porté';font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#1a110a;background:var(--or,#d9a52e);padding:1px 6px;border-radius:8px}
+.gal-objet.choisi{outline:3px solid #f3d58b;outline-offset:1px}
+.gal-zoom{display:flex;gap:12px;align-items:center;padding:14px;margin:10px 0;background:var(--pa-fond,#f1e2bd);color:var(--pa-encre,#3b2614);border:2px solid #8a6a3a;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:paDeroule .35s ease-out}
+.gal-zoom-ill{flex:none;padding:8px;background:radial-gradient(circle,#fff6d8,#e6cf9a);border-radius:50%;border:2px solid #b48a4a}
+.gal-zoom-txt{min-width:0}.gal-zoom-txt small{display:block;font-size:12px;opacity:.75}.gal-zoom-txt b{display:block;font-family:"Cinzel",serif;font-size:18px;line-height:1.2}
+.gal-zoom-txt p{margin:6px 0;font-size:14px}.gal-zoom-txt em{display:block;font-size:12px;opacity:.7}
+.gal-zoom .actions{margin-top:8px}
+:root[data-style="pixel"] .gal-objet,:root[data-style="pixel"] .gal-zoom{border-radius:0;border-width:3px;border-color:#3b2a18;box-shadow:4px 4px 0 rgba(40,25,10,.35)}
+.gal-zoom,.gal-zoom *{color:#3b2614!important;text-shadow:none!important}
+.gal-zoom{flex-direction:column;text-align:center}
+.gal-zoom .actions{justify-content:center}
+.gal-zoom button.vert{color:#fff!important}
 </style>
 </head>
 <body class="v-jour">
@@ -1045,6 +1177,7 @@ function charger() {
     .appDonnees(CLE);
 }
 function afficher() {
+  filtrerEnCours_(); setTimeout(feterCampagne_, 1500); // 25/11 : une quête validée ne revient pas ; 26/11 : fanfare de campagne
   $('maj').textContent = 'à ' + D.maj;
   $('n-taches').textContent = D.taches.filter(function (t) { return !t.aVenir; }).length || '';
   $('n-sms').textContent = D.sms.filter(function (s) { return s.fenetre !== false && (s.statut === 'À valider' || s.statut === 'Erreur'); }).length || '';
@@ -1179,11 +1312,11 @@ function iconeChap_(ch) { var l = (typeof LIEUX !== 'undefined' && LIEUX[String(
 function elementsQJ_() {
   var A = D.aventure, iso = isoJ(new Date()), out = [];
   ((A && A.quetes) || []).filter(function (q) { return q.jour === iso && q.type !== 'campus'; }).forEach(function (q) {
-    out.push({ html: carteQueteJour(q), cat: CHAP_EVT[q.type] || 'Vie perso', heure: q.debut || '99:99', fait: q.fait,
+    out.push({ id: 'c' + q.cle, html: carteQueteJour(q), cat: CHAP_EVT[q.type] || 'Vie perso', heure: q.debut || '99:99', fait: q.fait,
       imp: q.fait ? 0 : q.gemmes ? 70 : q.poche ? 60 : 20, gain: q.gemmes ? q.gemmes / 10 : (q.montant || 0) });
   });
   D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui); }).forEach(function (t) {
-    out.push({ html: '<div class="qj tache-jour" data-n="' + t.n + '"><span class="qj-h">' + (t.retard ? '⚠' : '📜') + '</span><span class="qj-t"><b>' + esc(t.tache) + '</b><small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : ' · aujourd’hui') + '</small></span><button class="coche" aria-label="Fait"></button></div>',
+    out.push({ id: 'n' + t.n, html: '<div class="qj tache-jour" data-n="' + t.n + '"><span class="qj-h">' + (t.retard ? '⚠' : '📜') + '</span><span class="qj-t"><b>' + esc(t.tache) + '</b><small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : ' · aujourd’hui') + '</small></span><button class="coche" aria-label="Fait"></button></div>',
       cat: t.section, heure: '99:98', fait: false, imp: t.retard ? 100 : 80, gain: t.xp || 10, urgent: true });
   });
   return out;
@@ -1191,18 +1324,20 @@ function elementsQJ_() {
 function blocQuetesUnifie() {
   var tous = elementsQJ_(), A = D.aventure, iso = isoJ(new Date());
   var att = ((A && A.quetes) || []).filter(function (q) { return q.jour < iso && !q.fait && q.type !== 'campus'; });
-  if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + grille_('<div class="aide">Rien de prévu aujourd’hui.</div>') + '</div>';
+  if (!tous.length && !att.length) return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + grille_(rouleauRituel_('Aube') + '<div class="aide">Rien de prévu aujourd’hui.</div>' + rouleauRituel_('Crépuscule')) + '</div>';
   var cats = []; tous.forEach(function (x) { if (cats.indexOf(x.cat) === -1) cats.push(x.cat); });
   if (QJ_CAT && cats.indexOf(QJ_CAT) === -1) QJ_CAT = '';
   var liste = tous.filter(function (x) { return !QJ_CAT || x.cat === QJ_CAT; });
   liste.sort(QJ_TRI === 'importance' ? function (a, b) { return b.imp - a.imp || (a.heure < b.heure ? -1 : 1); }
     : QJ_TRI === 'gain' ? function (a, b) { return (a.fait - b.fait) || (b.gain - a.gain) || (a.heure < b.heure ? -1 : 1); }
     : function (a, b) { return a.heure < b.heure ? -1 : a.heure > b.heure ? 1 : 0; });
+  liste = ordonnerQP_(liste); // la quête principale du jour (choisie au rituel de l'aube) passe en tête
   var tot = tous.filter(function (x) { return !x.fait && !x.urgent; }).reduce(function (s, x) { return s + (x.gain || 0); }, 0);
-  var html = '<div class="qj-barre"><span class="qj-l">Trier</span>' + [['heure', '⏰ Heure'], ['importance', '❗ Importance'], ['gain', '✨ Gain']].map(function (o) { return '<button data-tri="' + o[0] + '" class="' + (QJ_TRI === o[0] ? 'actif' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>'
+  var html = rouleauRituel_('Aube') + '<div class="qj-barre"><span class="qj-l">Trier</span>' + [['heure', '⏰ Heure'], ['importance', '❗ Importance'], ['gain', '✨ Gain']].map(function (o) { return '<button data-tri="' + o[0] + '" class="' + (QJ_TRI === o[0] ? 'actif' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>'
     + (cats.length > 1 ? '<div class="qj-barre cats"><button data-cat="" class="' + (!QJ_CAT ? 'actif' : '') + '">Tout · ' + tous.length + '</button>' + cats.map(function (c) { var n = tous.filter(function (x) { return x.cat === c; }).length; return '<button data-cat="' + esc(c) + '" class="' + (QJ_CAT === c ? 'actif' : '') + '">' + iconeChap_(c) + ' ' + esc(nomCourt_(c)) + ' · ' + n + '</button>'; }).join('') + '</div>' : '')
     + liste.map(function (x) { return x.html; }).join('');
   if (att.length) html += '<div class="moment">À valider (jours précédents)</div>' + att.map(function (q) { return carteQueteJour(q).replace('<span class="qj-h">', '<span class="qj-h"><i>' + q.jour.slice(8) + '/' + q.jour.slice(5, 7) + '</i>'); }).join('');
+  html += rouleauRituel_('Crépuscule');
   return '<div class="carte quetes-jour"><div class="ch-titre">⚔️ Quêtes du jour</div>' + grille_(html) + '</div>';
 }
 function brancherQuetesUnifie() {
@@ -1211,6 +1346,8 @@ function brancherQuetesUnifie() {
   z.querySelectorAll('[data-cat]').forEach(function (b) { b.onclick = function () { QJ_CAT = b.dataset.cat; try { localStorage.setItem('qj-cat', QJ_CAT); } catch (e) {} z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); }; });
   try { brancherQuetesJour(z); } catch (e) {}
   brancherRail_(z);
+  z.querySelectorAll('[data-rituel]').forEach(function (b) { b.onclick = function () { ouvrirRituel_(b.dataset.rituel); }; });
+  reprendreRituel_();
   z.querySelectorAll('.qj').forEach(balayerQJ_);
   z.querySelectorAll('.tache-jour .coche').forEach(function (c) {
     c.onclick = function () {
@@ -1233,7 +1370,7 @@ function grille_(corps) {
 function rail_() {
   var A = D.aventure; if (!A || !A.habitudes) return '';
   var iso = isoJ(new Date()), pf = A.paliersFaits || {};
-  var hab = A.habitudes.filter(function (h) { return h.moment !== 'Défi' && estQuotidienne(h); }), def = A.habitudes.filter(function (h) { return h.moment === 'Défi' && enCampagne_(h, iso); });
+  var hab = A.habitudes.filter(function (h) { return h.moment !== 'Défi' && h.moment !== 'Aube' && h.moment !== 'Crépuscule' && estQuotidienne(h); }), def = A.habitudes.filter(function (h) { return h.moment === 'Défi' && enCampagne_(h, iso); });
   if (!hab.length && !def.length) return '';
   var ico = function (h, cls) {
     var fait = !!faitLe_(h, iso), p = fait && pf[h.nom] && pf[h.nom][iso];
@@ -1279,14 +1416,18 @@ function bulle_(iso) {
   } else info = '+' + (A.xpDiff[h.diff] || 10) + ' XP' + (h.paliers && h.paliers.length ? ' pour 1 h' : '') + ' · −' + (A.penalite || 20) + ' XP si oubliée';
   var hier = hierIso_(), hierFait = (A.coches[h.nom] || []).indexOf(hier) !== -1;
   var btHier = (!defi && !hebdo && new Date().getHours() < 12 && !hierFait) ? '<button data-palier="' + (h.paliers && h.paliers.length ? esc(h.paliers.indexOf('1 h') !== -1 ? '1 h' : h.paliers[0]) : '') + '" data-jour="' + hier + '" class="r-hier">✓ Fait hier</button>' : '';
-  return '<div class="r-bulle' + (defi ? ' r-bulle-camp' : '') + '"><b>' + icone_(h) + ' ' + esc(h.nom.replace(/^Défi\s*:\s*/, '')) + '</b><span class="r-xp">' + info + '</span>'
-    + '<div class="r-bts">' + bts + (fait ? '<button data-annule="1" data-jour="' + leJour + '" class="r-annule">Annuler</button>' : '') + btHier + '</div></div>';
+  return '<div class="r-bulle' + (defi ? ' r-bulle-camp' : '') + '"><div class="rb-papier"><b>' + icone_(h) + ' ' + esc(h.nom.replace(/^Défi\s*:\s*/, '')) + '</b><span class="r-xp">' + info + '</span>'
+    + '<div class="r-bts">' + bts + (fait ? '<button data-annule="1" data-jour="' + leJour + '" class="r-annule">Annuler</button>' : '') + btHier + '</div></div></div>';
 }
 function brancherRail_(z) {
   var re = function () { z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); };
   z.querySelectorAll('[data-hab]').forEach(function (b) { b.onclick = function () { HAB_SEL = HAB_SEL === b.dataset.hab ? '' : b.dataset.hab; re(); }; });
   var bu = z.querySelector('.r-bulle'), sel = z.querySelector('.r-ico.sel');
   if (bu && sel) bu.style.top = Math.max(0, sel.offsetTop - 4) + 'px';
+  // la bulle dépasse sous les dernières quêtes : on agrandit la zone pour qu'elle ne soit jamais coupée, puis on la fait défiler en vue
+  var gr = z.querySelector('.qj-grille'), ra = z.querySelector('.rail');
+  if (gr) gr.style.minHeight = bu && ra ? (ra.offsetTop + bu.offsetTop + bu.offsetHeight + 16) + 'px' : '';
+  if (bu && bu.scrollIntoView) bu.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   if (!bu) return;
   bu.querySelectorAll('button').forEach(function (b) {
     b.onclick = function () {
@@ -1325,7 +1466,8 @@ function ignorerQJ_(el) {
   var fin = function (r) { toast('🗑 ' + r.msg); setTimeout(function () { el.remove(); }, 250); };
   if (el.classList.contains('tache-jour')) {
     var n = +el.dataset.n, t = D.taches.filter(function (x) { return x.n === n; })[0]; if (!t) return;
-    appel('appIgnorerTache', [n, t.tache], function (r) { D.taches = D.taches.filter(function (x) { return x.n !== n; }); fin(r); }, function () { el.classList.remove('ignoree'); });
+    // quête du journal glissée à gauche : reportée à demain (25/11, comme l'annonce l'aide de la Nouvelle quête)
+    appel('appReporterTache', [n, t.tache], function (r) { D.taches = D.taches.filter(function (x) { return x.n !== n; }); toast('↷ ' + r.msg); setTimeout(function () { el.remove(); }, 250); }, function () { el.classList.remove('ignoree'); });
   } else {
     var cle = el.dataset.cle;
     appel('appIgnorerEvenement', [cle], function (r) { D.aventure.quetes = D.aventure.quetes.filter(function (q) { return q.cle !== cle; }); fin(r); }, function () { el.classList.remove('ignoree'); });
@@ -2522,6 +2664,9 @@ document.addEventListener('input', function (e) { if (e.target.id === 'rg') { va
   var f = document.createElement('button'); f.id = 'fab-quete'; f.setAttribute('aria-label', 'Inscrire une nouvelle quête');
   f.innerHTML = '<span class="fab-parchemin">📜</span><span class="fab-plus">+</span>';
   document.body.appendChild(f);
+  // voile opaque derrière la zone d'inscription : on ne touche plus ce qu'il y a dessous ; le toucher referme
+  var v = document.createElement('div'); v.id = 'voile-saisie'; document.body.appendChild(v);
+  v.onclick = function () { document.documentElement.classList.remove('saisie-ouverte'); };
   f.onclick = function () {
     var ouvert = !document.documentElement.classList.contains('saisie-ouverte');
     if (ouvert && VUE !== 'taches') allerVue('taches');
@@ -2547,7 +2692,9 @@ function ouvrirReglages_() {
     + '<div class="ra-ligne"><span>Taille du texte <small>' + Math.round(z * 100) + ' %</small></span><button data-pr="z-">A−</button><button data-pr="z+">A+</button></div>'
     + '<div class="ra-ligne"><span>Style</span><button data-pr="style-pixel" class="' + (px ? 'actif' : '') + '">Pixel 16 bits</button><button data-pr="style-parchemin" class="' + (px ? '' : 'actif') + '">Parchemin</button></div>'
     + '<div class="ra-ligne"><span>Mode nuit</span>' + [['auto', 'Auto (20 h–7 h)'], ['toujours', 'Toujours'], ['jamais', 'Jamais']].map(function (m) { return '<button data-pr="nuit-' + m[0] + '" class="' + (nuit === m[0] ? 'actif' : '') + '">' + m[1] + '</button>'; }).join('') + '</div>'
-    + '<div class="ra-ligne"><span>Musique</span><button data-pr="musique" class="' + (Musique.voulue() ? 'actif' : '') + '">' + (Musique.voulue() ? '🎵 Activée' : '🔇 Coupée') + '</button></div></div>';
+    + '<div class="ra-ligne"><span>Musique</span><button data-pr="musique" class="' + (Musique.voulue() ? 'actif' : '') + '">' + (Musique.voulue() ? '🎵 Activée' : '🔇 Coupée') + '</button></div>'
+    + '<div class="ra-ligne ra-ambiances"><span>Ambiance</span>' + Musique.AMBIANCES.map(function (m) { return '<button data-pr="amb-' + m[0] + '" class="' + (Musique.ambiance() === m[0] ? 'actif' : '') + '">' + m[1] + '</button>'; }).join('') + '</div>'
+    + '<div class="ra-ligne"><span>Journal débordé ?<small> range d’un coup les quêtes en retard</small></span><button data-pr="table-rase">🧹 Table rase</button></div></div>';
   document.body.appendChild(o);
   o.onclick = function (e) { if (e.target === o || e.target.closest('.pr-fermer')) o.remove(); };
   o.querySelectorAll('[data-pr]').forEach(function (b) {
@@ -2557,6 +2704,8 @@ function ouvrirReglages_() {
       else if (a.indexOf('style-') === 0) { var veut = a === 'style-pixel'; if ((document.documentElement.getAttribute('data-style') === 'pixel') !== veut && window.basculerStyle) basculerStyle(); }
       else if (a.indexOf('nuit-') === 0) { try { localStorage.setItem('journal-nuit', a.slice(5)); } catch (e) {} appliquerAffichage_(); }
       else if (a === 'musique') { Musique.basculer(); majBandeau(); }
+      else if (a === 'table-rase') { tableRase_(); return; }
+      else if (a.indexOf('amb-') === 0) { Musique.choisir(a.slice(4)); toast('🎵 ' + b.textContent); }
       o.remove(); ouvrirReglages_();
     };
   });
@@ -2887,7 +3036,7 @@ function ongletAventure(o) { if (o === 'salle') { ouvrirSalle(); return; } AV_ON
 function vueAventure() {
   var v = $('v-aventure'); if (!v) return;
   if (!D.aventure) { v.innerHTML = '<div class="vide">L’aventure se prépare… (installe la dernière version du script)</div>'; return; }
-  var A = D.aventure, O = [['habitudes', '✦ Habitudes'], ['defis', '📯 Défis'], ['boutique', '🪙 Boutique'], ['armurerie', '⚔️ Armurerie'], ['mois', '⚜ Quête du mois'], ['expedition', '🧭 Expédition'], ['salle', '🛡️ Salle d’arme']];
+  var A = D.aventure, O = [['habitudes', '✦ Habitudes'], ['defis', '📯 Primes'], ['boutique', '🪙 Boutique'], ['armurerie', '⚔️ Galerie'], ['mois', '⚜ Quête du mois'], ['expedition', '🧭 Expédition']];
   var html = '<div class="av-onglets">' + O.map(function (o) { return '<button class="' + (o[0] === AV_ONGLET ? 'actif' : '') + '" data-o="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
   if (AV_ONGLET === 'tresor') AV_ONGLET = 'habitudes';
   if (AV_ONGLET === 'habitudes') html += vueHabitudes(A);
@@ -2916,7 +3065,7 @@ function vueHabitudes(A) {
   var html = guide('gouvernante', 'Les petites routines font les grands chevaliers. Touche une case pour cocher ou décocher une habitude ce jour-là.')
     + '<div class="ch-grille trois"><div class="ch"><b>' + (total ? Math.round(100 * faites / total) : 0) + ' %</b><span>réussite</span></div><div class="ch"><b>' + A.habitudes.reduce(function (s, h) { return s + cocheesSemaine(h); }, 0) + '</b><span>cochées</span></div><div class="ch"><b>⭐ ' + parfaits + '</b><span>journées parfaites</span></div></div>'
     + '<div class="carte grille-hab"><div class="gh-ligne gh-tete"><span></span>' + jours.map(function (d) { return '<em class="' + (isoJ(d) === iso ? 'auj' : '') + '">' + 'LMMJVSD'.charAt((d.getDay() + 6) % 7) + '<br>' + d.getDate() + '</em>'; }).join('') + '</div>'
-    + A.habitudes.map(function (h) { return '<div class="gh-ligne"><span class="gh-nom">' + esc(h.icone) + ' ' + esc(h.nom) + '</span>' + jours.map(function (d) { var k = isoJ(d), f = (A.coches[h.nom] || []).indexOf(k) !== -1, futur = isoJ(d) > iso;
+    + A.habitudes.map(function (h) { return '<div class="gh-ligne"><span class="gh-nom">' + (h.moment === 'Défi' ? '🏆 Campagne : ' : esc(h.icone) + ' ') + esc(h.nom) + '</span>' + jours.map(function (d) { var k = isoJ(d), f = (A.coches[h.nom] || []).indexOf(k) !== -1, futur = isoJ(d) > iso;
       return '<span class="habitude gh-case' + (f ? ' faite' : '') + (futur ? ' futur' : '') + '" data-h="' + esc(h.nom) + '" data-iso="' + k + '">' + (futur ? '' : '<button class="hab-case">' + (f ? '✔' : '') + '</button>') + '</span>'; }).join('') + '</div>'; }).join('') + '</div>'
     + '<div class="carte"><div class="ch-titre">🔥 Séries en cours</div>' + A.habitudes.map(function (h) { return '<div class="serie"><span>' + esc(h.icone) + ' ' + esc(h.nom) + '</span><b>' + serie(h) + '</b></div>'; }).join('') + '</div>'
     + '<div class="carte"><div class="ch-titre">🛡️ Compétences</div><div class="competences">' + A.competences.map(function (c) { return '<div class="comp"><span class="comp-bl">' + c.blason + '</span><b>' + esc(c.nom) + '</b><small>niv. ' + c.niveau + ' · ' + c.xp + ' XP</small></div>'; }).join('') + '</div></div>'
@@ -2924,11 +3073,11 @@ function vueHabitudes(A) {
   return html;
 }
 function vueDefis(A) {
-  var html = guide('crieur', 'Oyez ! L’or ne se gagne qu’à la sueur du travail payé : cours, gardes de bassin, conseils, encaissements. Réclame ta prime quand le défi est rempli.');
-  if (!A.defis.length) html += '<div class="vide">Aucun défi lucratif aujourd’hui : pas de cours, de garde ni de rendez-vous à l’agenda.</div>';
+  var html = guide('crieur', 'Oyez ! L’or ne se gagne qu’à la sueur du travail payé : cours, gardes de bassin, conseils, encaissements. Dès qu’une prime est remplie, les pièces tombent d’elles-mêmes dans ta bourse.');
+  if (!A.defis.length) html += '<div class="vide">Aucune prime aujourd’hui : pas de cours, de garde ni de rendez-vous à l’agenda.</div>';
   A.defis.forEach(function (d) {
     html += '<div class="parchemin' + (d.reclame ? ' reclame' : '') + '"><div class="pa-tete"><b>' + esc(d.titre) + '</b><span>🪙 ' + d.or + '</span></div><div class="pa-corps">' + esc(d.texte)
-      + (d.reclame ? '<div class="pa-ok">✔ Prime réclamée</div>' : d.fait ? '<button class="pa-bt" data-defi="' + esc(d.k) + '">Réclamer mes pièces</button>' : '<div class="pa-attente">En cours…</div>') + '</div></div>';
+      + (d.reclame ? '<div class="pa-ok">✔ Pièces versées</div>' : d.fait ? '<div class="pa-ok">✔ Versement en cours…</div>' : '<div class="pa-attente">En cours…</div>') + '</div></div>';
   });
   var g = A.gagne || { detail: {}, n: {} }, d = g.detail || {};
   html += '<div class="carte"><div class="ch-titre">📜 D’où viennent tes pièces (depuis le 1er novembre)</div>'
@@ -3012,7 +3161,27 @@ var Musique = (function () {
     3: { g: [0, 2, 4, 5, 7, 9, 11], t: 146.8, d: .28, mel: 'square', tambour: true },          // ré majeur : fanfare de tournoi
     4: { g: [0, 2, 4, 6, 7, 9, 11], t: 130.8, d: .38, mel: 'sine', tambour: false },           // do lydien : chœur lumineux
     5: { g: [0, 1, 3, 5, 7, 8, 10], t: 73.4, d: .45, mel: 'sine', tambour: false },            // ré phrygien : arcanes
+    // ambiances au choix (25/11, réglages ⚙️)
+    taverne: { g: [0, 2, 4, 5, 7, 9, 10], t: 146.8, d: .19, mel: 'triangle', tambour: true },  // ré mixolydien : gigue de taverne
+    foret: { g: [0, 3, 5, 7, 10], t: 164.8, d: .42, mel: 'sine', tambour: false, arp: true },    // pentatonique : harpe et flûte en forêt
+    etoiles: { g: [0, 2, 4, 6, 7, 9, 11], t: 196, d: .58, mel: 'sine', tambour: false, arp: true, cloche: true }, // sol lydien : nuit étoilée de l'astronome
+    epopee: { g: [0, 2, 3, 5, 7, 8, 10], t: 98, d: .25, mel: 'square', tambour: true },        // sol éolien : chevauchée épique
+    veillee: { g: [0, 2, 4, 7, 9], t: 130.8, d: .5, mel: 'triangle', tambour: false, arp: true }, // pentatonique majeure : veillée au coin du feu
+    mer: { g: [0, 2, 3, 5, 7, 9, 10], t: 110, d: .44, mel: 'sine', tambour: false, arp: true, cloche: true } // la dorien : houle et cloche de bouée
   };
+  // 25/11 : en mode « Selon le lieu », chaque tableau de quête a sa musique ; Aujourd'hui suit le rang
+  var AMB_SCENE = { lac: 'mer', navire: 'mer', biblio: 'etoiles', tour: 'etoiles', foret: 'taverne', marche: 'taverne', colombages: 'taverne',
+    armes: 'epopee', fort: 'epopee', carrosse: 'foret', coffres: 'veillee', bureau: 'veillee', theatre: 'veillee' };
+  var AMB_VUE = { aventure: 'epopee', tableau: 'veillee', presages: 'etoiles', sms: 'veillee', resas: 'taverne' };
+  function ambianceDuLieu() {
+    var r = document.querySelector('.rituel-ecran'); if (r) return r.dataset.m === 'Aube' ? 'foret' : 'veillee';
+    var v = typeof VUE !== 'undefined' ? VUE : 'jour';
+    if (v === 'taches' && typeof OUVERT !== 'undefined' && OUVERT && OUVERT !== '__avenir') { try { var n = String(OUVERT).toLowerCase().trim(); return AMB_SCENE[(typeof SCENE_FIXE !== 'undefined' && SCENE_FIXE[n]) || sceneDe(OUVERT)] || null; } catch (x) { return null; } }
+    return AMB_VUE[v] || null; // Aujourd'hui et la carte des chapitres : selon le rang
+  }
+  var AMBIANCES = [['auto', '🗺️ Selon le lieu'], ['rang', '🎖️ Selon mon rang'], ['taverne', '🍺 Taverne'], ['foret', '🌲 Forêt'], ['etoiles', '🔭 Étoiles'], ['epopee', '⚔️ Épopée'], ['veillee', '🔥 Veillée'], ['mer', '🌊 Mer']];
+  function ambiance() { try { return localStorage.getItem('journal-ambiance') || 'auto'; } catch (x) { return 'auto'; } }
+  function choisir(a) { try { localStorage.setItem('journal-ambiance', a); } catch (x) {} if (!actif) demarrer(); }
   function voulue() { try { return localStorage.getItem('journal-musique') !== 'non'; } catch (x) { return true; } }
   function f(a, deg, oct) { var n = a.g.length, i = ((deg % n) + n) % n, o = Math.floor(deg / n) + (oct || 0); return a.t * Math.pow(2, (a.g[i] + 12 * o) / 12); }
   function note(type, fr, t, dur, vol, vib) {
@@ -3025,7 +3194,7 @@ var Musique = (function () {
     var s = audio.createBufferSource(), fl = audio.createBiquadFilter(), g = audio.createGain(); s.buffer = b; fl.type = 'lowpass'; fl.frequency.value = 900; g.gain.value = vol; s.connect(fl); fl.connect(g); g.connect(sortieM); s.start(t); }
   var deg = 0;
   function planifier() {
-    var a = AMB[niveauStyle(etatRenommee().n)] || AMB[1];
+    var c = ambiance(); if (c === 'auto') c = ambianceDuLieu(); var a = (c && AMB[c]) || AMB[niveauStyle(etatRenommee().n)] || AMB[1];
     while (temps < audio.currentTime + .6) {
       if (pas % 16 === 0) { accord = [0, 3, 4, 0, 5, 3, 4, 0][(pas / 16) % 8]; [0, 2, 4].forEach(function (k) { note('sine', f(a, accord + k, -1), temps, a.d * 16, .035); }); note('sine', f(a, accord, -2), temps, a.d * 16, .05); }
       if (pas % 2 === 0 || Math.random() < .25) {
@@ -3033,6 +3202,8 @@ var Musique = (function () {
         if (Math.random() < .8) note(a.mel, f(a, accord + deg, 1), temps, a.d * (pas % 4 === 0 ? 3 : 1.6), a.mel === 'square' ? .018 : .05, a.mel !== 'square');
       }
       if (a.tambour && pas % 4 === 0) tambour(temps, pas % 8 === 0 ? .18 : .09);
+      if (a.arp) note('sine', f(a, accord + [0, 2, 4, 7, 4, 2][pas % 6], 0), temps, a.d * 2.2, .028);
+      if (a.cloche && Math.random() < .07) note('sine', f(a, accord + [0, 2, 4][Math.floor(Math.random() * 3)], 2), temps, a.d * 6, .018);
       temps += a.d; pas++;
     }
   }
@@ -3047,7 +3218,7 @@ var Musique = (function () {
   function basculer() { var v = !voulue(); try { localStorage.setItem('journal-musique', v ? 'oui' : 'non'); } catch (x) {} if (v) demarrer(); else arreter(); toast(v ? 'Musique 🎵' : 'Musique coupée'); }
   document.addEventListener('pointerdown', function () { if (voulue()) demarrer(); }, { passive: true });
   document.addEventListener('visibilitychange', function () { if (document.hidden) arreter(); });
-  return { voulue: voulue, basculer: basculer, demarrer: demarrer, arreter: arreter };
+  return { voulue: voulue, basculer: basculer, demarrer: demarrer, arreter: arreter, ambiance: ambiance, lieu: ambianceDuLieu, choisir: choisir, AMBIANCES: AMBIANCES };
 })();
 // ---------- Guides : un personnage par lieu ----------
 var PAROLES = {
@@ -3393,6 +3564,479 @@ function blocCombatDuJour() {
   var jours = armeLire('arme-jours') || [], j = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'][new Date().getDay()];
   var c = jours.filter(function (x) { return x[0] === j; })[0]; if (!c) return '';
   return '<button class="carte arme-jour" onclick="ouvrirSalle()"><span>⚔ <b>Combat ' + esc(c[1]) + '</b> aujourd’hui</span><em>Entrer en salle d’arme ›</em></button>';
+}
+
+// =================== RITUELS (25/11) : les Rites de l'aube (en tête des quêtes du jour) et les Rituels du crépuscule (en fin) ===================
+// Missions = habitudes de l'onglet Habitudes avec le Moment « Aube » ou « Crépuscule ». Un parchemin roulé ; touché, il prend tout l'écran
+// du Journal et y reste tant que tout n'est pas coché (on peut changer d'application ; « Plus tard » par appui long pour une urgence).
+var RITUELS = { 'Aube': { nom: 'Les Rites de l’aube', ico: '🌅' }, 'Crépuscule': { nom: 'Les Rituels du crépuscule', ico: '🌙' } };
+var XP_RITUEL = 30;
+// ordre des missions voulu par Cairn (26/11), quel que soit l'ordre des lignes de l'onglet Habitudes
+var ORDRE_MISSIONS = { Aube: [/eau/i, /[ée]tirement|mobilit/i, /relire/i, /principale/i, /cgpi/i, /sac/i], 'Crépuscule': [/valider|reporter/i, /cours|[ée]cus/i, /sac|demain/i, /lire|journal|lecture/i] };
+function rangMission_(m, nom) { var l = ORDRE_MISSIONS[m] || []; for (var i = 0; i < l.length; i++) if (l[i].test(nom)) return i; return 99; }
+function missions_(m) { var A = D.aventure; return A && A.habitudes ? A.habitudes.filter(function (h) { return h.moment === m; }).sort(function (a, b) { return rangMission_(m, a.nom) - rangMission_(m, b.nom); }) : []; }
+function cocheeLe_(h, iso) { return ((D.aventure.coches || {})[h.nom] || []).indexOf(iso) !== -1; }
+function etatRituel_(m) { var l = missions_(m), iso = isoJ(new Date()), n = l.filter(function (h) { return cocheeLe_(h, iso); }).length; return { l: l, n: n, fini: l.length > 0 && n === l.length }; }
+function rouleauRituel_(m) {
+  var e = etatRituel_(m), R = RITUELS[m]; if (!e.l.length) return '';
+  return '<button class="rituel-rouleau' + (e.fini ? ' fini' : '') + '" data-rituel="' + m + '"><span class="rr-ico">' + R.ico + '</span><span class="rr-t"><b>' + R.nom + '</b><small>'
+    + (e.fini ? '✓ Accompli · +' + XP_RITUEL + ' XP' : e.n + ' / ' + e.l.length + ' missions · touche pour dérouler') + '</small><span class="rr-jauge"><i style="width:' + Math.round(100 * e.n / e.l.length) + '%"></i></span></span></button>';
+}
+
+// ---- la quête principale du jour : 3 candidates proposées ; à 10 h, sans choix, le Journal prend la première ----
+function cleQP_() { return 'journal-qp-' + isoJ(new Date()); }
+function candidatesQP_() {
+  var A = D.aventure || {}, iso = isoJ(new Date()), out = [], vus = {};
+  var pousse = function (id, titre, raison) { if (out.length < 3 && !vus[id]) { vus[id] = 1; out.push({ id: id, titre: titre, raison: raison }); } };
+  D.taches.filter(function (t) { return !t.aVenir && t.retard; }).forEach(function (t) { pousse('n' + t.n, t.tache, '⚠ la plus en retard'); });
+  (A.quetes || []).filter(function (q) { return q.jour === iso && !q.fait && q.type !== 'campus' && (q.gemmes || q.montant); })
+    .sort(function (a, b) { return (b.gemmes ? b.gemmes / 10 : b.montant || 0) - (a.gemmes ? a.gemmes / 10 : a.montant || 0); })
+    .forEach(function (q) { pousse('c' + q.cle, q.titre, '✨ celle qui rapporte le plus'); });
+  D.taches.filter(function (t) { return !t.aVenir && t.aujourdhui && !t.retard; }).forEach(function (t) { pousse('n' + t.n, t.tache, '❗ prévue aujourd’hui'); });
+  (A.quetes || []).filter(function (q) { return q.jour === iso && !q.fait && q.type !== 'campus'; }).forEach(function (q) { pousse('c' + q.cle, q.titre, '📅 à l’agenda'); });
+  return out;
+}
+function quetePrincipale_() {
+  var v = null; try { v = JSON.parse(localStorage.getItem(cleQP_()) || 'null'); } catch (e) {}
+  if (!v && new Date().getHours() >= 10) { var c = candidatesQP_()[0]; if (c) v = { id: c.id, titre: c.titre, auto: true }; }
+  return v;
+}
+// appelé par la liste des quêtes du jour : la quête principale passe en tête, avec le sceau d'or
+function ordonnerQP_(liste) {
+  var qp = quetePrincipale_(); if (!qp) return liste;
+  var i = -1; liste.forEach(function (x, k) { if (x.id === qp.id) i = k; }); if (i < 0) return liste;
+  var x = liste.splice(i, 1)[0]; x = { html: x.html.replace('class="qj', 'class="qj qp-jour'), id: x.id };
+  return [x].concat(liste);
+}
+
+// ---- l'écran du rituel ----
+function ouvrirRituel_(m) {
+  if (m === 'Aube') sacDejaFait_();
+  try { localStorage.setItem('journal-rituel', m + '|' + isoJ(new Date())); } catch (e) {}
+  var o = document.querySelector('.rituel-ecran');
+  if (!o) { o = document.createElement('div'); o.className = 'rituel-ecran'; document.body.appendChild(o); }
+  o.dataset.m = m; document.documentElement.classList.add('rituel-ouvert'); dessinerRituel_();
+}
+function fermerRituel_() {
+  try { localStorage.removeItem('journal-rituel'); } catch (e) {}
+  var o = document.querySelector('.rituel-ecran'); if (o) o.remove();
+  document.documentElement.classList.remove('rituel-ouvert'); rafraichirQJ_();
+}
+function rafraichirQJ_() { var z = $('qj-unifie'); if (z) { z.innerHTML = blocQuetesUnifie(); brancherQuetesUnifie(); } }
+function dessinerRituel_() {
+  var o = document.querySelector('.rituel-ecran'); if (!o) return;
+  var m = o.dataset.m, R = RITUELS[m], e = etatRituel_(m), iso = isoJ(new Date());
+  o.innerHTML = '<div class="rituel-parchemin"><div class="rp-tete"><span>' + R.ico + '</span><b>' + R.nom + '</b><small>' + e.n + ' / ' + e.l.length + '</small></div>'
+    + e.l.map(function (h) {
+      var f = cocheeLe_(h, iso);
+      return '<div class="rp-mission' + (f ? ' faite' : '') + '"><button class="rp-case" data-mission="' + esc(h.nom) + '" aria-label="Cocher">' + (f ? '✔' : '') + '</button><span class="rp-nom">' + icone_(h) + ' ' + esc(h.nom) + '</span></div>' + aideMission_(h, f);
+    }).join('')
+    + '<div class="rp-bonus">' + (e.fini ? '🏆 Rituel accompli : +' + XP_RITUEL + ' XP' : 'Le rituel compte en entier : complet +' + XP_RITUEL + ' XP · inachevé −' + (D.aventure.penalite || 20) + ' XP') + '</div>'
+    + '<div class="rp-pied">' + (e.fini ? '<button class="rp-fermer">✓ Refermer le parchemin</button>' : '<button class="rp-plustard">Plus tard <small>(appui long)</small></button>')
+    + '<a class="rp-reglages" href="https://docs.google.com/spreadsheets/d/1W1IEgZk99oiIsqKfnJ7xjw2IsVPXt0FuOc-6gYrT-hk/edit" target="_blank" rel="noopener">⚙️ Modifier les missions</a></div></div>';
+  brancherRituel_(o, m);
+}
+// sous certaines missions, de quoi l'accomplir sans quitter le parchemin
+function aideMission_(h, fait) {
+  if (/qu[eê]te principale/i.test(h.nom)) {
+    var qp = null; try { qp = JSON.parse(localStorage.getItem(cleQP_()) || 'null'); } catch (e) {}
+    if (qp) return '<div class="rp-aide">⚜ ' + esc(qp.titre) + '</div>';
+    var c = candidatesQP_(); if (!c.length) return '<div class="rp-aide">Aucune quête aujourd’hui : coche simplement.</div>';
+    return '<div class="rp-aide rp-choix">' + c.map(function (x) { return '<button data-qp="' + esc(x.id) + '" data-titre="' + esc(x.titre) + '"><b>' + esc(x.titre) + '</b><small>' + x.raison + '</small></button>'; }).join('') + '</div>';
+  }
+  if (/valider|reporter/i.test(h.nom) && !fait) {
+    var l = D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui); });
+    if (!l.length) return '<div class="rp-aide">Toutes les quêtes du jour sont réglées.</div>';
+    return '<div class="rp-aide rp-quetes">' + l.map(function (t) { return '<div class="rp-q" data-n="' + t.n + '"><span>' + esc(t.tache) + '</span><button data-q-fait="' + t.n + '">✓</button><button data-q-report="' + t.n + '">↷ Demain</button></div>'; }).join('') + '</div>';
+  }
+  return '';
+}
+function gainXP_(xp, msg) {
+  if (xp && D.xpJours && D.xpJours.length) { D.xpJours[D.xpJours.length - 1] += xp; majRenommee(true); }
+  if (xp > 0) toast(msg || '+' + xp + ' XP'); majBandeau();
+}
+function cocherMission_(nom, m, coche) {
+  var A = D.aventure, iso = isoJ(new Date()), c = A.coches[nom] = A.coches[nom] || [], i = c.indexOf(iso);
+  if (coche === undefined) coche = i === -1;
+  if (coche && i === -1) c.push(iso); else if (!coche && i !== -1) c.splice(i, 1); else return;
+  dessinerRituel_(); rafraichirQJ_();
+  appel('appCocherHabitude', [nom, iso, coche, ''], function () {
+    appel('appBonusRituel', [m, iso], function (b) { if (b && b.xp) { if (b.xp > 0) sonRituel_(m); gainXP_(b.xp, b.xp > 0 ? '🏆 Rituel accompli : +' + b.xp + ' XP' : ''); } });
+  });
+}
+function brancherRituel_(o, m) {
+  o.querySelectorAll('[data-mission]').forEach(function (b) { b.onclick = function () { cocherMission_(b.dataset.mission, m); }; });
+  o.querySelectorAll('[data-qp]').forEach(function (b) {
+    b.onclick = function () {
+      try { localStorage.setItem(cleQP_(), JSON.stringify({ id: b.dataset.qp, titre: b.dataset.titre })); } catch (e) {}
+      var h = missions_(m).filter(function (x) { return /qu[eê]te principale/i.test(x.nom); })[0];
+      if (h && !cocheeLe_(h, isoJ(new Date()))) cocherMission_(h.nom, m, true); else { dessinerRituel_(); rafraichirQJ_(); }
+      toast('⚜ Quête principale du jour choisie');
+    };
+  });
+  o.querySelectorAll('[data-q-fait]').forEach(function (b) {
+    b.onclick = function () {
+      var n = +b.dataset.qFait, t = D.taches.filter(function (x) { return x.n === n; })[0]; if (!t) return; b.disabled = true;
+      appel('appCocherTache', [n, t.tache], function (r) { D.taches = D.taches.filter(function (x) { return x.n !== n; }); gainXP_(r && r.xp); dessinerRituel_(); rafraichirQJ_(); }, function () { b.disabled = false; });
+    };
+  });
+  o.querySelectorAll('[data-q-report]').forEach(function (b) {
+    b.onclick = function () {
+      var n = +b.dataset.qReport, t = D.taches.filter(function (x) { return x.n === n; })[0]; if (!t) return; b.disabled = true;
+      appel('appReporterTache', [n, t.tache], function (r) { D.taches = D.taches.filter(function (x) { return x.n !== n; }); toast('↷ ' + r.msg); dessinerRituel_(); rafraichirQJ_(); }, function () { b.disabled = false; });
+    };
+  });
+  var f = o.querySelector('.rp-fermer'); if (f) f.onclick = fermerRituel_;
+  var p = o.querySelector('.rp-plustard');
+  if (p) {
+    var minuteur = null, stop = function () { clearTimeout(minuteur); p.classList.remove('appui'); };
+    var debut = function (e) { e.preventDefault(); p.classList.add('appui'); minuteur = setTimeout(function () { stop(); fermerRituel_(); toast('Le parchemin t’attend : tu le retrouveras dans les quêtes du jour'); }, 800); };
+    p.addEventListener('touchstart', debut); p.addEventListener('mousedown', debut);
+    ['touchend', 'touchcancel', 'mouseup', 'mouseleave'].forEach(function (ev) { p.addEventListener(ev, stop); });
+    p.onclick = function () { toast('Garde le doigt appuyé pour remettre à plus tard'); };
+  }
+}
+// « Préparer le sac » le matin : déjà fait si le sac a été préparé la veille au crépuscule
+function sacDejaFait_() {
+  var hier = new Date(); hier.setDate(hier.getDate() - 1); var ih = isoJ(hier), iso = isoJ(new Date());
+  var soir = missions_('Crépuscule').filter(function (h) { return /sac/i.test(h.nom); })[0], matin = missions_('Aube').filter(function (h) { return /sac/i.test(h.nom); })[0];
+  if (soir && matin && cocheeLe_(soir, ih) && !cocheeLe_(matin, iso)) cocherMission_(matin.nom, 'Aube', true);
+}
+// en rouvrant le Journal : on retombe sur le rituel en cours
+var RITUEL_REPRIS = false;
+function reprendreRituel_() {
+  if (RITUEL_REPRIS || document.querySelector('.rituel-ecran')) return; RITUEL_REPRIS = true;
+  var v = ''; try { v = localStorage.getItem('journal-rituel') || ''; } catch (e) {}
+  var p = v.split('|'); if (p[1] !== isoJ(new Date()) || !RITUELS[p[0]]) return;
+  if (!etatRituel_(p[0]).fini) ouvrirRituel_(p[0]);
+}
+
+// ---- petite fanfare quand un rituel est complet (25/11) ----
+function sonFanfare_() {
+  try {
+    var m = sortie(.9); if (!m) return; var t = audio.currentTime + .05;
+    function cuivre(fr, t0, dur, vol) {
+      [1, 1.005].forEach(function (k) {
+        var o = audio.createOscillator(), f = audio.createBiquadFilter(), g = audio.createGain();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(fr * k * .985, t0); o.frequency.linearRampToValueAtTime(fr * k, t0 + .04);
+        f.type = 'lowpass'; f.frequency.setValueAtTime(600, t0); f.frequency.linearRampToValueAtTime(2600, t0 + .06); f.frequency.exponentialRampToValueAtTime(1200, t0 + dur);
+        g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + .03); g.gain.setValueAtTime(vol, t0 + dur * .7); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+        o.connect(f); f.connect(g); g.connect(m); o.start(t0); o.stop(t0 + dur + .05);
+      });
+    }
+    function timbale(t0, vol) { var o = audio.createOscillator(), g = audio.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(110, t0); o.frequency.exponentialRampToValueAtTime(70, t0 + .3);
+      g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + .45); o.connect(g); g.connect(m); o.start(t0); o.stop(t0 + .5); }
+    // sol – do – mi – sol (triolet puis appel), accord tenu de do majeur
+    [[392, 0, .13], [392, .14, .13], [392, .28, .13], [523.3, .42, .32], [659.3, .76, .2], [784, .98, 1.1]].forEach(function (n) { cuivre(n[0], t + n[1], n[2], .09); });
+    cuivre(523.3, t + .98, 1.1, .06); cuivre(659.3, t + .98, 1.1, .05);
+    [0, .42, .9, .98, 1.02, 1.06].forEach(function (d, i) { timbale(t + d, i < 2 ? .35 : .25); });
+    if (navigator.vibrate) navigator.vibrate([30, 60, 30, 60, 80]);
+  } catch (e) {}
+}
+
+// ---- sons des rituels accomplis (26/11) : cloches au loin à l'aube, chouette hulotte au crépuscule ----
+function echoLointain_(m, retard, gain) { // écho de vallée pour éloigner le son
+  var d = audio.createDelay(2), g = audio.createGain(), f = audio.createBiquadFilter(), e = audio.createGain();
+  d.delayTime.value = retard; g.gain.value = gain; f.type = 'lowpass'; f.frequency.value = 1800; e.gain.value = 1;
+  e.connect(m); e.connect(d); d.connect(f); f.connect(g); g.connect(d); g.connect(m); return e;
+}
+function sonCloches_() { // angélus du matin (matines) : 3 × 3 coups du gros bourdon, puis la volée
+  try {
+    var m = sortie(1); if (!m) return; var t = audio.currentTime + .05, e = echoLointain_(m, .38, .4);
+    var lp = audio.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3200; lp.connect(e);
+    function coup(fr, t0, vol, long) {
+      // partiels d'une cloche d'église : bourdon, fondamentale, tierce mineure, quinte, nominale, douzième, double octave
+      [[.5, .9, 7], [1, .7, 5], [1.2, .55, 4], [1.5, .3, 3], [2, .5, 3], [2.5, .15, 2], [3, .18, 1.6], [4.2, .08, 1]].forEach(function (p) {
+        var o = audio.createOscillator(), g = audio.createGain(), d = p[2] * (long || 1); o.type = 'sine'; o.frequency.value = fr * p[0] * (1 + (Math.random() - .5) * .002);
+        g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(vol * p[1], t0 + .006); g.gain.exponentialRampToValueAtTime(.0001, t0 + d);
+        o.connect(g); g.connect(lp); o.start(t0); o.stop(t0 + d + .05);
+      });
+      var s = bruit(.05), f = audio.createBiquadFilter(), gs = audio.createGain(); f.type = 'bandpass'; f.frequency.value = fr * 6; f.Q.value = 2; // le battant frappe le bronze
+      gs.gain.setValueAtTime(vol * .6, t0); gs.gain.exponentialRampToValueAtTime(.0001, t0 + .05); s.connect(f); f.connect(gs); gs.connect(lp); s.start(t0);
+    }
+    var B = 207.7, tt = t; // sol dièse grave : le bourdon du clocher
+    [0, 1, 2].forEach(function (serie) { [0, 1, 2].forEach(function () { coup(B, tt, .13, .8); tt += 1.05; }); tt += .9; });
+    // la volée : deux cloches qui balancent
+    for (var i = 0; i < 6; i++) { coup(i % 2 ? B * 1.335 : B, tt, i % 2 ? .08 : .11); tt += .62; }
+    if (navigator.vibrate) navigator.vibrate([25, 1000, 25, 1000, 25]);
+  } catch (e) {}
+}
+function sonChouette_() {
+  try {
+    var m = sortie(.9); if (!m) return; var t = audio.currentTime + .05, e = echoLointain_(m, .45, .3);
+    function hou(t0, dur, f0, vol, trem) {
+      var o = audio.createOscillator(), g = audio.createGain(), lf, lg; o.type = 'sine';
+      o.frequency.setValueAtTime(f0 * .93, t0); o.frequency.linearRampToValueAtTime(f0, t0 + .06); o.frequency.linearRampToValueAtTime(f0 * .96, t0 + dur);
+      g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + .05); g.gain.setValueAtTime(vol, t0 + dur * .6); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+      if (trem) { lf = audio.createOscillator(); lg = audio.createGain(); lf.frequency.value = 9; lg.gain.value = f0 * .03; lf.connect(lg); lg.connect(o.frequency); lf.start(t0); lf.stop(t0 + dur); }
+      var s = bruit(dur), bp = audio.createBiquadFilter(), gs = audio.createGain(); bp.type = 'bandpass'; bp.frequency.value = f0; bp.Q.value = 6; // souffle
+      gs.gain.setValueAtTime(.0001, t0); gs.gain.exponentialRampToValueAtTime(vol * .5, t0 + .05); gs.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+      o.connect(g); g.connect(e); s.connect(bp); bp.connect(gs); gs.connect(e); o.start(t0); o.stop(t0 + dur + .05); s.start(t0);
+    }
+    // « hou… » puis « hou-hou-houuuuu » chevrotant : le chant du mâle de la hulotte
+    hou(t, .75, 420, .32); hou(t + 1.9, .14, 440, .2); hou(t + 2.15, .14, 445, .22); hou(t + 2.4, 1.1, 430, .3, true);
+    if (navigator.vibrate) navigator.vibrate([15, 80, 15]);
+  } catch (e) {}
+}
+function sonRituel_(m) { if (m === 'Aube') sonCloches_(); else sonChouette_(); }
+
+// ---- fanfare pour une campagne réussie (une fois, à l'ouverture qui suit la victoire) ----
+function feterCampagne_() {
+  try {
+    var A = D && D.aventure; if (!A || !A.trophees) return;
+    var lim = isoJ(new Date(Date.now() - 4 * 864e5)), c = A.trophees.filter(function (x) { return x.cat === 'Campagne' && x.le >= lim; })[0]; if (!c) return;
+    var k = 'journal-campagne-fetee', cle = c.nom + '|' + c.le; if (localStorage.getItem(k) === cle) return;
+    localStorage.setItem(k, cle);
+    var jouer = function () { sonFanfare_(); toast('📯 Campagne « ' + c.nom + ' » réussie ! ' + (c.recit.match(/\+\d+ XP/) || [''])[0]); };
+    if (audio && audio.state === 'running') jouer(); else document.addEventListener('pointerdown', function f() { document.removeEventListener('pointerdown', f); jouer(); });
+  } catch (e) {}
+}
+
+// =================== FIABILITÉ ET PETITS PLAISIRS (25/11) ===================
+// 1. Une quête validée ne revient plus. Cause : le Journal se recharge à chaque retour dans l'application ; si ce chargement
+//    était parti avant que le serveur ait fini d'écrire, l'ancienne liste revenait. On retient donc 3 minutes ce qui vient d'être
+//    validé, reporté ou retiré, et on le masque dans toute liste arrivée entre-temps (même la copie gardée au démarrage).
+var EN_COURS = {};
+try { EN_COURS = JSON.parse(localStorage.getItem('journal-en-cours') || '{}') || {}; } catch (e) {}
+function retenir_(id, oui) {
+  if (oui === false) delete EN_COURS[id]; else EN_COURS[id] = Date.now();
+  try { localStorage.setItem('journal-en-cours', JSON.stringify(EN_COURS)); } catch (e) {}
+}
+function filtrerEnCours_() {
+  if (!D) return; var t = Date.now();
+  Object.keys(EN_COURS).forEach(function (k) { if (t - EN_COURS[k] > 180000) delete EN_COURS[k]; });
+  if (D.taches) D.taches = D.taches.filter(function (x) { return !EN_COURS['n' + x.n]; });
+  if (D.aventure && D.aventure.quetes) {
+    D.aventure.quetes = D.aventure.quetes.filter(function (q) { return !EN_COURS['x' + q.cle]; });
+    D.aventure.quetes.forEach(function (q) { if (EN_COURS['c' + q.cle]) q.fait = true; });
+  }
+}
+(function () {
+  var origine = appel, marque = { appCocherTache: 'n', appIgnorerTache: 'n', appReporterTache: 'n', appAccomplirEvenement: 'c', appIgnorerEvenement: 'x' };
+  appel = function (fn, args, ok, ko) {
+    var m = marque[fn], id = m && args && args.length ? m + args[0] : '';
+    if (id) retenir_(id);
+    return origine(fn, args, ok, function (e) { if (id) retenir_(id, false); if (ko) ko(e); });
+  };
+})();
+
+// 2. Table rase : toutes les quêtes en retard rangées d'un coup (réglages ⚙️)
+function tableRase_() {
+  var n = D.taches.filter(function (t) { return t.retard && !t.aVenir && t.section !== 'Quête principale' && !t.parent; }).length;
+  if (!n) { toast('Aucune quête en retard : ton journal est à jour'); return; }
+  if (!confirm('Table rase : ranger les ' + n + ' quête' + (n > 1 ? 's' : '') + ' en retard ?\nElles seront notées « Abandonnée » (retrouvables dans la to-do list). La quête principale n’est pas touchée.')) return;
+  var o = document.querySelector('.voile-reglages'); if (o) o.remove();
+  appel('appTableRase', [], function (r) { toast('🧹 ' + r.msg); charger(); });
+}
+
+// 3. Le hamster dans sa roue de bois, pendant les chargements
+var HAMSTER_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">'
+  + '<path d="M60 60 L32 114 M60 60 L88 114" stroke="#6b4423" stroke-width="7" stroke-linecap="round"/><rect x="22" y="110" width="76" height="7" rx="3" fill="#5a3a1c"/>'
+  + '<g><animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="1.4s" repeatCount="indefinite"/>'
+  + '<circle cx="60" cy="60" r="50" fill="none" stroke="#8a5a2b" stroke-width="7"/><circle cx="60" cy="60" r="50" fill="none" stroke="#c08850" stroke-width="2"/>'
+  + '<circle cx="60" cy="60" r="44" fill="none" stroke="#a0703c" stroke-width="5" stroke-dasharray="3 6"/>'
+  + '<path d="M60 12 V108 M12 60 H108 M26 26 L94 94 M94 26 L26 94" stroke="#a0703c" stroke-width="2.5"/></g>'
+  + '<circle cx="60" cy="60" r="6" fill="#5a3a1c"/><circle cx="60" cy="60" r="2.5" fill="#d9a35b"/>'
+  + '<g><animateTransform attributeName="transform" type="translate" values="0 0;0 -2.5;0 0" dur="0.28s" repeatCount="indefinite"/>'
+  + '<path d="M38 92 q-6 -1 -8 -6" stroke="#c98b4a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+  + '<ellipse cx="54" cy="88" rx="18" ry="11" fill="#d99a52"/><ellipse cx="56" cy="92" rx="11" ry="5" fill="#f6dcae"/>'
+  + '<circle cx="71" cy="83" r="9" fill="#d99a52"/><circle cx="67" cy="75" r="3.6" fill="#e9b27a" stroke="#b87a3c" stroke-width="1"/>'
+  + '<circle cx="74" cy="81" r="1.8" fill="#1b1209"/><circle cx="79.5" cy="85" r="1.8" fill="#e58a9a"/><path d="M72 87 q3 2 6 0" stroke="#f6dcae" stroke-width="2" fill="none"/>'
+  + '<g stroke="#b87a3c" stroke-width="3.2" stroke-linecap="round">'
+  + '<path d="M46 97 l-4 5"><animateTransform attributeName="transform" type="rotate" values="-25 46 97;25 46 97;-25 46 97" dur="0.28s" repeatCount="indefinite"/></path>'
+  + '<path d="M64 96 l3 6"><animateTransform attributeName="transform" type="rotate" values="25 64 96;-25 64 96;25 64 96" dur="0.28s" repeatCount="indefinite"/></path></g></g></svg>';
+(function () {
+  var url = 'url("data:image/svg+xml,' + encodeURIComponent(HAMSTER_SVG) + '")';
+  var st = document.createElement('style');
+  st.textContent = '.chargement::before{content:"";display:block;width:110px;height:110px;margin:0 auto 10px;background:' + url + ' center/contain no-repeat}'
+    + '#rafraichir:disabled{font-size:0!important;opacity:1!important;background-image:' + url + '!important;background-position:center!important;background-size:34px!important;background-repeat:no-repeat!important}';
+  document.head.appendChild(st);
+  var c = document.querySelector('#v-jour .chargement'); if (c) c.textContent = 'Le hamster fait tourner la roue du Journal…';
+})();
+
+// =================== Le tableau du chapitre CGPI (25/11) : le cabinet d'astronomie ===================
+// Bureau médiéval cosy : lunette pointée vers une fenêtre ouverte sur la nuit étoilée et la forêt, sphère armillaire,
+// orrery du système solaire, carte du ciel, bibliothèque, plumes, encrier et chandelle.
+SCENES.biblio = (function () {
+  var s = '<defs>'
+    + '<linearGradient id="oMur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2210"/><stop offset="1" stop-color="#5a3519"/></linearGradient>'
+    + '<linearGradient id="oCiel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b26"/><stop offset=".6" stop-color="#1b2a63"/><stop offset="1" stop-color="#3a4f8f"/></linearGradient>'
+    + '<linearGradient id="oLait" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset=".5" stop-color="#c9c3ff" stop-opacity=".28"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>'
+    + '<linearGradient id="oLaiton" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b0"/><stop offset=".45" stop-color="#d9a441"/><stop offset="1" stop-color="#7a5212"/></linearGradient>'
+    + '<linearGradient id="oBois" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a2b"/><stop offset="1" stop-color="#4a2c12"/></linearGradient>'
+    + '<radialGradient id="oHalo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd977" stop-opacity=".75"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>'
+    + '<radialGradient id="oSoleil" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c8"/><stop offset=".5" stop-color="#ffcf4a"/><stop offset="1" stop-color="#ff9a2a" stop-opacity="0"/></radialGradient>'
+    + '<radialGradient id="oCarte" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#22336e"/><stop offset="1" stop-color="#0c1538"/></radialGradient>'
+    + '</defs>'
+    // mur, poutres, plancher, tapis
+    + '<rect width="360" height="90" fill="url(#oMur)"/>'
+    + '<g stroke="#2a170a" stroke-width="1" opacity=".5"><path d="M0 20H360M0 40H200M290 40H360M0 58H360"/></g>'
+    + '<rect y="0" width="360" height="5" fill="#2a170a"/><rect x="96" y="0" width="5" height="76" fill="#2a170a" opacity=".6"/><rect x="300" y="0" width="5" height="76" fill="#2a170a" opacity=".6"/>'
+    + '<rect y="76" width="360" height="14" fill="#3b2210"/><g stroke="#2a170a"><path d="M0 81H360M0 86H360"/></g>'
+    + '<path d="M150 90 L170 79 H300 L320 90Z" fill="#7a1f18"/><path d="M160 88 L174 81 H296 L310 88Z" fill="none" stroke="#d9a441" stroke-width=".8" stroke-dasharray="2 2"/>';
+  // bibliothèque (gauche)
+  s += '<rect x="6" y="6" width="86" height="70" fill="#2a170a"/><rect x="8" y="8" width="82" height="66" fill="#3b2412"/>';
+  var cols = ['#8e1c14', '#2f5a8a', '#2f6a3a', '#b07a1a', '#5a2a6a', '#a8241a', '#1f4a6a', '#6a4a1a', '#3a6a5a', '#7a2a2a'];
+  [28, 50, 72].forEach(function (y, r) {
+    var x = 10; for (var i = 0; x < 84; i++) { var w = 3 + ((i * 7 + r * 3) % 4), h = 14 + ((i * 5 + r) % 6), c = cols[(i + r * 3) % cols.length];
+      if (i % 7 === 5 && x + 20 < 88) { s += '<rect x="' + x + '" y="' + (y - h + 3) + '" width="' + h + '" height="3" fill="' + c + '"/>'; x += h + 1; continue; }
+      s += '<rect x="' + x + '" y="' + (y - h) + '" width="' + w + '" height="' + h + '" fill="' + c + '"/><rect x="' + x + '" y="' + (y - h + 3) + '" width="' + w + '" height="1" fill="#d9a441" opacity=".7"/>'; x += w + .6; if (x > 86) break; }
+    s += '<rect x="8" y="' + y + '" width="82" height="3" fill="#5a3519"/>';
+  });
+  s += '<g transform="translate(70 4)"><circle cx="6" cy="9" r="5" fill="#c9b48a"/><circle cx="6" cy="9" r="5" fill="none" stroke="#7a5212"/><path d="M3 8h1.5M7.5 8H9M4.5 11.5q1.5 1 3 0" stroke="#3b2a18" stroke-width=".8"/></g>';
+  // carte du ciel (planisphère) épinglée au mur
+  s += '<g transform="rotate(-3 140 26)"><rect x="112" y="8" width="58" height="40" fill="#e9d3a0"/><rect x="112" y="8" width="58" height="40" fill="none" stroke="#a07a3a"/>'
+    + '<circle cx="141" cy="28" r="16" fill="url(#oCarte)" stroke="#d9a441" stroke-width="1.2"/><circle cx="141" cy="28" r="12" fill="none" stroke="#d9a441" stroke-width=".4" stroke-dasharray="1 1.5"/>'
+    + '<g stroke="#f3d58b" stroke-width=".5" fill="none"><path d="M131 22l5 3 4-2 5 4 6-3M134 33l4-4 5 2 3 5"/></g>'
+    + '<g fill="#fff6c8"><circle cx="131" cy="22" r=".8"/><circle cx="136" cy="25" r=".7"/><circle cx="140" cy="23" r=".9"/><circle cx="145" cy="27" r=".7"/><circle cx="151" cy="24" r=".8"/><circle cx="134" cy="33" r=".7"/><circle cx="138" cy="29" r=".8"/><circle cx="143" cy="31" r=".6"/><circle cx="146" cy="36" r=".8"/></g>'
+    + '<path d="M115 13l4 1M163 43l4 1" stroke="#a07a3a" stroke-width=".6"/><circle cx="113" cy="9" r="1.4" fill="#8e1c14"/><circle cx="169" cy="9" r="1.4" fill="#8e1c14"/></g>';
+  // astrolabe suspendu
+  s += '<path d="M182 0V12" stroke="#7a5212"/><circle cx="182" cy="18" r="6.5" fill="none" stroke="url(#oLaiton)" stroke-width="1.6"/><circle cx="182" cy="18" r="3.5" fill="none" stroke="#d9a441" stroke-width=".6"/><path d="M176 18h12M182 12v12" stroke="#d9a441" stroke-width=".5"/>';
+  // fenêtre en arc ouverte sur la nuit, la forêt et les montagnes
+  s += '<path d="M206 66V34Q206 8 245 8Q284 8 284 34V66Z" fill="url(#oCiel)"/>'
+    + '<path d="M206 40 Q240 20 284 22 V30 Q240 28 206 50Z" fill="url(#oLait)"/>';
+  [[214, 30], [222, 18], [231, 34], [238, 14], [252, 26], [259, 15], [266, 36], [276, 28], [218, 44], [247, 40], [272, 44], [228, 24], [262, 48], [242, 30]].forEach(function (p, i) {
+    s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (i % 3 ? .6 : 1) + '" fill="#fff8d8"><animate attributeName="opacity" values="1;.3;1" dur="' + (2 + i % 4) + 's" repeatCount="indefinite"/></circle>';
+  });
+  s += '<circle cx="268" cy="19" r="5" fill="#f6f0d0"/><circle cx="270.5" cy="17.5" r="4.6" fill="#1b2a63"/>'
+    + '<path d="M206 58 L216 48 L224 54 L236 42 L248 52 L258 44 L272 54 L284 47 V66 H206Z" fill="#2a3560"/>'
+    + '<path d="M206 66 V60' + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (k) { var x = 206 + k * 7.8; return ' L' + (x + 2) + ' ' + (60 - (k % 2 ? 7 : 4)) + ' L' + (x + 4) + ' 61'; }).join('') + ' L284 60 V66Z" fill="#12261c"/>'
+    + '<path d="M206 66V34Q206 8 245 8Q284 8 284 34V66" fill="none" stroke="#6b4423" stroke-width="4"/><path d="M245 8V66M206 40H284" stroke="#6b4423" stroke-width="1.6"/>'
+    + '<path d="M284 22 L298 30 V70 L284 66Z" fill="#5a3519" stroke="#2a170a"/><path d="M286 30 L296 35 V64 L286 62Z" fill="#203060" opacity=".6"/>'
+    + '<rect x="202" y="64" width="86" height="5" fill="#6b4423"/>';
+  // lunette astronomique sur trépied, pointée vers la fenêtre
+  s += '<g stroke="#4a2c12" stroke-width="2" stroke-linecap="round"><path d="M240 62 L230 88M240 62 L252 88M240 62 L241 88"/></g>'
+    + '<g transform="rotate(-32 240 58)"><rect x="222" y="54" width="44" height="7" rx="2" fill="url(#oLaiton)" stroke="#5a3a06" stroke-width=".6"/><rect x="262" y="52.5" width="7" height="10" rx="1.5" fill="url(#oLaiton)" stroke="#5a3a06" stroke-width=".6"/><rect x="216" y="55.5" width="7" height="4" fill="#3b2a18"/><path d="M232 54v7M248 54v7" stroke="#7a5212"/></g>'
+    + '<circle cx="240" cy="60" r="2" fill="#d9a441"/>';
+  // bureau : chandelle, orrery, sphère armillaire, livre ouvert, encrier et plumes
+  s += '<rect x="102" y="62" width="96" height="5" fill="url(#oBois)"/><rect x="106" y="67" width="88" height="10" fill="#4a2c12"/><rect x="108" y="69" width="10" height="7" fill="#3b2210"/><rect x="182" y="69" width="10" height="7" fill="#3b2210"/><rect x="104" y="77" width="5" height="9" fill="#3b2210"/><rect x="191" y="77" width="5" height="9" fill="#3b2210"/>';
+  s += '<circle cx="110" cy="48" r="18" fill="url(#oHalo)"/><rect x="107" y="52" width="5" height="10" fill="#f6ecd4"/><path d="M109.5 52 q-2.5 -4 0 -8 q2.5 4 0 8z" fill="#ffcf4a"><animate attributeName="d" values="M109.5 52 q-2.5 -4 0 -8 q2.5 4 0 8z;M109.5 52 q-3 -4.5 .6 -9 q2 4.5 -.6 9z;M109.5 52 q-2.5 -4 0 -8 q2.5 4 0 8z" dur="1.2s" repeatCount="indefinite"/></path><rect x="105" y="61" width="9" height="2" fill="url(#oLaiton)"/>';
+  // orrery : le soleil au centre, les planètes sur leurs orbites (qui tournent doucement)
+  s += '<g transform="translate(132 46)"><circle r="7" fill="url(#oSoleil)"/><circle r="2.6" fill="#ffd24a"/>'
+    + '<ellipse rx="9" ry="3.2" fill="none" stroke="#d9a441" stroke-width=".5"/><ellipse rx="13" ry="4.6" fill="none" stroke="#d9a441" stroke-width=".5"/><ellipse rx="17" ry="6" fill="none" stroke="#d9a441" stroke-width=".5"/>'
+    + '<g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="9s" repeatCount="indefinite"/><circle cx="9" cy="0" r="1.2" fill="#c0c8d0"/></g>'
+    + '<g><animateTransform attributeName="transform" type="rotate" from="120" to="480" dur="15s" repeatCount="indefinite"/><circle cx="13" cy="0" r="1.6" fill="#4a90d0"/></g>'
+    + '<g><animateTransform attributeName="transform" type="rotate" from="250" to="610" dur="24s" repeatCount="indefinite"/><circle cx="17" cy="0" r="1.8" fill="#c8412c"/></g>'
+    + '<path d="M0 6V16" stroke="url(#oLaiton)" stroke-width="1.6"/><path d="M-6 16H6" stroke="url(#oLaiton)" stroke-width="2"/></g>';
+  // sphère armillaire
+  s += '<g transform="translate(160 50)"><circle r="8" fill="none" stroke="url(#oLaiton)" stroke-width="1.2"/><ellipse rx="8" ry="2.6" fill="none" stroke="#d9a441" stroke-width=".8"/><ellipse rx="2.6" ry="8" fill="none" stroke="#d9a441" stroke-width=".8"/><ellipse rx="8" ry="3" fill="none" stroke="#e9c46a" stroke-width=".7" transform="rotate(-24)"/><circle r="1.4" fill="#4a90d0"/><path d="M0 8V12M-4 12H4" stroke="url(#oLaiton)" stroke-width="1.6"/></g>';
+  // livre ouvert, encrier et plumes
+  s += '<path d="M168 61 Q174 57 181 60 Q188 57 194 61 V63 H168Z" fill="#f6ecd4" stroke="#a07a3a" stroke-width=".5"/><path d="M181 60V63" stroke="#a07a3a" stroke-width=".5"/><g stroke="#7a6448" stroke-width=".3"><path d="M171 60h8M171 61.3h7M184 60h7M184 61.3h6"/></g>'
+    + '<rect x="186" y="55" width="7" height="7" rx="1.5" fill="#1a1020"/><rect x="187.5" y="53.5" width="4" height="2" fill="#3b2a18"/>'
+    + '<path d="M189 54 Q192 40 202 30 Q196 44 190 54" fill="#f6ecd4" stroke="#c9b48a" stroke-width=".4"/><path d="M190.5 54 Q197 44 206 40 Q199 48 191.5 54" fill="#e8d8b8" stroke="#c9b48a" stroke-width=".4"/>';
+  // globe céleste sur pied (droite) et lierre qui entre par la fenêtre
+  s += '<g transform="translate(330 52)"><circle r="12" fill="url(#oCarte)" stroke="url(#oLaiton)" stroke-width="1.4"/><ellipse rx="12" ry="4" fill="none" stroke="#d9a441" stroke-width=".6"/><g fill="#fff6c8"><circle cx="-5" cy="-4" r=".8"/><circle cx="3" cy="-6" r=".7"/><circle cx="6" cy="2" r=".8"/><circle cx="-2" cy="5" r=".6"/></g><path d="M-5 -4l8 -2 3 8" stroke="#f3d58b" stroke-width=".4" fill="none"/><path d="M0 12V24M-7 24H7" stroke="url(#oBois)" stroke-width="2.4"/><path d="M-14 0A14 14 0 0 0 14 0" fill="none" stroke="url(#oLaiton)" stroke-width="1.2"/></g>'
+    + '<g fill="#2f6a3a"><path d="M284 12 q6 2 8 8 q-6 0 -8 -8z"/><path d="M290 22 q6 1 8 7 q-6 0 -8 -7z"/><path d="M293 34 q5 2 6 7 q-5 -1 -6 -7z"/></g><path d="M284 10 Q292 20 292 30 Q294 40 298 46" stroke="#24502c" fill="none"/>';
+  // chaleur de la chandelle sur toute la pièce
+  s += '<rect width="360" height="90" fill="url(#oHalo)" opacity=".12"/>';
+  return s;
+})();
+// ---------- Galerie des objets (26/11) : chaque objet de l'armurerie a sa petite illustration pixel ----------
+// Porter un objet (un par catégorie) : pur décor, mémorisé sur le téléphone (journal-equipe). Il s'affiche dans les cases autour du personnage.
+var PIX_PAL = { k: '#2a1a0e', b: '#6b4423', B: '#a0693a', y: '#d9a52e', Y: '#fff1a8', r: '#a8302a', R: '#e0584a', g: '#3d8b4a', G: '#8fd47a',
+  u: '#2f5fa8', U: '#86b8f2', w: '#efe2c0', W: '#ffffff', s: '#7d8591', S: '#d2d8e0', p: '#62399a', P: '#b892e8', o: '#d8742a', n: '#1c2440' };
+var PIX = {
+  livre: ['................', '..kkkkkkkkkkk...', '.kbrrrrrrrrrrk..', '.kbrRRRRRRRRrk..', '.kbrRyyyyyyRrk..', '.kbrRyYYYYyRrk..', '.kbrRyyyyyyRrk..', '.kbrRRRRRRRRrk..',
+    '.kbrrrrrrrrrrk..', '.kbrrrryyrrrrk..', '.kbrrrrrrrrrrk..', '.kbwwwwwwwwwwk..', '.kbkkkkkkkkkkk..', '.kk.............', '................', '................'],
+  vague: ['................', '...kkkkkkkkkk...', '..kUUUUUUUUUUk..', '..kUUUYYUUUUUk..', '..kUUYYYYUUUUk..', '..kUUUYYUUUUUk..', '..kUUUUUUUUUUk..', '..kUUUuuuUUUUk..',
+    '..kUUuUUUuUUuk..', '..kuuUUuuuUuuk..', '..kuuuuuuuuuuk..', '...kuuuuuuuuk...', '....kuuuuuuk....', '.....kuuuuk.....', '......kkkk......', '................'],
+  orbe: ['................', '.....kkkkkk.....', '....kPPPPWPk....', '...kPpPPPWWPk...', '...kPppPPPPPk...', '...kPpppPPPPk...', '...kPPppppPPk...', '....kPPPpPPk....',
+    '.....kkkkkk.....', '....kyyyyyyk....', '...kyYYYYYYyk...', '...kbbbbbbbbk...', '..kbBBBBBBBBbk..', '..kkkkkkkkkkkk..', '................', '................'],
+  pigeon: ['................', '................', '.........kkk....', '........kSSSk...', '........kSkSok..', '...kk...kSSSkoo.', '..kSSk.kSSSk....', '..kSSSkSSSSk....',
+    '...kSSSSSSSSk...', '...kSsSSSSSSSk..', '....ksSSSSSSk...', '.....kssssSk....', '......kkkkk.....', '.......o.o......', '................', '................'],
+  bourse: ['................', '......kkkk......', '.....kyYYyk.....', '......kbbk......', '.....kBBBBk.....', '....kBBBBBBk....', '...kBBbBBBBBk...', '..kBBBBBByBBBk..',
+    '..kBBBByYyBBBk..', '..kBBBBByBBBBk..', '..kbBBBBBBBBbk..', '...kbbBBBBbbk...', '....kkkkkkkk....', '................', '................', '................'],
+  coffre: ['................', '................', '...kkkkkkkkkk...', '..kbBBBBBBBBBk..', '..kbByBBBByBBk..', '..kbbbbbbbbbbk..', '..kyyyykkyyyyk..', '..kbBBBkYkBBBk..',
+    '..kbBBBBkBBBBk..', '..kbByBBBByBBk..', '..kbBBBBBBBBBk..', '..kbbbbbbbbbbk..', '..kkkkkkkkkkkk..', '................', '................', '................'],
+  cle: ['................', '................', '...kkkk.........', '..kyYYyk........', '..kYk.kyk.......', '..kYk.kyk.......', '..kyYYyykkkkkkk.', '...kkkkyyyyyyyyk',
+    '.......kkkykkyk.', '.........kyk.yk.', '..........k...k.', '................', '................', '................', '................', '................'],
+  sablier: ['................', '...kkkkkkkkkk...', '...kbbbbbbbbk...', '....kWWWWWWk....', '....kYYYYYYk....', '.....kYYYYk.....', '......kYYk......', '.......kk.......',
+    '......kWYk......', '.....kWWYWk.....', '....kWWYYWWk....', '....kYYYYYYk....', '...kbbbbbbbbk...', '...kkkkkkkkkk...', '................', '................'],
+  bouclier: ['................', '..kkkkkkkkkkkk..', '..kSSSSSSSSSSk..', '..kSuuuuyuuuSk..', '..kSuuuuyuuuSk..', '..kSuuuuyuuuSk..', '..kSyyyyyyyySk..', '..kSuuuuyuuuSk..',
+    '..kSuuuuyuuuSk..', '...kSuuuyuuSk...', '...kSuuuyuuSk...', '....kSuuyuSk....', '.....kSSSSk.....', '......kkkk......', '................', '................'],
+  parchemin: ['................', '..kkkkkkkkkkk...', '.kwBwwwwwwwwwk..', '.kBBkkkkkkkkkk..', '..kwwwwwwwwwk...', '..kwkkkkkkkwk...', '..kwwwwwwwwwk...', '..kwkkkkkkwwk...',
+    '..kwwwwwwwwwk...', '..kwkkkkkwwwk...', '..kwwwwwwrrwk...', '..kwwwwwwrRrk...', '.kkkkkkkkkkkkk..', '.kwBwwwwwwwwwBk.', '..kkkkkkkkkkkk..', '................'],
+  anneaux: ['................', '.....kkkkk......', '....kRRRRRk.....', '....kRrRrRk.....', '....kRRrRRk.....', '....kRrRrRk.....', '.....kkkkk......', '.kkkkk...kkkkk..',
+    'kuuuuuk.kgggggk.', 'kuUuUuk.kgGgGgk.', 'kuuUuuk.kggGggk.', 'kuUuUuk.kgGgGgk.', '.kkkkk...kkkkk..', '................', '................', '................'],
+  lettre: ['................', '................', '..kkkkkkkkkkkk..', '..kwkwwwwwwkwk..', '..kwwkwwwwkwwk..', '..kwwwkwwkwwwk..', '..kwwwwkkwwwwk..', '..kwwwwrrwwwwk..',
+    '..kwwwrRRrwwwk..', '..kwwwwrrwwwwk..', '..kwwwwwwwwwwk..', '..kkkkkkkkkkkk..', '................', '................', '................', '................'],
+  gantelet: ['................', '....k.k.k.......', '...kSkSkSk......', '...kSkSkSkk.....', '...kSkSkSkSk....', '...kSSSSSkSk....', '...kSSSSSSSk....', '...kSssSSSSk....',
+    '...kSSSSSSk.....', '...kssssssk.....', '...kSSSSSSk.....', '...kyyyyyyk.....', '...kbbbbbbk.....', '...kkkkkkkk.....', '................', '................'],
+  cor: ['................', '................', '...........kkk..', '..........kyYk..', '.........kyyk...', '...kk...kyyk....', '..kyykkkyyk.....', '.kyYYyyyyk......',
+    '.kyyyyyyk.......', '..kyyyyk........', '...kbbk.........', '...kbk..........', '................', '................', '................', '................'],
+  plume: ['................', '............kk..', '...........kWk..', '..........kWSk..', '.........kWSk...', '........kWSk....', '.......kWSk.....', '......kWSk......',
+    '.....kWSk.......', '.....kSk........', '....kk..........', '...kb...........', '..kb............', '..k.............', '................', '................'],
+  pierre: ['................', '................', '......kkkk......', '....kkUUUUkk....', '...kUUWUUUUUk...', '...kUWWUUUUUk...', '..kUUWUUUUUuUk..', '..kUUUUUUUuuUk..',
+    '..kUUUUUUuuuUk..', '...kUUUUuuuUk...', '...kuUUuuuuuk...', '....kkuuuukk....', '......kkkk......', '................', '................', '................'],
+  carte: ['................', '..kkkkkkkkkkkk..', '..kwwwwwwwwwwk..', '..kwgGwwwwuuwk..', '..kwgGGwwuuuwk..', '..kwwgwwkwuuwk..', '..kwwwwkwkwwwk..', '..kwwwkwwwkwwk..',
+    '..kwwkwwwwwrwk..', '..kwwwwwwwrwrk..', '..kwwwwwwwwrwk..', '..kkkkkkkkkkkk..', '................', '................', '................', '................'],
+  coquillage: ['................', '................', '.......kk.......', '......kWWk......', '.....kWwWwk.....', '....kWwWwWwk....', '...kWwWwWwWwk...', '...kWwWwWwWwk...',
+    '...kwWwWwWwWk...', '....kwWwWwWk....', '.....kkWWkk.....', '......kwwk......', '.......kk.......', '................', '................', '................'],
+  rune: ['................', '................', '....kkkkkkkk....', '...ksSSSSSSsk...', '...kSSSuSSSSk...', '...kSSSuuSSSk...', '...kSSSuSuSSk...', '...kSSSuSSSSk...',
+    '...kSSSuSSSSk...', '...kSSSuSSSSk...', '...ksSSSSSSsk...', '....kkkkkkkk....', '................', '................', '................', '................'],
+  fiole: ['................', '.......kk.......', '......kbbk......', '......kwwk......', '......kwwk......', '.....kwwwwk.....', '....kwUUUUwk....', '...kwUUUWUUwk...',
+    '...kUUUUUUUUk...', '...kuUUUUUUuk...', '...kuuUUUUuuk...', '....kuuuuuuk....', '.....kkkkkk.....', '................', '................', '................'],
+  ecaille: ['................', '................', '......kkkk......', '.....kGGGGk.....', '....kGGWGGGk....', '...kGGWGGGgGk...', '...kGGGGGggGk...', '...kGGGGgggGk...',
+    '....kGGgggGk....', '.....kGgggk.....', '......kggk......', '.......kk.......', '................', '................', '................', '................'],
+  engrenage: ['................', '.......kk.......', '...kk.kSSk.kk...', '..kSSkkSSkkSSk..', '...kSSSSSSSSk...', '..kkSSskksSSkk..', '.kSSSskWWksSSSk.', '.kSSSkW..WkSSSk.',
+    '.kSSSkW..WkSSSk.', '.kSSSskWWksSSSk.', '..kkSSskksSSkk..', '...kSSSSSSSSk...', '..kSSkkSSkkSSk..', '...kk.kSSk.kk...', '.......kk.......', '................'],
+  etoile: ['................', '.......kk.......', '......kYYk......', '......kYyk......', '.kkkkkkYykkkkkk.', '.kYYYYYYyyyyyyk.', '..kkYYYYyyyykk..', '....kYYYyyyk....',
+    '....kYYkkyyk....', '...kYYk..kyyk...', '...kYk....kyk...', '...kk......kk...', '................', '................', '................', '................'],
+  casque: ['................', '.....kkkkkk.....', '....kSSSSSSk....', '...kSSWSSSSSk...', '..kSSWSSSSSSSk..', '..kSSSSSSSSSSk..', '..kkkkkkkkkkkk..', '..kSkSSkkSSkSk..',
+    '..kSkSSkkSSkSk..', '..kSSSSkkSSSSk..', '...kSSSkkSSSk...', '....kkkkkkkk....', '................', '................', '................', '................'],
+  patte: ['................', '................', '....kk....kk....', '...kbbk..kbbk...', '...kbbk..kbbk...', '.kk.kk.kk.kk.kk.', 'kbbk..kbbk..kbbk', 'kbbk.kkkkkk.kbbk',
+    '.kk.kbbbbbbk.kk.', '....kbbbbbbk....', '...kbbbbbbbbk...', '...kbbbbbbbbk...', '....kkkkkkkk....', '................', '................', '................']
+};
+var PIX_MOTS = [[/journal|carnet|poste|grimoire|livre/i, 'livre'], [/oracle|présage|vision/i, 'orbe'], [/pigeon|messager|corbeau/i, 'pigeon'],
+  [/poche|bourse/i, 'bourse'], [/fiche|bouclier/i, 'bouclier'], [/site|nager|natation|bassin/i, 'vague'], [/coffre|qonto|trésor/i, 'coffre'], [/\blien\b|\bclé/i, 'cle'], [/trou|créneau|temps|sablier/i, 'sablier'],
+  [/bilan|parchemin|carte ancienne|récit/i, 'parchemin'], [/sceau|anneau/i, 'anneaux'], [/facteur|courriel|lettre|missive/i, 'lettre'], [/main|gant/i, 'gantelet'],
+  [/écho|cor\b|trompe/i, 'cor'], [/plume/i, 'plume'], [/pierre|lune/i, 'pierre'], [/carte/i, 'carte'], [/coquillage|nacr/i, 'coquillage'], [/rune/i, 'rune'],
+  [/fiole|encre/i, 'fiole'], [/écaille|sirène/i, 'ecaille'], [/trophée|campagne/i, 'etoile']];
+var PIX_CAT = { Grimoire: 'livre', Automate: 'engrenage', Sort: 'fiole', Armure: 'casque', Talisman: 'etoile', Compagnon: 'patte' };
+function spriteDe_(o) { var t = o.objet + ' ' + (o.origine || ''); for (var i = 0; i < PIX_MOTS.length; i++) if (PIX_MOTS[i][0].test(o.objet)) return PIX_MOTS[i][1]; return PIX_CAT[o.cat] || 'etoile'; }
+function pixelSvg_(nom, taille) {
+  var g = PIX[nom] || PIX.etoile, r = '';
+  g.forEach(function (l, y) { for (var x = 0; x < 16; x++) { var c = l.charAt(x); if (c && c !== '.' && PIX_PAL[c]) r += '<rect x="' + x + '" y="' + y + '" width="1.04" height="1.04" fill="' + PIX_PAL[c] + '"/>'; } });
+  return '<svg class="pix" viewBox="0 0 16 16" width="' + (taille || 48) + '" height="' + (taille || 48) + '" shape-rendering="crispEdges" aria-hidden="true">' + r + '</svg>';
+}
+function equipe_() { try { return JSON.parse(localStorage.getItem('journal-equipe') || '{}'); } catch (e) { return {}; } }
+function porter_(cat, objet) { var e = equipe_(); if (e[cat] === objet) delete e[cat]; else e[cat] = objet; try { localStorage.setItem('journal-equipe', JSON.stringify(e)); } catch (x) {} }
+
+// L'armurerie devient une galerie : le personnage entouré de ce qu'il porte, puis tous les objets en vitrine.
+var GAL_SEL = null;
+function vueArmurerie(A) {
+  var e = etatRenommee(), eq = equipe_(), parNom = {};
+  A.armurerie.forEach(function (o) { parNom[o.objet] = o; });
+  Object.keys(eq).forEach(function (c) { if (!parNom[eq[c]]) delete eq[c]; });
+  function caseCat(c) {
+    var o = parNom[eq[c[0]]], n = A.armurerie.filter(function (x) { return x.cat === c[0]; }).length;
+    return '<div class="arm-case' + (o ? ' pleine portee' : n ? ' pleine' : '') + '" data-gal-cat="' + c[0] + '">' + (o ? pixelSvg_(spriteDe_(o), 34) : '<span>' + c[1] + '</span>')
+      + '<small>' + (o ? esc(o.objet) : c[0] + (n ? ' · ' + n : '')) + '</small></div>';
+  }
+  var html = guide('forgeronne', 'Ta galerie d’objets. Touche un objet pour le voir de près, puis « Porter » pour l’afficher près de ton personnage (un par catégorie).')
+    + '<div class="armure"><div class="arm-cases g">' + CATS.slice(0, 3).map(caseCat).join('') + '</div><div class="arm-avatar">' + avatarRang(e.n, 132) + '<b>' + esc(RANGS[Math.min(e.n, RANGS.length - 1)]) + '</b><small>niveau ' + e.n + '</small></div><div class="arm-cases d">' + CATS.slice(3).map(caseCat).join('') + '</div></div>';
+  var sel = GAL_SEL && parNom[GAL_SEL];
+  if (sel) {
+    var porte = eq[sel.cat] === sel.objet, cat = CATS.filter(function (c) { return c[0] === sel.cat; })[0] || ['', '✦'];
+    html += '<div class="gal-zoom"><div class="gal-zoom-ill">' + pixelSvg_(spriteDe_(sel), 112) + '</div><div class="gal-zoom-txt"><small>' + cat[1] + ' ' + esc(sel.cat) + '</small><b>' + esc(sel.objet) + '</b>'
+      + (sel.pouvoir ? '<p>' + esc(sel.pouvoir) + '</p>' : '') + '<em>' + esc(sel.origine) + (sel.le ? ' · ' + esc(sel.le.split('-').reverse().join('/')) : '') + '</em>'
+      + '<div class="actions choix"><button class="' + (porte ? 'gris' : 'vert') + '" data-gal-porter="1">' + (porte ? 'Retirer' : '🛡️ Porter') + '</button><button class="gris" data-gal-fermer="1">Fermer</button></div></div></div>';
+  }
+  html += '<div class="galerie">' + A.armurerie.slice().reverse().map(function (o) {
+    return '<button class="gal-objet' + (eq[o.cat] === o.objet ? ' portee' : '') + (sel === o ? ' choisi' : '') + '" data-gal="' + esc(o.objet) + '">' + pixelSvg_(spriteDe_(o), 56) + '<b>' + esc(o.objet) + '</b><small>' + esc(o.cat) + '</small></button>';
+  }).join('') + (A.armurerie.length ? '' : '<div class="vide">Aucun objet pour l’instant : écris « Grimoire : Nom – pouvoir » dans la colonne « Butin » d’une quête.</div>') + '</div>';
+  html += '<div class="aide">Pour gagner un objet : « Grimoire : Nom – pouvoir » dans la colonne « Butin » d’une quête. Les expéditions rapportent parfois un souvenir.</div>';
+  html += '<div class="carte"><div class="ch-titre">🏰 Les rangs</div><div class="rangs-galerie">' + RANGS.slice(1).map(function (r, i) { return '<div class="rang-av' + (i + 1 === Math.min(e.n, 8) ? ' actuel' : '') + (i + 1 > e.n ? ' verrou' : '') + '">' + avatarRang(i + 1, 48) + '<small>' + esc(r) + '</small></div>'; }).join('') + '</div></div>';
+  setTimeout(brancherGalerie_, 0);
+  return html;
+}
+function brancherGalerie_() {
+  var v = document.getElementById('v-aventure'); if (!v) return;
+  var re = function () { try { vueAventure(); } catch (x) {} };
+  v.querySelectorAll('[data-gal]').forEach(function (b) { b.onclick = function () { GAL_SEL = GAL_SEL === b.dataset.gal ? null : b.dataset.gal; re(); var z = document.querySelector('.gal-zoom'); if (z) z.scrollIntoView({ block: 'center', behavior: 'smooth' }); }; });
+  v.querySelectorAll('[data-gal-cat]').forEach(function (b) { b.onclick = function () { var o = equipe_()[b.dataset.galCat]; if (o) { GAL_SEL = o; re(); } }; });
+  var p = v.querySelector('[data-gal-porter]'); if (p) p.onclick = function () { var o = D.aventure.armurerie.filter(function (x) { return x.objet === GAL_SEL; })[0]; if (!o) return; porter_(o.cat, o.objet); re(); };
+  var f = v.querySelector('[data-gal-fermer]'); if (f) f.onclick = function () { GAL_SEL = null; re(); };
 }
 
 // ---------- Navigation ----------
