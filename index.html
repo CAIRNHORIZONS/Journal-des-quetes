@@ -1170,31 +1170,11 @@ function appel(fn, args, ok, ko) {
   var r = google.script.run.withSuccessHandler(ok || function () {}).withFailureHandler(function (e) { toast('⚠️ ' + (e && e.message || e)); if (ko) ko(e); charger(); });
   r[fn].apply(r, [CLE].concat(args || []));
 }
-// 26/11 : diagnostic si la page reste vide (erreurs gardées + état de l'appli, affichés à l'écran)
-var DIAG_ERR = [];
-(function () { var ce = console.error; console.error = function () { try { DIAG_ERR.push([].slice.call(arguments).map(function (a) { return a && a.stack ? String(a.stack).split('\n').slice(0, 2).join(' ') : String(a); }).join(' ')); } catch (x) {} return ce.apply(console, arguments); }; })();
-window.addEventListener('error', function (ev) { DIAG_ERR.push(String(ev.message) + ' @' + ev.lineno); });
-window.addEventListener('unhandledrejection', function (ev) { DIAG_ERR.push('promesse : ' + String(ev.reason && ev.reason.message || ev.reason)); });
-function diagnostic_() {
-  try {
-    var v = document.querySelector('.vue.actif'), vide = !v || !v.innerText.trim();
-    if (!vide && !DIAG_ERR.length) return;
-    var r = v ? v.getBoundingClientRect() : null, o = document.querySelector('.rituel-ecran'), info = [
-      'Version appli : v51', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
-      'Taille : ' + (r ? Math.round(r.width) + '×' + Math.round(r.height) : '?') + ' · classes : ' + document.documentElement.className, 'Rituel ouvert : ' + (o ? 'oui (' + o.dataset.m + ')' : 'non'),
-      'Données : ' + (D ? Object.keys(D).join(', ') : 'aucune') + (D && D.jour ? '' : ' · jour absent'), 'Erreurs : ' + (DIAG_ERR.length ? DIAG_ERR.slice(-5).join(' | ') : 'aucune')];
-    var b = document.getElementById('diag') || document.createElement('div'); b.id = 'diag';
-    b.style.cssText = 'position:fixed;left:8px;right:8px;top:90px;z-index:999;background:#fff8e6;color:#3b2614;border:2px solid #b44;padding:10px;font:13px/1.35 sans-serif;max-height:60vh;overflow:auto;white-space:pre-wrap';
-    b.textContent = '🛠 Diagnostic (fais une capture et envoie-la à Claude)\n' + info.join('\n'); b.onclick = function () { b.remove(); };
-    document.body.appendChild(b);
-  } catch (x) {}
-}
-setTimeout(diagnostic_, 12000);
 // 26/11 : toute erreur d'affichage est montrée à l'écran (au lieu d'une page vide)
-window.addEventListener('error', function (ev) { try { var v = document.querySelector('.vue.actif') || $('v-jour'); if (v && !v.querySelector('.erreur-js')) v.insertAdjacentHTML('afterbegin', '<div class="vide erreur-js">⚠️ Erreur d’affichage : ' + esc(String(ev.message || ev.error || '?')) + (ev.lineno ? ' (ligne ' + ev.lineno + ')' : '') + '</div>'); } catch (x) {} });
+window.addEventListener('error', function (ev) { try { var v = document.querySelector('.vue.actif') || $('v-jour'); if (v && !v.querySelector('.erreur-js')) v.insertAdjacentHTML('afterbegin', '<div class="vide erreur-js">⚠️ Erreur d’affichage : ' + esc(String(ev.message || ev.error || '?')) + (ev.lineno ? ' (ligne ' + ev.lineno + ')' : '') + '</div>'); try { google.script.run.appSignalerErreur(CLE, String(ev.message || ev.error || '?'), (ev.filename || '') + ':' + (ev.lineno || '') + ':' + (ev.colno || '') + ' ' + String((ev.error && ev.error.stack) || '').slice(0, 800)); } catch (y) {} } catch (x) {} });
 function charger() {
   $('rafraichir').disabled = true;
-  google.script.run.withSuccessHandler(function (d) { D = d; $('rafraichir').disabled = false; try { afficher(); } catch (e) { console.error(e); } setTimeout(diagnostic_, 1500); })
+  google.script.run.withSuccessHandler(function (d) { D = d; $('rafraichir').disabled = false; afficher(); })
     .withFailureHandler(function (e) { $('rafraichir').disabled = false; var m = '<div class="vide">⚠️ Le Journal n’a pas pu charger : ' + esc(e.message || e) + '</div>'; $('v-taches').innerHTML = m; $('v-jour').innerHTML = m; })
     .appDonnees(CLE);
 }
