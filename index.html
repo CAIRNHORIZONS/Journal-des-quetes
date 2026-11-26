@@ -808,6 +808,9 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 .sms.carte.rapport.deplie .lire-suite{display:none}
 .actions button.or{background:linear-gradient(#e0b84a,#b8860b);color:#3b2a18;border:1px solid #8a6410!important;font-family:"Cinzel",serif}
 .qj-voir-tout{display:block;width:100%;margin:8px 0 4px;border:1px dashed var(--trait);background:transparent;color:var(--doux);border-radius:10px;padding:8px 10px;font:600 13px "Atkinson Hyperlegible",sans-serif;cursor:pointer}
+.nq-dates{display:flex;gap:8px;margin:8px 0 2px}.nq-dates label{flex:1;display:flex;flex-direction:column;font-size:12px;color:var(--doux);gap:2px}
+.nq-dates input,.nq-ev-zone input,.nq-ev-zone select{font:inherit;font-size:14px;padding:5px 6px;border:1px solid var(--trait);border-radius:8px;background:var(--carte);color:var(--texte);min-width:0}
+.nq-ev{display:flex;align-items:center;gap:6px;font-size:13px;margin:6px 0 2px}.nq-ev-zone{display:flex;gap:6px;flex-wrap:wrap}.nq-ev-zone[hidden]{display:none}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 /* ===== C : manuscrit enluminé. Plus de cartes : une page de parchemin, enluminures, lettrines, sceaux de cire ===== */
 html:is([data-esth="C"],[data-esth="Cn"]){--texte:#3b2a18!important;--doux:#7a6448!important;--carte:#f3e5c4!important;--fond:#ead7ac!important;--trait:#c4a66e!important}
@@ -1183,7 +1186,7 @@ function diagnostic_() {
     var v = document.querySelector('.vue.actif'), vide = !v || !v.innerText.trim();
     if (!vide && !DIAG_ERR.length) return;
     var r = v ? v.getBoundingClientRect() : null, o = document.querySelector('.rituel-ecran'), info = [
-      'Version appli : v58', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
+      'Version appli : v59', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
       'Taille : ' + (r ? Math.round(r.width) + '×' + Math.round(r.height) : '?') + ' · classes : ' + document.documentElement.className, 'Rituel ouvert : ' + (o ? 'oui (' + o.dataset.m + ')' : 'non'),
       'Données : ' + (D ? Object.keys(D).join(', ') : 'aucune') + (D && D.jour ? '' : ' · jour absent'), 'Erreurs : ' + (DIAG_ERR.length ? DIAG_ERR.slice(-5).join(' | ') : 'aucune')];
     var b = document.getElementById('diag') || document.createElement('div'); b.id = 'diag';
@@ -1672,7 +1675,7 @@ function vueTaches() {
   var toutesAvenir = D.taches.filter(function (t) { return t.aVenir && !t.parent; }).sort(function (a, b) { return (a.debutIso || '') < (b.debutIso || '') ? -1 : (a.debutIso || '') > (b.debutIso || '') ? 1 : a.n - b.n; });
   html += '<div class="carte saisie"><textarea id="nv-tache" rows="2" placeholder="Inscrire une nouvelle quête… (écris ou dicte)" enterkeyhint="send"></textarea>'
     + '<div class="ajout"><button class="micro" id="nv-micro" aria-label="Dicter">🎤</button><select id="nv-section"><option value="auto">Chapitre : deviné</option>'
-    + D.sections.map(function (s) { return '<option' + (s === OUVERT ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select><button class="plein" id="nv-ok">Inscrire</button></div>'
+    + D.sections.map(function (s) { return '<option' + (s === OUVERT ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select><button class="plein" id="nv-ok">Inscrire</button></div>' + nqChamps_()
     + '<div class="aide">Ex. : « Natation : appeler Célia pour vendredi » · « dès le 1/12 préparer la facture » · « chaque mois le 5 vérifier les loyers » · « cours Tom jeudi 14h Bulle d’O » · « rdv dentiste mardi 9h30 ». Glisse une quête à droite pour l’accomplir, à gauche pour la reporter.</div></div>';
   if (OUVERT === '__avenir') {
     html += '<div class="horizon-tete"><h3>🔭 Quêtes à venir</h3><button id="horizon-fermer">✕ Fermer</button></div>'
@@ -1756,15 +1759,15 @@ function vueTaches() {
   function ajouter() {
     arreterDictee();
     var txt = $('nv-tache').value.trim(); if (!txt) return;
-    var sec = $('nv-section').value; $('nv-tache').value = ''; $('nv-ok').disabled = true;
+    var sec = $('nv-section').value, nqo = nqLire_(); $('nv-tache').value = ''; $('nv-ok').disabled = true;
     appel('appAjouterTache', [txt, sec], function (t) {
       $('nv-ok').disabled = false;
       if (t && t.presage) { toast(t.msg); charger(); return; }
-      D.taches.push(t); afficher(); if (t.recurrence) toast('Quête récurrente inscrite (' + t.recurrence.replace(':', ' ') + ') 🔁');
+      D.taches.push(t); afficher(); nqApres_(t, nqo); if (t.recurrence) toast('Quête récurrente inscrite (' + t.recurrence.replace(':', ' ') + ') 🔁');
       toast('Quête inscrite au chapitre « ' + t.section + ' »' + (t.echeance ? ' pour ' + t.echeance : '') + (t.aVenir ? ' (dès ' + t.debut + ')' : ''));
     });
   }
-  $('nv-ok').onclick = ajouter;
+  $('nv-ok').onclick = ajouter; nqBrancher_();
   $('nv-tache').onkeydown = function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ajouter(); } };
   $('nv-micro').onclick = dicter;
 }
@@ -4072,6 +4075,38 @@ function brancherGalerie_() {
   v.querySelectorAll('[data-gal-cat]').forEach(function (b) { b.onclick = function () { var o = equipe_()[b.dataset.galCat]; if (o) { GAL_SEL = o; re(); } }; });
   var p = v.querySelector('[data-gal-porter]'); if (p) p.onclick = function () { var o = D.aventure.armurerie.filter(function (x) { return x.objet === GAL_SEL; })[0]; if (!o) return; porter_(o.cat, o.objet); re(); };
   var f = v.querySelector('[data-gal-fermer]'); if (f) f.onclick = function () { GAL_SEL = null; re(); };
+}
+// ---------- 26/11 (Cairn) : Nouvelle quête avec date d'ouverture, date butoir et événement d'agenda proposé ----------
+// Les dates ne sont envoyées que si Cairn y touche (sinon le script devine depuis le texte : « pour vendredi »…).
+// L'événement s'ouvre dans Google Agenda déjà rempli : Cairn choisit l'agenda et valide (rien n'est créé sans lui).
+function nqChamps_() {
+  var auj = isoJ(new Date());
+  return '<div class="nq-dates"><label>🗓 Ouverture<input type="date" id="nv-debut" value="' + auj + '"></label>'
+    + '<label>⏳ Date butoir<input type="date" id="nv-ech"></label></div>'
+    + '<label class="nq-ev"><input type="checkbox" id="nv-ev"> 📅 Proposer aussi un événement dans l’agenda</label>'
+    + '<div class="nq-ev-zone" id="nv-ev-zone" hidden><input type="date" id="nv-ev-date" value="' + auj + '"><input type="time" id="nv-ev-h" value="09:00">'
+    + '<select id="nv-ev-duree"><option value="30">30 min</option><option value="60" selected>1 h</option><option value="90">1 h 30</option><option value="120">2 h</option></select></div>';
+}
+function nqBrancher_() {
+  var d = $('nv-debut'), e = $('nv-ech'), cb = $('nv-ev'); if (!d || !cb) return;
+  [d, e].forEach(function (x) { x.onchange = function () { x.dataset.touche = '1'; if ($('nv-ev-date') && !$('nv-ev-date').dataset.touche) $('nv-ev-date').value = e.value || d.value; }; });
+  $('nv-ev-date').onchange = function () { this.dataset.touche = '1'; };
+  cb.onchange = function () { $('nv-ev-zone').hidden = !cb.checked; };
+}
+function nqLire_() { // à lire AVANT l'envoi (le formulaire est vidé ensuite)
+  var d = $('nv-debut'), e = $('nv-ech'); if (!d) return null;
+  return { debut: d.dataset.touche || e.dataset.touche ? d.value : null, ech: d.dataset.touche || e.dataset.touche ? e.value : null,
+    ev: $('nv-ev').checked ? { date: $('nv-ev-date').value, h: $('nv-ev-h').value || '09:00', duree: +$('nv-ev-duree').value || 60 } : null };
+}
+function nqApres_(t, o) {
+  if (!o || !t || !t.n) return;
+  if (o.debut !== null) appel('appDatesTache', [t.n, t.tache, o.debut, o.ech], function (r) { for (var k in r) t[k] = r[k]; afficher(); toast('Dates de la quête fixées' + (r.echeance ? ' (avant le ' + r.echeance + ')' : '')); });
+  if (o.ev && o.ev.date) {
+    var p = o.ev.date.split('-'), hm = o.ev.h.split(':'), deb = new Date(+p[0], +p[1] - 1, +p[2], +hm[0], +hm[1]), fin = new Date(deb.getTime() + o.ev.duree * 60000);
+    var f = function (x) { var z = function (n) { return (n < 10 ? '0' : '') + n; }; return x.getFullYear() + z(x.getMonth() + 1) + z(x.getDate()) + 'T' + z(x.getHours()) + z(x.getMinutes()) + '00'; };
+    window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(t.tache) + '&dates=' + f(deb) + '/' + f(fin)
+      + '&ctz=Europe%2FParis&details=' + encodeURIComponent('Quête n°' + t.n + ' (' + t.section + ') – Journal des quêtes'), '_blank');
+  }
 }
 
 // ---------- Navigation ----------
