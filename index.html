@@ -1182,7 +1182,7 @@ function diagnostic_() {
     var v = document.querySelector('.vue.actif'), vide = !v || !v.innerText.trim();
     if (!vide && !DIAG_ERR.length) return;
     var r = v ? v.getBoundingClientRect() : null, o = document.querySelector('.rituel-ecran'), info = [
-      'Version appli : v56', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
+      'Version appli : v57', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
       'Taille : ' + (r ? Math.round(r.width) + '×' + Math.round(r.height) : '?') + ' · classes : ' + document.documentElement.className, 'Rituel ouvert : ' + (o ? 'oui (' + o.dataset.m + ')' : 'non'),
       'Données : ' + (D ? Object.keys(D).join(', ') : 'aucune') + (D && D.jour ? '' : ' · jour absent'), 'Erreurs : ' + (DIAG_ERR.length ? DIAG_ERR.slice(-5).join(' | ') : 'aucune')];
     var b = document.getElementById('diag') || document.createElement('div'); b.id = 'diag';
@@ -1339,9 +1339,11 @@ function elementsQJ_() {
     out.push({ id: 'c' + q.cle, html: carteQueteJour(q), cat: CHAP_EVT[q.type] || 'Vie perso', heure: q.debut || '99:99', fait: q.fait,
       imp: q.fait ? 0 : q.gemmes ? 70 : q.poche ? 60 : 20, gain: q.gemmes ? q.gemmes / 10 : (q.montant || 0) });
   });
-  D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui); }).forEach(function (t) {
-    out.push({ id: 'n' + t.n, html: '<div class="qj tache-jour" data-n="' + t.n + '"><span class="qj-h">' + (t.retard ? '⚠' : '📜') + '</span><span class="qj-t"><b>' + esc(t.tache) + '</b><small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : ' · aujourd’hui') + '</small></span><button class="coche" aria-label="Fait"></button></div>',
-      cat: t.section, heure: '99:98', fait: false, imp: t.retard ? 100 : 80, gain: t.xp || 10, urgent: true });
+  // 26/11 (Cairn) : une quête commencée (« Commencer le » atteint) apparaît d'elle-même dans les quêtes du jour, jusqu'à ce qu'elle soit faite ou reportée
+  D.taches.filter(function (t) { return !t.aVenir && (t.retard || t.aujourdhui || (t.debutIso && t.debutIso <= iso)); }).forEach(function (t) {
+    var enCours = !t.retard && !t.aujourdhui;
+    out.push({ id: 'n' + t.n, html: '<div class="qj tache-jour" data-n="' + t.n + '"><span class="qj-h">' + (t.retard ? '⚠' : '📜') + '</span><span class="qj-t"><b>' + esc(t.tache) + '</b><small>' + esc(t.section) + (t.retard ? ' · <em>délai dépassé</em>' : enCours ? (t.echeance ? ' · avant le ' + esc(t.echeance) : ' · en cours') : ' · aujourd’hui') + '</small></span><button class="coche" aria-label="Fait"></button></div>',
+      cat: t.section, heure: enCours ? '99:99' : '99:98', fait: false, imp: t.retard ? 100 : enCours ? 50 : 80, gain: t.xp || 10, urgent: !enCours });
   });
   return out;
 }
