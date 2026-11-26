@@ -815,6 +815,11 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 /* 26/11 : bouton « Inscrire » tout en bas de la fenêtre ; parchemin qui s'envole */
 .nq-bas{display:flex;margin-top:12px}.nq-bas #nv-ok{flex:1!important;width:100%;padding:12px}
 .nq-envol{position:fixed;z-index:60;font-size:28px;pointer-events:none;will-change:transform,opacity}
+/* 26/11 : pense-bêtes */
+.nq-bas{gap:8px}.nq-bas .nq-pb{flex:none;padding:12px 10px;font-size:14px;border-radius:999px}
+.nq-pb-liste{margin-top:8px;font-size:13px}.nq-pb-liste .lien{background:none;border:0;padding:4px 0;color:inherit;text-decoration:underline;font:inherit;cursor:pointer}
+.nq-pb-el{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px dotted var(--trait)}.nq-pb-el small{flex:none;opacity:.7}.nq-pb-el span{flex:1;white-space:pre-wrap}
+.nq-pb-el button{flex:none;background:none;border:0;font-size:14px;cursor:pointer;color:inherit;opacity:.7}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 /* ===== C : manuscrit enluminé. Plus de cartes : une page de parchemin, enluminures, lettrines, sceaux de cire ===== */
 html:is([data-esth="C"],[data-esth="Cn"]){--texte:#3b2a18!important;--doux:#7a6448!important;--carte:#f3e5c4!important;--fond:#ead7ac!important;--trait:#c4a66e!important}
@@ -1190,7 +1195,7 @@ function diagnostic_() {
     var v = document.querySelector('.vue.actif'), vide = !v || !v.innerText.trim();
     if (!vide && !DIAG_ERR.length) return;
     var r = v ? v.getBoundingClientRect() : null, o = document.querySelector('.rituel-ecran'), info = [
-      'Version appli : v64', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
+      'Version appli : v65', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
       'Taille : ' + (r ? Math.round(r.width) + '×' + Math.round(r.height) : '?') + ' · classes : ' + document.documentElement.className, 'Rituel ouvert : ' + (o ? 'oui (' + o.dataset.m + ')' : 'non'),
       'Données : ' + (D ? Object.keys(D).join(', ') : 'aucune') + (D && D.jour ? '' : ' · jour absent'), 'Erreurs : ' + (DIAG_ERR.length ? DIAG_ERR.slice(-5).join(' | ') : 'aucune')];
     var b = document.getElementById('diag') || document.createElement('div'); b.id = 'diag';
@@ -1215,7 +1220,7 @@ function afficher() {
   $('n-sms').textContent = D.sms.filter(function (s) { return s.fenetre !== false && (s.statut === 'À valider' || s.statut === 'Erreur'); }).length || '';
   $('n-resas').textContent = D.resas.filter(function (r) { return r.statut === 'À valider'; }).length || '';
   $('n-presages').textContent = (D.presages || []).length || '';
-  majRenommee(false); vueJour(); vueTaches(); vueSMS(); vueResas(); vuePresages();
+  var sgS = sgSauver_(); majRenommee(false); vueJour(); vueTaches(); vueSMS(); vueResas(); vuePresages(); sgRestaurer_(sgS);
   try { if (D.aventure) { $('n-aventure').textContent = D.aventure.defis.filter(function (d) { return d.fait && !d.reclame; }).length || ''; vueAventure(); brancherHabitudes($('v-jour')); brancherQuetesJour($('v-jour')); }
     $('v-jour').querySelectorAll('[data-av]').forEach(function (b) { b.onclick = function () { allerVue('aventure'); ongletAventure(b.dataset.av); }; });
     majBandeau(); guidesVues(); } catch (e) { console.error(e); }
@@ -1670,6 +1675,7 @@ function tuile(s) {
     + (retard ? '<span class="tuile-retard" title="en retard">' + retard + '</span>' : '') + '</button>';
 }
 function vueTaches() {
+  var sgT = sgSauver_();
   var actifsDe = function (s) { return D.taches.filter(function (t) { return t.section === s && !t.aVenir; }).length; };
   var v = $('v-taches'), html = '', chapitres = ordreChapitres().filter(function (s) { return actifsDe(s) > 0; });
   if (OUVERT && OUVERT !== '__avenir' && chapitres.indexOf(OUVERT) === -1) OUVERT = null;
@@ -1771,7 +1777,7 @@ function vueTaches() {
       toast('Quête inscrite au chapitre « ' + t.section + ' »' + (t.echeance ? ' pour ' + t.echeance : '') + (t.aVenir ? ' (dès ' + t.debut + ')' : ''));
     });
   }
-  $('nv-ok').onclick = ajouter; nqBrancher_();
+  $('nv-ok').onclick = ajouter; nqBrancher_(); sgRestaurer_(sgT); nqBrouillon_();
   $('nv-tache').onkeydown = function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ajouter(); } };
   $('nv-micro').onclick = dicter;
 }
@@ -4092,11 +4098,14 @@ function nqChamps_() {
     + '<label class="nq-ev"><input type="checkbox" id="nv-ev"> 📅 Proposer aussi un événement dans l’agenda</label>'
     + '<div class="nq-ev-zone" id="nv-ev-zone" hidden><input type="date" id="nv-ev-date" value="' + auj + '"><input type="time" id="nv-ev-h" value="09:00">'
     + '<select id="nv-ev-duree"><option value="15">15 min</option><option value="30" selected>30 min</option><option value="60">1 h</option></select></div>'
-    + '<div class="nq-bas" id="nq-bas"></div>';
+    + '<div class="nq-bas" id="nq-bas"><button class="nq-pb" id="nv-pb" title="Une idée ou une consigne pour Claude, pas une quête">💡 Pense-bête</button></div>'
+    + '<div class="nq-pb-liste"><button class="lien" id="nv-pb-voir">💡 Mes pense-bêtes pour Claude</button><div id="nv-pb-zone" hidden></div></div>';
 }
 function nqBrancher_() {
   var d = $('nv-debut'), e = $('nv-ech'), cb = $('nv-ev'); if (!d || !cb) return;
-  if ($('nq-bas') && $('nv-ok')) $('nq-bas').appendChild($('nv-ok')); // 26/11 : « Inscrire » en bas, après les réglages
+  if ($('nq-bas') && $('nv-ok')) $('nq-bas').insertBefore($('nv-ok'), $('nv-pb')); // 26/11 : « Inscrire » en bas, après les réglages
+  if ($('nv-pb')) $('nv-pb').onclick = nqPenseBete_;
+  if ($('nv-pb-voir')) $('nv-pb-voir').onclick = function () { var z = $('nv-pb-zone'); z.hidden = !z.hidden; if (!z.hidden) { z.innerHTML = '<div class="aide">…</div>'; appel('appPenseBetes', [''], nqPbAfficher_); } };
   [d, e].forEach(function (x) { x.onchange = function () { x.dataset.touche = '1'; if ($('nv-ev-date') && !$('nv-ev-date').dataset.touche) $('nv-ev-date').value = e.value || d.value; }; });
   $('nv-ev-date').onchange = function () { this.dataset.touche = '1'; };
   cb.onchange = function () { $('nv-ev-zone').hidden = !cb.checked; };
@@ -4119,7 +4128,7 @@ function nqApres_(t, o) {
 }
 // 26/11 (Cairn) : quête envoyée → la fenêtre se referme tout de suite ; quand le Journal confirme, le téléphone vibre
 // et on entend un parchemin froissé (coupé avec « Bruit du sceau » dans les réglages).
-function nqFermer_() { document.documentElement.classList.remove('saisie-ouverte'); try { $('nv-tache').blur(); } catch (x) {} }
+function nqFermer_() { nqBrouillon_(true); document.documentElement.classList.remove('saisie-ouverte'); try { $('nv-tache').blur(); } catch (x) {} }
 function nqConfirmer_(t, o) {
   var xp = +(o && o.xp) || +(t && t.xp) || 10;
   try { navigator.vibrate && navigator.vibrate(xp >= 30 ? [60, 60, 60, 60, 120] : [40, 70, 40]); } catch (x) {}
@@ -4187,6 +4196,65 @@ function nqEnvol_() {
       { transform: 'translate(' + dx * .5 + 'px,' + (dy * .5 - 60) + 'px) scale(.8) rotate(200deg)', opacity: 1, offset: .6 },
       { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.4) rotate(360deg)', opacity: 0 }
     ], { duration: 900, easing: 'cubic-bezier(.4,0,.3,1)' }).onfinish = function () { p.remove(); };
+  } catch (x) {}
+}
+
+// ---------- 26/11 (Cairn) : pense-bêtes — une idée ou une consigne pour Claude, mise de côté (pas une quête, pas d'IA) ----------
+// Rangés dans l'onglet « Pense-bêtes » de la to-do list. Cairn dit à Claude « lis mes pense-bêtes » quand il veut les lui donner.
+function nqPenseBete_() {
+  var z = $('nv-tache'), txt = z ? z.value.trim() : ''; if (!txt) { toast('Écris d’abord ton pense-bête dans la zone de texte'); return; }
+  try { arreterDictee(); } catch (x) {}
+  z.value = ''; nqBrouillon_(true); nqFermer_();
+  appel('appPenseBete', [txt], function (l) {
+    try { navigator.vibrate && navigator.vibrate(30); } catch (x) {}
+    try { if (typeof MS_SON === 'undefined' || MS_SON) { var A = window.AudioContext || window.webkitAudioContext, ac = nqConfirmer_.ac = nqConfirmer_.ac || new A(); nqPlume_(ac); } } catch (x) {}
+    toast('💡 Pense-bête mis de côté pour Claude (' + (l ? l.length : 1) + ' en réserve)');
+    if ($('nv-pb-zone') && !$('nv-pb-zone').hidden) nqPbAfficher_(l);
+  }, function () { z.value = txt; nqBrouillon_(); toast('Pense-bête non enregistré : ton texte est resté dans la fenêtre'); });
+}
+function nqPbAfficher_(l) {
+  var z = $('nv-pb-zone'); if (!z) return; l = l || [];
+  z.innerHTML = l.length ? l.map(function (x) { return '<div class="nq-pb-el"><small>' + esc(x.date) + '</small><span>' + esc(x.texte) + '</span><button data-pb="' + x.ligne + '" aria-label="Effacer">✕</button></div>'; }).join('')
+    + '<div class="aide">Pour les donner à Claude : dis-lui « lis mes pense-bêtes ».</div>' : '<div class="aide">Aucun pense-bête en réserve.</div>';
+  z.querySelectorAll('[data-pb]').forEach(function (b) { b.onclick = function () { b.disabled = true; appel('appPenseBetes', [+b.dataset.pb], nqPbAfficher_); }; });
+}
+
+// ---------- 26/11 (Cairn) : ce qui est en cours de saisie n'est plus effacé quand l'appli se redessine ----------
+// (retour depuis Google Agenda, actualisation automatique, changement de chapitre…). Chaque champ touché est repéré
+// par sa carte + son nom ; sa valeur du moment est remise après le nouvel affichage.
+var SG_TOUCHES = {};
+function sgCle_(el) {
+  if (!el || !el.closest || el.closest('.cle-ecran')) return '';
+  if (el.id) return '#' + el.id;
+  var c = el.closest('[data-id],[data-l],[data-ref],[data-n]'), nom = el.getAttribute('data-k') || el.getAttribute('data-t') || el.getAttribute('name') || el.className;
+  if (!c || !nom) return '';
+  return ['id', 'l', 'ref', 'n'].map(function (k) { return c.dataset[k] || ''; }).join('/') + '|' + nom;
+}
+['input', 'change'].forEach(function (ev) { document.addEventListener(ev, function (e) { var t = e.target; if (!/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName || '')) return; var k = sgCle_(t); if (k) SG_TOUCHES[k] = 1; if (t.id === 'nv-tache') { try { if (t.value) localStorage.setItem('journal-brouillon-quete', t.value); else localStorage.removeItem('journal-brouillon-quete'); } catch (x) {} } }, true); });
+function sgSauver_() {
+  var r = {};
+  try { document.querySelectorAll('input,textarea,select').forEach(function (el) { var k = sgCle_(el); if (k && SG_TOUCHES[k]) r[k] = { v: el.value, c: el.checked, t: el.dataset.touche }; }); } catch (x) {}
+  return r;
+}
+function sgRestaurer_(r) {
+  if (!r) return;
+  try {
+    document.querySelectorAll('input,textarea,select').forEach(function (el) {
+      var k = sgCle_(el), o = k && r[k]; if (!o) return;
+      if (el.type === 'checkbox' || el.type === 'radio') el.checked = o.c; else if (el.value !== o.v) el.value = o.v;
+      if (o.t) el.dataset.touche = o.t;
+      var d = el.closest('details'); if (d && o.v) d.open = true;
+    });
+    if ($('nv-ev') && $('nv-ev-zone')) $('nv-ev-zone').hidden = !$('nv-ev').checked;
+  } catch (x) {}
+}
+// brouillon de la nouvelle quête gardé sur le téléphone : il survit même si Android ferme l'appli pendant qu'on est dans l'agenda
+function nqBrouillon_(vider) {
+  try {
+    var z = $('nv-tache'); if (!z) return;
+    if (vider) { localStorage.removeItem('journal-brouillon-quete'); return; }
+    if (z.value) { localStorage.setItem('journal-brouillon-quete', z.value); return; }
+    var b = localStorage.getItem('journal-brouillon-quete'); if (b) { z.value = b; SG_TOUCHES['#nv-tache'] = 1; }
   } catch (x) {}
 }
 
