@@ -592,6 +592,73 @@ nav button b{font-size:19px}
 .carte.coffres{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;width:100%;padding:10px 12px;text-align:left;font:inherit;color:var(--texte);cursor:pointer}
 .carte.coffres span{font-size:13px}.carte.coffres b{font-size:16px}
 .ultimatums .qj-t small em{color:var(--rouge);font-style:normal}
+/* ---------- Salle d'arme (combats) ---------- */
+:root{--ar-effort:#b8432f;--ar-recup:#3d7aa3;--ar-transit:#8a63b5;--ar-or:#b8862a;--ar-ok:#5e8a35}
+:root.nuit{--ar-effort:#e0705c;--ar-recup:#7fb1d3;--ar-transit:#b99be0;--ar-or:#e0b54a;--ar-ok:#9cc26a}
+.arme [hidden]{display:none!important}
+.arme{display:flex;flex-direction:column;gap:12px}
+.arme-tete{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.arme-tete h2{margin:0;font-family:"Cinzel",serif;font-size:1.25rem}
+.arme-tete p{margin:2px 0 0}
+.arme-outils{display:flex;gap:6px}.arme-outils button{font-size:.8rem;padding:6px 10px}
+.arme-outils button[aria-pressed="true"]{background:var(--ar-or);color:#fff;border-color:var(--ar-or)}
+.arme-alerte{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.arme-combat.du-jour{border:2px solid var(--ar-or)}
+.arme-ct{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}.arme-ct b{font-family:"Cinzel",serif;font-size:1.05rem}.arme-ct small{color:var(--doux);text-transform:capitalize}
+.arme-ligne{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:5px 0;border-bottom:1px dashed var(--trait)}.arme-ligne small{color:var(--doux);font-variant-numeric:tabular-nums}
+.arme-go{width:100%;margin-top:10px}
+.arme-jour{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;width:100%;text-align:left;border:2px solid var(--ar-or);cursor:pointer;color:var(--texte)}
+.arme-jour em{color:var(--ar-or);font-style:normal}
+.ar-chrono{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.ar-phase{font-family:"Cinzel",serif;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--doux)}
+.ar-exo{font-family:"Cinzel",serif;font-size:1.15rem}
+.ar-anneau{position:relative;width:min(230px,66vw);aspect-ratio:1;max-width:100%}
+.ar-anneau svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ar-temps{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ar-temps b{font-family:"Cinzel",serif;font-size:2.9rem;font-variant-numeric:tabular-nums;line-height:1}
+.ar-temps b.compte{font-size:4.5rem;color:var(--ar-or)}
+.ar-temps span{color:var(--doux);font-size:.9rem}
+.ar-derniere{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
+.ar-derniere span{color:var(--doux)}.ar-derniere b{font-variant-numeric:tabular-nums;padding:0 4px;border-radius:3px}
+.ar-derniere b.ici{background:var(--ar-or);color:#fff}
+.ar-charge{border:1px dashed var(--ar-transit);border-radius:4px;padding:8px 12px;width:100%}.ar-charge b{color:var(--ar-transit);font-size:.85rem;letter-spacing:.06em}
+.ar-saisie{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.ar-saisie>div{display:flex;flex-direction:column;align-items:center;gap:4px}.ar-saisie label{font-size:.85rem;color:var(--doux)}
+.ar-pas{display:flex;align-items:center;gap:6px}.ar-pas button{width:42px;height:42px;padding:0;font-size:1.2rem}
+.ar-pas input{width:66px;text-align:center;font-size:1.3rem;font-variant-numeric:tabular-nums;padding:5px 0}
+.ar-boutons{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
+.ar-grand{flex:1 1 100%;font-size:1.1rem;padding:16px;border:none;border-radius:6px;color:#fff;background:var(--ar-or);font-family:"Cinzel",serif}
+.ar-grand.valide{background:transparent!important;color:var(--ar-ok);border:1px solid var(--ar-ok)}
+.ar-lien{background:none;border:none;color:var(--doux);text-decoration:underline;font-size:.9rem}
+.ar-totaux{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.ar-totaux div{display:flex;flex-direction:column;min-width:0}.ar-totaux b{font-family:"Cinzel",serif;font-size:1.05rem;font-variant-numeric:tabular-nums}.ar-totaux span{font-size:.72rem;color:var(--doux)}
+.ar-totaux .e{color:var(--ar-effort)}.ar-totaux .r{color:var(--ar-recup)}.ar-totaux .t{color:var(--ar-transit)}
+.ar-it{border:1px solid var(--trait);border-radius:4px;margin-top:8px}
+.ar-it.encours{border-color:var(--ar-or);box-shadow:0 0 0 1px var(--ar-or)}
+.ar-it summary{list-style:none;cursor:pointer;padding:9px 10px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}
+.ar-it summary::-webkit-details-marker{display:none}
+.ar-sceau{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;border:1px solid var(--trait);color:var(--doux);font-family:"Cinzel",serif}
+.ar-it.fait .ar-sceau{background:var(--ar-ok);border-color:var(--ar-ok);color:#fff}.ar-it.encours .ar-sceau{background:var(--ar-or);border-color:var(--ar-or);color:#fff}
+.ar-nom{min-width:0}.ar-nom small{display:block;color:var(--doux);font-size:.82rem}
+.ar-pts{display:flex;gap:4px}.ar-pts i{width:9px;height:9px;border-radius:50%;border:1px solid var(--doux)}
+.ar-pts i.f{background:var(--ar-ok);border-color:var(--ar-ok)}.ar-pts i.c{background:var(--ar-or);border-color:var(--ar-or)}
+.ar-var{display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 8px}.ar-var button{font-size:.82rem;padding:5px 9px}.ar-var button.actif{background:var(--ar-or);color:#fff;border-color:var(--ar-or)}
+.ar-choisir{margin:0 10px 8px;font-size:.82rem;padding:5px 9px;color:var(--ar-transit);border-color:var(--ar-transit)}
+.ar-det{padding:0 10px 8px;overflow-x:auto}.ar-det table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.9rem}
+.ar-det th{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--doux);text-align:left;padding:3px 5px;border-bottom:1px solid var(--trait)}.ar-det td{padding:4px 5px;border-bottom:1px dashed var(--trait)}
+.ar-det .moins{color:var(--ar-effort);font-weight:600}.ar-det .plus{color:var(--ar-ok);font-weight:600}
+.ar-verdicts{display:flex;flex-direction:column;gap:6px;margin:10px 0}.ar-verdicts>div{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ar-verdicts em{font-style:normal;font-size:.85rem;border:1px solid var(--ar-or);color:var(--ar-or);border-radius:10px;padding:1px 8px}
+.ar-cexo{margin-top:10px}.ar-cexo>b{font-family:"Cinzel",serif;font-size:.85rem}
+.ar-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ar-mini{display:flex;flex-direction:column;min-width:0}
+.ar-mini span{font-size:.72rem;color:var(--doux)}.ar-mini b{font-size:.9rem;font-variant-numeric:tabular-nums}.ar-mini svg{width:100%;height:34px;overflow:visible}
+#ar-retour{width:100%;margin-top:12px}
+.arme.gros .ar-masque{display:none}
+.arme.gros .ar-anneau{width:min(360px,88vw)}.arme.gros .ar-temps b{font-size:5.5rem}.arme.gros .ar-temps b.compte{font-size:8rem}
+.arme.gros .ar-exo{font-size:1.6rem}.arme.gros .ar-grand{font-size:1.4rem;padding:22px}
+html.arme-gros nav,html.arme-gros header{display:none!important}
+body.v-salle:has(.arme.combat) #fab-quete{display:none!important}
+.arme-titre{font-family:"Cinzel",serif;font-size:1.25rem;font-weight:700;margin:0}
 
 /* =================== LISIBILITÉ (23/11) =================== */
 :root{--neutre:#4f4234;--zoom:1}
@@ -1046,6 +1113,7 @@ html.nuit :is(.rp-choix button,.rp-q button,.rp-case),html[data-esth="Cn"] :is(.
   <section class="vue" id="v-resas"></section>
   <section class="vue" id="v-presages"></section>
   <section class="vue" id="v-aventure"></section>
+  <section class="vue" id="v-salle"></section>
 </main>
 <nav>
   <button class="actif" data-vue="jour"><b>🏰</b>Aujourd’hui<span class="pastille" id="n-resas"></span></button>
@@ -1094,7 +1162,7 @@ if ('serviceWorker' in navigator) window.addEventListener('load', function () { 
 </script>
 <script>
 var LIBELLES = { 'Prêt à envoyer': 'Sceller et envoyer', 'Ignorer': 'Jeter au feu', 'Valider': 'Accepter', 'Refuser': 'Éconduire', 'Lu ✓': 'Missive lue', 'Répondre': 'Répondre' };
-var D = null, VUE = 'jour', TITRES = { jour: 'Aujourd’hui', taches: 'Journal des quêtes', sms: 'Missives à sceller', resas: 'Requêtes de voyageurs', presages: 'Présages du jour', aventure: 'L’aventure', tableau: 'Tableau de bord' };
+var D = null, VUE = 'jour', TITRES = { jour: 'Aujourd’hui', taches: 'Journal des quêtes', sms: 'Missives à sceller', resas: 'Requêtes de voyageurs', presages: 'Présages du jour', aventure: 'L’aventure', tableau: 'Tableau de bord', salle: 'Salle d’arme' };
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { t.classList.remove('on'); }, 2600); }
@@ -1132,6 +1200,7 @@ function vueJour() {
   var v = $('v-jour'), J = D.jour, html = '';
   if (!J) { v.innerHTML = '<div class="vide">Le tableau du jour n’a pas pu être dressé. Actualise dans un instant.</div>'; try { vueTableau(); } catch (e) {} return; }
   html += '<div class="jour-date">' + esc(J.date.charAt(0).toUpperCase() + J.date.slice(1)) + '</div>';
+  try { html += blocCombatDuJour(); } catch (e) {} // 26/11 : combat de musculation du jour (Salle d'arme)
   html += '<div id="qj-unifie">' + blocQuetesUnifie() + '</div>';
   // planning de demain
   var dem = J.agenda.filter(function (e) { return e.jour === 'dem'; });
@@ -2963,11 +3032,11 @@ function blocHabitudesDuJour() {
 // ---------- Onglet Aventure ----------
 var AV_ONGLET = 'habitudes';
 try { AV_ONGLET = sessionStorage.getItem('av-onglet') || 'habitudes'; } catch (x) {}
-function ongletAventure(o) { AV_ONGLET = o; try { sessionStorage.setItem('av-onglet', o); } catch (x) {} vueAventure(); window.scrollTo(0, 0); }
+function ongletAventure(o) { if (o === 'salle') { ouvrirSalle(); return; } AV_ONGLET = o; try { sessionStorage.setItem('av-onglet', o); } catch (x) {} vueAventure(); window.scrollTo(0, 0); }
 function vueAventure() {
   var v = $('v-aventure'); if (!v) return;
   if (!D.aventure) { v.innerHTML = '<div class="vide">L’aventure se prépare… (installe la dernière version du script)</div>'; return; }
-  var A = D.aventure, O = [['habitudes', '✦ Habitudes'], ['defis', '📯 Primes'], ['boutique', '🪙 Boutique'], ['armurerie', '⚔️ Galerie'], ['mois', '⚜ Quête du mois'], ['expedition', '🧭 Expédition']];
+  var A = D.aventure, O = [['habitudes', '✦ Habitudes'], ['defis', '📯 Primes'], ['boutique', '🪙 Boutique'], ['armurerie', '⚔️ Galerie'], ['mois', '⚜ Quête du mois'], ['expedition', '🧭 Expédition'], ['salle', '🛡️ Salle d’arme']];
   var html = '<div class="av-onglets">' + O.map(function (o) { return '<button class="' + (o[0] === AV_ONGLET ? 'actif' : '') + '" data-o="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
   if (AV_ONGLET === 'tresor') AV_ONGLET = 'habitudes';
   if (AV_ONGLET === 'habitudes') html += vueHabitudes(A);
@@ -3253,6 +3322,248 @@ function blocReleve(f) {
     + '<details class="rl-detail"><summary>Toutes les séances (' + R.seances.length + ')</summary>' + R.seances.slice().reverse().map(function (s) {
       return '<div class="fs ' + (s.reglee ? 'ok' : s.due ? 'du' : '') + '"><span>' + esc(s.date.split('-').reverse().join('/')) + ' ' + esc(s.heure) + '</span><span>' + esc(s.statut) + '</span><span>' + (s.due ? e(s.montant) : '—') + '</span><span>' + (s.reglee ? '✓ ' + esc(s.mode || 'réglé') : s.due ? 'à régler' : '') + '</span></div>'; }).join('') + '</details>'
     + '<div class="f-actions"><button class="f-bt" data-f="releve">📄 Envoyer le relevé au client</button>' + (f.lien ? '<a class="f-bt" href="' + esc(f.lien) + '#releve" target="_blank" rel="noopener">👁️ Voir comme le client</a>' : '') + '</div></div>';
+}
+// ---------- Salle d'arme : les Combats (séances de musculation) ----------
+// Demande de Cairn (26/11) : chrono d'effort (montant) puis de récup (descendant), 3 coups sourds puis une cloche de ring à la reprise,
+// bouton « Valider » quand les reps et le poids sont pré-remplis, temps entre deux exercices compté à part, écran gardé allumé,
+// rappel de la dernière performance, mode « gros chiffres », courbes de progression dans le bilan.
+var ARME = { data: null, c: null, timer: null, verrou: null, ac: null, chargement: false };
+function armeKg(n) { return n === null || n === undefined || n === '' ? '?' : String(Math.round(n * 100) / 100).replace('.', ','); }
+function armeT(s) { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+function armeLire(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+function armeEcrire(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function armeDemo() { return /[?&#]demo-arme/.test(location.href) ? 10 : 1; }
+
+/* ---- sons : coups sourds (compte à rebours) et cloche de ring (reprise) ---- */
+function armeCtx() { try { ARME.ac = ARME.ac || new (window.AudioContext || window.webkitAudioContext)(); if (ARME.ac.state === 'suspended') ARME.ac.resume(); } catch (e) {} return ARME.ac; }
+function armeCoup() { var a = armeCtx(); if (!a) return; var t = a.currentTime, o = a.createOscillator(), f = a.createBiquadFilter(), g = a.createGain();
+  o.type = 'triangle'; o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(90, t + 0.15); f.type = 'lowpass'; f.frequency.value = 500;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+  o.connect(f).connect(g).connect(a.destination); o.start(t); o.stop(t + 0.22); }
+function armeCloche(fois) { var a = armeCtx(); if (!a) return; for (var k = 0; k < (fois || 1); k++) { var t = a.currentTime + k * 0.45;
+  [[1, 0.35, 1.6], [2.0, 0.15, 1.0], [2.76, 0.12, 0.8], [5.4, 0.05, 0.4]].forEach(function (p) { var o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine'; o.frequency.value = 780 * p[0]; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(p[1], t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + p[2]);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + p[2] + 0.05); }); }
+  if (navigator.vibrate) navigator.vibrate(200); }
+/* ---- écran allumé pendant le combat ---- */
+function armeEcran(on) {
+  if (!on) { if (ARME.verrou) { ARME.verrou.release().catch(function () {}); ARME.verrou = null; } return; }
+  try { if ('wakeLock' in navigator) navigator.wakeLock.request('screen').then(function (v) { ARME.verrou = v; }).catch(function () {}); } catch (e) {}
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && ARME.c && ARME.c.phase !== 'fini' && ARME.c.phase !== 'pret') armeEcran(true); });
+/* ---- disques à charger sur une barre de 20 kg ---- */
+function armeDisques(p) { var r = (p - 20) / 2, out = []; if (!(r > 0)) return 'barre seule'; [20, 10, 5, 2.5, 1.25].forEach(function (d) { while (r >= d - 1e-9) { out.push(armeKg(d)); r -= d; } }); return out.join(' + '); }
+
+/* ================= accueil de la Salle d'arme ================= */
+function ouvrirSalle() { allerVue('salle'); vueSalle(); }
+function vueSalle() {
+  var v = $('v-salle'); if (!v) return;
+  if (ARME.c && ARME.c.phase !== 'fini') { armeDessiner(); return; }
+  if (!ARME.data) {
+    v.innerHTML = '<div class="vide">La salle d’arme s’ouvre…</div>';
+    if (!ARME.chargement) { ARME.chargement = true; appel('appSalle', [], function (d) { ARME.chargement = false; ARME.data = d; armeEcrire('arme-jours', d.combats.map(function (c) { return [c.jour, c.nom]; })); armeEnvoyerEnAttente(); vueSalle(); }, function () { ARME.chargement = false; }); }
+    return;
+  }
+  var A = ARME.data, enCours = armeLire('arme-encours'), attente = armeLire('arme-a-envoyer') || [];
+  var html = '<div class="arme"><div class="arme-tete"><div class="arme-titre">🛡️ Salle d’arme</div><p class="doux">' + (A.aujourdhui ? 'Aujourd’hui : combat <b>' + esc(A.aujourdhui) + '</b>' : 'Pas de combat prévu aujourd’hui.') + '</p></div>';
+  if (attente.length) html += '<div class="carte arme-alerte">⏳ ' + attente.length + ' combat' + (attente.length > 1 ? 's' : '') + ' pas encore enregistré' + (attente.length > 1 ? 's' : '') + ' (réseau). <button class="or" id="arme-renvoyer">Réessayer</button></div>';
+  if (enCours && enCours.combat && Date.now() - (enCours.maj || 0) < 6 * 3600e3) html += '<div class="carte arme-alerte">⚔ Combat <b>' + esc(enCours.combat) + '</b> interrompu (' + armeNbFaites(enCours) + ' séries notées). <button class="or" id="arme-reprendre">Reprendre</button> <button class="gris" id="arme-jeter">Abandonner</button></div>';
+  A.combats.forEach(function (c) {
+    var groupes = armeGrouper(c.exos);
+    html += '<div class="carte arme-combat' + (c.nom === A.aujourdhui ? ' du-jour' : '') + '"><div class="arme-ct"><b>⚔ ' + esc(c.nom) + '</b><small>' + esc(c.jour) + '</small></div>'
+      + groupes.map(function (g) { var e = g[0]; return '<div class="arme-ligne"><span>' + g.map(function (x) { return esc(x.nom); }).join(' <i>ou</i> ') + '</span><small>' + e.series + ' × ' + e.min + '–' + e.max + ' · ' + (e.poids === null ? 'à calibrer' : armeKg(e.poids) + ' kg') + ' · ' + armeT(e.recup) + '</small></div>'; }).join('')
+      + '<button class="plein arme-go" data-combat="' + esc(c.nom) + '">Entrer en combat</button></div>';
+  });
+  if (A.derniers && A.derniers.length) html += '<div class="carte"><div class="ch-titre">📜 Derniers combats</div>' + A.derniers.slice(0, 6).map(function (d) { return '<div class="arme-ligne"><span>' + esc(d.date.split('-').reverse().join('/')) + ' · ' + esc(d.combat) + '</span><small>' + armeT(d.duree) + ' dont ' + armeT(d.effort) + ' d’effort</small></div>'; }).join('') + '</div>';
+  html += '<p class="aide">Le programme se modifie dans la to-do list, onglet « Salle d’arme ». Un poids vide = séance de calibrage.</p></div>';
+  v.innerHTML = html;
+  v.querySelectorAll('.arme-go').forEach(function (b) { b.onclick = function () { armeNouveau(b.dataset.combat); }; });
+  if ($('arme-renvoyer')) $('arme-renvoyer').onclick = armeEnvoyerEnAttente;
+  if ($('arme-reprendre')) $('arme-reprendre').onclick = function () {
+    var c = ARME.c = enCours; c.phase = 'pret'; c.reprise = true; c.suivant = null;
+    var it = c.items[c.i]; if (it && it.log[c.s] && it.log[c.s].reps != null) { if (it.fini) { var n = armeProchain(); if (n == null) { c.debutMs = c.debutMs || Date.now(); armeDessiner(); armeFin(); return; } c.i = n; c.s = 0; } else c.s++; }
+    armeDessiner(); };
+  if ($('arme-jeter')) $('arme-jeter').onclick = function () { armeEcrire('arme-encours', null); vueSalle(); };
+}
+function armeGrouper(exos) { var g = [], par = {}; exos.forEach(function (e) { if (!par[e.ordre]) { par[e.ordre] = []; g.push(par[e.ordre]); } par[e.ordre].push(e); }); return g; }
+function armeNbFaites(c) { return c.items.reduce(function (a, it) { return a + it.log.filter(function (s) { return s.reps != null; }).length; }, 0); }
+
+/* ================= le combat ================= */
+function armeNouveau(nom) {
+  var C = ARME.data.combats.find(function (c) { return c.nom === nom; }); if (!C) return;
+  ARME.c = { cle: Date.now().toString(36), combat: nom, debut: new Date().toISOString(), t0: 0, phase: 'pret', i: 0, s: 0, totE: 0, totR: 0, totT: 0, suivant: null, gros: false,
+    items: armeGrouper(C.exos).map(function (g) {
+      var sel = 0, d = ''; g.forEach(function (e, k) { if (e.derniereDate > d) { d = e.derniereDate; sel = k; } }); // variante faite en dernier
+      return { choix: g, sel: sel, log: [], fini: false };
+    }) };
+  armeDessiner();
+}
+function armeIt() { return ARME.c.items[ARME.c.i]; }
+function armeEx(it) { it = it || armeIt(); return it.choix[it.sel]; }
+function armeSauver() { var c = ARME.c; if (!c) return; c.maj = Date.now(); var copie = JSON.parse(JSON.stringify(c)); armeEcrire('arme-encours', copie); }
+function armeProchain() { var c = ARME.c; if (c.suivant != null && !c.items[c.suivant].fini) return c.suivant; for (var k = 0; k < c.items.length; k++) if (!c.items[k].fini && k !== c.i) return k; return null; }
+function armePoidsPrevu(e, it) { var prec = it.log.filter(function (s) { return s.poids != null && s.poids !== ''; }).slice(-1)[0]; return prec ? prec.poids : (e.poids != null ? e.poids : (e.dernierPoids != null ? e.dernierPoids : '')); }
+
+function armeDessiner() {
+  var c = ARME.c, v = $('v-salle'); if (!v || !c) return;
+  var nbSeries = c.items.reduce(function (a, it) { return a + armeEx(it).series; }, 0);
+  v.innerHTML = '<div class="arme combat' + (c.gros ? ' gros' : '') + '">'
+    + '<div class="arme-tete"><div class="arme-titre">⚔ Combat ' + esc(c.combat) + '</div><div class="arme-outils"><button class="gris" id="ar-gros" aria-pressed="' + c.gros + '">Gros chiffres</button><button class="gris" id="ar-quitter">Quitter</button></div></div>'
+    + '<div class="carte ar-chrono" aria-live="polite"><div class="ar-phase" id="ar-phase">' + (c.reprise ? 'Reprise du combat' : 'Prêt au combat') + '</div><div class="ar-exo" id="ar-exo">' + esc(armeEx().nom) + '</div><div class="doux" id="ar-info">' + c.items.length + ' exercices · ' + nbSeries + ' séries</div>'
+    + '<div class="ar-derniere" id="ar-derniere" hidden></div>'
+    + '<div class="ar-anneau"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="45" fill="none" stroke="var(--trait)" stroke-width="4"/><circle id="ar-arc" cx="50" cy="50" r="45" fill="none" stroke="var(--ar-or)" stroke-width="5" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="0"/></svg>'
+    + '<div class="ar-temps"><b id="ar-temps">0:00</b><span id="ar-tlib">touche pour commencer</span></div></div>'
+    + '<div class="ar-charge" id="ar-charge" hidden></div>'
+    + '<div class="ar-saisie" id="ar-saisie" hidden><div><label for="ar-reps">Reps faites</label><div class="ar-pas"><button data-c="ar-reps" data-p="-1" aria-label="Une rep de moins">−</button><input id="ar-reps" type="number" inputmode="numeric"><button data-c="ar-reps" data-p="1" aria-label="Une rep de plus">+</button></div></div>'
+    + '<div><label for="ar-poids">Poids (kg)</label><div class="ar-pas"><button data-c="ar-poids" data-p="-1" aria-label="Moins lourd">−</button><input id="ar-poids" type="number" inputmode="decimal" step="0.5" placeholder="?"><button data-c="ar-poids" data-p="1" aria-label="Plus lourd">+</button></div></div></div>'
+    + '<p class="aide" id="ar-aide">Trois coups sourds, puis la cloche : c’est la reprise.</p>'
+    + '<div class="ar-boutons"><button class="ar-grand" id="ar-principal">' + (c.reprise ? 'Reprendre le combat' : 'Commencer le combat') + '</button><button class="gris" id="ar-plus15" hidden>+15 s</button><button class="gris" id="ar-passer" hidden>Reprendre maintenant</button></div>'
+    + '<button class="ar-lien" id="ar-finexo" hidden>Terminer cet exercice maintenant</button></div>'
+    + '<div class="carte ar-totaux ar-masque"><div><b id="ar-te" class="e">0:00</b><span>effort</span></div><div><b id="ar-tr" class="r">0:00</b><span>récup</span></div><div><b id="ar-tt" class="t">0:00</b><span>inter-exos</span></div><div><b id="ar-td">0:00</b><span>combat</span></div></div>'
+    + '<div class="carte ar-masque"><div class="ch-titre">Ordre de bataille</div><div id="ar-bataille"></div></div>'
+    + '<div class="carte" id="ar-bilan" hidden></div></div>';
+  $('ar-principal').onclick = armePrincipal;
+  $('ar-plus15').onclick = function () { if (c.phase === 'compte') { c.phase = c.pause; c.fin = Date.now() + 3000; } c.fin += 15000 / armeDemo(); c.duree += 15 / armeDemo(); c.top = null; };
+  $('ar-passer').onclick = function () { if (c.phase !== 'compte') c.fin = Math.min(c.fin, Date.now() + 3000); };
+  $('ar-finexo').onclick = function () { if (c.phase !== 'effort') return; var it = armeIt(); it.coupe = it.log.length + 1; armeFinEffort(); };
+  $('ar-gros').onclick = function () { c.gros = !c.gros; v.querySelector('.arme').classList.toggle('gros', c.gros); document.documentElement.classList.toggle('arme-gros', c.gros); this.setAttribute('aria-pressed', c.gros); };
+  $('ar-quitter').onclick = function () { if (c.phase === 'pret' || c.phase === 'fini' || this.dataset.sur) { armeArreter(); armeSauver(); if (c.phase === 'fini') armeEcrire('arme-encours', null); ARME.c = null; vueSalle(); } else { this.dataset.sur = 1; this.textContent = 'Quitter ? (il reste dans « reprendre »)'; } };
+  v.querySelectorAll('[data-c]').forEach(function (b) { b.onclick = function () { var i = $(b.dataset.c), e = armeEx(), pas = b.dataset.c === 'ar-poids' ? (e.pas || 2.5) : 1; i.value = Math.max(0, Math.round(((+i.value || 0) + (+b.dataset.p) * pas) * 100) / 100); c.valide = false; armeMajValider(); }; });
+  ['ar-reps', 'ar-poids'].forEach(function (id) { $(id).oninput = function () { c.valide = false; armeMajValider(); }; });
+  document.documentElement.classList.toggle('arme-gros', !!c.gros);
+  armeBataille();
+  if (c.phase === 'fini') armeBilan();
+}
+function armePhase(nom, coul) { $('ar-phase').textContent = nom; $('ar-phase').style.color = 'var(' + coul + ')'; $('ar-principal').style.background = 'var(' + coul + ')'; $('ar-principal').classList.remove('valide'); }
+function armeArc(f, coul) { var a = $('ar-arc'); if (!a) return; a.style.strokeDashoffset = 282.7 * (1 - f); a.style.stroke = 'var(' + coul + ')'; }
+function armeVisible(id, on) { var e = $(id); if (e) e.hidden = !on; }
+
+function armeBataille() {
+  var c = ARME.c, z = $('ar-bataille'); if (!z) return;
+  var proch = c.phase === 'transition' || (c.phase === 'compte' && c.pause === 'transition') ? armeProchain() : null;
+  z.innerHTML = c.items.map(function (it, k) {
+    var e = armeEx(it), cls = it.fini ? 'fait' : ((k === c.i && c.phase !== 'pret' && proch === null) || k === proch ? 'encours' : '');
+    var pts = ''; for (var n = 0; n < e.series; n++) { var s = it.log[n]; pts += '<i class="' + (s && s.reps != null ? 'f' : (k === c.i && n === c.s && c.phase === 'effort' ? 'c' : '')) + '"></i>'; }
+    var variantes = it.choix.length > 1 && !it.log.length ? '<div class="ar-var">' + it.choix.map(function (x, j) { return '<button class="' + (j === it.sel ? 'actif' : '') + '" data-it="' + k + '" data-v="' + j + '">' + esc(x.nom) + '</button>'; }).join('') + '</div>' : '';
+    var choix = (c.phase === 'transition' || (c.phase === 'compte' && c.pause === 'transition')) && !it.fini && k !== proch ? '<button class="ar-choisir" data-choix="' + k + '">Faire celui-ci à la place</button>' : '';
+    var lignes = it.log.map(function (s, n) { return '<tr><td>' + (n + 1) + '</td><td>' + (s.reps == null ? '–' : '<span class="' + (s.reps < e.min ? 'moins' : s.reps >= e.max ? 'plus' : '') + '">' + s.reps + ' × ' + armeKg(s.poids) + '</span>') + '</td><td>' + armeT(s.effort) + '</td><td>' + (s.recup != null ? armeT(s.recup) : '–') + '</td></tr>'; }).join('');
+    return '<details class="ar-it ' + cls + '"' + (cls === 'encours' ? ' open' : '') + '><summary><span class="ar-sceau">' + (it.fini ? '✓' : ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'][k]) + '</span><span class="ar-nom">' + esc(e.nom) + '<small>' + e.series + ' × ' + e.min + '–' + e.max + ' · ' + (e.poids == null ? 'à calibrer' : armeKg(e.poids) + ' kg') + ' · récup ' + armeT(e.recup) + '</small></span><span class="ar-pts">' + pts + '</span></summary>'
+      + variantes + choix + (lignes ? '<div class="ar-det"><table><thead><tr><th>Série</th><th>Fait</th><th>Effort</th><th>Récup</th></tr></thead><tbody>' + lignes + '</tbody></table></div>' : '') + '</details>';
+  }).join('');
+  z.querySelectorAll('[data-choix]').forEach(function (b) { b.onclick = function (ev) { ev.preventDefault(); c.suivant = +b.dataset.choix; armeCharge(); armeBataille(); }; });
+  z.querySelectorAll('[data-v]').forEach(function (b) { b.onclick = function (ev) { ev.preventDefault(); c.items[+b.dataset.it].sel = +b.dataset.v; armeSauver(); if (+b.dataset.it === c.i && c.phase !== 'transition') { $('ar-exo').textContent = armeEx().nom; } armeCharge(); armeBataille(); }; });
+}
+function armeCharge() {
+  var c = ARME.c, n = armeProchain(); if (n == null) { armeVisible('ar-charge', false); return; }
+  var it = c.items[n], e = armeEx(it), p = armePoidsPrevu(e, it);
+  $('ar-exo').textContent = 'Prochain : ' + e.nom; armeVisible('ar-charge', true);
+  $('ar-charge').innerHTML = p === '' ? '<b>À PRÉPARER</b><br>' + esc(e.materiel || 'le matériel') + ' · poids à choisir (calibrage)'
+    : /barre/i.test(e.materiel) ? '<b>À CHARGER</b><br>' + armeKg(p) + ' kg = barre 20 kg + par côté ' + armeDisques(p)
+    : '<b>À PRÉPARER</b><br>' + esc(e.materiel || '') + ' · ' + armeKg(p) + ' kg';
+}
+function armeDerniere() {
+  var c = ARME.c, e = armeEx(); if (!e.derniere || !e.derniere.length) { armeVisible('ar-derniere', false); return; }
+  armeVisible('ar-derniere', true);
+  $('ar-derniere').innerHTML = '<span>La dernière fois :</span>' + e.derniere.map(function (r, k) { return '<b class="' + (k === c.s ? 'ici' : '') + '">' + (r == null ? '–' : r) + '</b>'; }).join('') + (e.dernierPoids != null ? '<span>à ' + armeKg(e.dernierPoids) + ' kg</span>' : '');
+}
+function armeLancerEffort() {
+  var c = ARME.c, e = armeEx(); c.phase = 'effort'; c.t0 = Date.now(); c.pause = null; c.reprise = false;
+  armePhase('Effort', '--ar-effort'); armeVisible('ar-charge', false); $('ar-temps').classList.remove('compte');
+  $('ar-exo').textContent = e.nom; $('ar-info').textContent = 'Série ' + (c.s + 1) + ' / ' + e.series + ' · objectif ' + e.min + '–' + e.max + ' reps' + (e.poids != null ? ' à ' + armeKg(e.poids) + ' kg' : ' (calibrage)');
+  $('ar-tlib').textContent = 'effort en cours'; $('ar-principal').textContent = 'Série terminée';
+  ['ar-saisie', 'ar-plus15', 'ar-passer'].forEach(function (id) { armeVisible(id, false); }); armeVisible('ar-finexo', true);
+  $('ar-aide').textContent = 'Appuie dès que tu poses la charge.'; armeDerniere(); armeBataille();
+}
+function armeEnregistrerSaisie() { var c = ARME.c, s = armeIt().log[c.s]; if (!s) return; s.reps = $('ar-reps').value === '' ? null : +$('ar-reps').value; s.poids = $('ar-poids').value === '' ? null : +$('ar-poids').value; armeSauver(); }
+function armeMajValider() { var c = ARME.c; if (!/recup|transition|compte/.test(c.phase) || c.pause === 'depart') return; var p = $('ar-poids').value;
+  $('ar-principal').classList.toggle('valide', !!c.valide); $('ar-principal').textContent = c.valide ? '✓ Validé' : 'Valider ' + $('ar-reps').value + (p !== '' ? ' × ' + armeKg(+p) + ' kg' : ' reps'); }
+function armeFinEffort() {
+  var c = ARME.c, it = armeIt(), e = armeEx(), effort = (Date.now() - c.t0) / 1000; c.totE += effort;
+  it.log[c.s] = { reps: e.min, poids: armePoidsPrevu(e, it), effort: effort, recup: null, pause: '' };
+  $('ar-reps').value = e.min; $('ar-poids').value = it.log[c.s].poids; armeEnregistrerSaisie(); c.valide = false;
+  armeVisible('ar-saisie', true); armeVisible('ar-finexo', false);
+  var dern = c.s >= e.series - 1 || (it.coupe && c.s >= it.coupe - 1);
+  if (dern) { it.fini = true; if (it.coupe) e.series = c.s + 1; }
+  if (dern && armeProchain() == null) { armeFin(); return; }
+  c.phase = dern ? 'transition' : 'recup'; c.suivant = null; c.duree = (dern ? (ARME.data.transition || 180) : e.recup) / armeDemo(); c.t0 = Date.now(); c.fin = c.t0 + c.duree * 1000; c.top = null;
+  if (dern) { armeVisible('ar-derniere', false); armePhase('Entre deux exercices', '--ar-transit'); $('ar-tlib').textContent = 'prépare ton matériel'; $('ar-info').textContent = e.nom + ' terminé ✓'; armeCharge(); $('ar-passer').textContent = 'Matériel prêt'; $('ar-aide').textContent = 'Machine prise ? Choisis un autre exercice dans l’ordre de bataille.'; }
+  else { armePhase('Récupération', '--ar-recup'); $('ar-tlib').textContent = 'avant la reprise'; $('ar-info').textContent = 'Ensuite : série ' + (c.s + 2) + ' / ' + e.series; $('ar-passer').textContent = 'Reprendre maintenant'; $('ar-aide').textContent = 'Valide tel quel, ou ajuste d’abord avec − et +.'; }
+  armeVisible('ar-plus15', true); armeVisible('ar-passer', true); armeMajValider(); armeBataille(); armeSauver();
+}
+function armeFinPause() {
+  var c = ARME.c;
+  if (c.pause === 'depart') { armeCloche(1); armeLancerEffort(); return; }
+  armeEnregistrerSaisie(); var s = armeIt().log[c.s], t = (Date.now() - c.t0) / 1000 * armeDemo();
+  s.recup = t; s.pause = c.pause === 'transition' ? 'inter-exercice' : 'récup';
+  if (c.pause === 'transition') { c.totT += t; c.i = armeProchain(); c.s = 0; } else { c.totR += t; c.s++; }
+  armeSauver(); armeCloche(1); armeLancerEffort();
+}
+function armeTic() {
+  var c = ARME.c; if (!c || !$('ar-temps')) return; var now = Date.now();
+  if (c.phase === 'effort') { var t = (now - c.t0) / 1000; $('ar-temps').textContent = armeT(t); armeArc(Math.min(1, (t % 60) / 60), '--ar-effort'); }
+  if (c.phase === 'recup' || c.phase === 'transition') { var reste = (c.fin - now) / 1000;
+    if (reste <= 3) { c.pause = c.phase; c.phase = 'compte'; armePhase('Reprise', '--ar-or'); armeMajValider(); }
+    else { $('ar-temps').textContent = armeT(Math.ceil(reste)); armeArc(Math.max(0, reste / c.duree), c.phase === 'recup' ? '--ar-recup' : '--ar-transit'); } }
+  if (c.phase === 'compte') { var r = (c.fin - now) / 1000, n = Math.ceil(r);
+    if (n >= 1 && n !== c.top) { c.top = n; armeCoup(); }
+    $('ar-temps').textContent = n >= 1 ? n : '0'; $('ar-temps').classList.add('compte'); $('ar-tlib').textContent = 'prépare-toi'; armeArc(Math.max(0, r / 3), '--ar-or');
+    if (r <= 0) armeFinPause(); }
+  var enPause = /recup|transition|compte/.test(c.phase) && c.pause !== 'depart' ? (now - c.t0) / 1000 * armeDemo() : 0, typ = c.phase === 'compte' ? c.pause : c.phase;
+  $('ar-te').textContent = armeT(c.totE + (c.phase === 'effort' ? (now - c.t0) / 1000 : 0));
+  $('ar-tr').textContent = armeT(c.totR + (typ === 'recup' ? enPause : 0)); $('ar-tt').textContent = armeT(c.totT + (typ === 'transition' ? enPause : 0));
+  if (c.phase !== 'fini' && c.debutMs) $('ar-td').textContent = armeT((now - c.debutMs) / 1000);
+}
+function armeArreter() { clearInterval(ARME.timer); ARME.timer = null; armeEcran(false); document.documentElement.classList.remove('arme-gros'); }
+function armePrincipal() {
+  var c = ARME.c;
+  if (c.phase === 'pret') { armeCtx(); armeEcran(true); if (!c.debutMs) c.debutMs = Date.now(); clearInterval(ARME.timer); ARME.timer = setInterval(armeTic, 100);
+    c.phase = 'compte'; c.pause = 'depart'; c.fin = Date.now() + 3000; c.top = null; armePhase('Reprise', '--ar-or'); $('ar-principal').textContent = '…'; }
+  else if (c.phase === 'effort') armeFinEffort();
+  else if (/recup|transition|compte/.test(c.phase) && c.pause !== 'depart') { armeEnregistrerSaisie(); c.valide = true; armeMajValider(); armeBataille(); }
+}
+function armeFin() {
+  var c = ARME.c; c.phase = 'fini'; c.dureeTot = (Date.now() - c.debutMs) / 1000; armeArreter(); armeCloche(3);
+  armePhase('Combat terminé', '--ar-or'); $('ar-exo').textContent = 'Victoire !'; $('ar-info').textContent = 'Enregistrement dans la salle d’arme…';
+  ['ar-principal', 'ar-saisie', 'ar-plus15', 'ar-passer', 'ar-charge', 'ar-finexo', 'ar-derniere'].forEach(function (id) { armeVisible(id, false); }); $('ar-aide').textContent = '';
+  armeArc(1, '--ar-or'); $('ar-tlib').textContent = 'durée du combat'; $('ar-temps').classList.remove('compte'); $('ar-temps').textContent = armeT(c.dureeTot); $('ar-td').textContent = armeT(c.dureeTot);
+  var series = []; c.items.forEach(function (it) { var e = armeEx(it); it.log.forEach(function (s, n) { if (s && s.reps != null) series.push({ exo: e.nom, serie: n + 1, visees: e.min + '–' + e.max, reps: s.reps, poids: s.poids, effort: s.effort, recup: s.recup, pause: s.pause }); }); });
+  var envoi = { cle: c.cle, combat: c.combat, debut: c.debut, duree: c.dureeTot, effort: c.totE, recup: c.totR, transit: c.totT, series: series };
+  var attente = armeLire('arme-a-envoyer') || []; attente.push(envoi); armeEcrire('arme-a-envoyer', attente); armeEcrire('arme-encours', null);
+  armeBataille(); armeBilan();
+  armeEnvoyer(envoi, function (r) { c.resultat = r; $('ar-info').textContent = (r.xp ? '+' + r.xp + ' XP · ' : '') + 'combat enregistré dans la salle d’arme'; armeBilan(); ARME.data = null; },
+    function () { $('ar-info').textContent = 'Pas de réseau : le combat est gardé sur le téléphone et partira à la prochaine ouverture.'; });
+}
+function armeEnvoyer(envoi, ok, ko) {
+  appel('appSalleEnregistrer', [envoi], function (r) { armeEcrire('arme-a-envoyer', (armeLire('arme-a-envoyer') || []).filter(function (x) { return x.cle !== envoi.cle; })); if (ok) ok(r); }, ko);
+}
+function armeEnvoyerEnAttente() { (armeLire('arme-a-envoyer') || []).forEach(function (e) { armeEnvoyer(e, function () { toast('⚔ Combat ' + e.combat + ' enregistré'); }); }); }
+function armeBilan() {
+  var c = ARME.c, z = $('ar-bilan'); if (!z) return; z.hidden = false;
+  var prog = (c.resultat && c.resultat.progression) || [];
+  var html = '<div class="ch-titre">Bilan du combat</div><div class="ar-totaux"><div><b class="e">' + armeT(c.totE) + '</b><span>effort</span></div><div><b class="r">' + armeT(c.totR) + '</b><span>récup</span></div><div><b class="t">' + armeT(c.totT) + '</b><span>inter-exos</span></div><div><b>' + armeT(c.dureeTot) + '</b><span>combat</span></div></div>';
+  html += '<div class="ar-verdicts">' + (prog.length ? prog.map(function (p) { return '<div><span>' + esc(p.exo) + '</span><em>' + esc(p.msg) + (p.apres != null ? ' → ' + armeKg(p.apres) + ' kg' : '') + '</em></div>'; }).join('') : '<div class="doux">La progression s’affiche dès que le combat est enregistré.</div>') + '</div>';
+  html += '<div class="ch-titre">Progression</div><p class="doux">Combats précédents, et aujourd’hui en doré.</p>';
+  html += c.items.map(function (it) {
+    var e = armeEx(it), s = it.log.filter(function (x) { return x && x.reps != null; }); if (!s.length) return '';
+    var r = s.filter(function (x) { return x.recup != null; });
+    var auj = [Math.max.apply(null, s.map(function (x) { return +x.poids || 0; })), s.reduce(function (a, x) { return a + x.reps; }, 0) / s.length, r.length ? r.reduce(function (a, x) { return a + x.recup; }, 0) / r.length : e.recup];
+    var serie = (e.hist || []).map(function (h) { return h.slice(1); }).concat([auj]);
+    function mini(k, lib, col, f) { var v = serie.map(function (x) { return x[k]; }), mn = Math.min.apply(null, v), mx = Math.max.apply(null, v), W = 100, H = 30, pad = 4;
+      function pt(x, j) { return [v.length > 1 ? pad + j * (W - 2 * pad) / (v.length - 1) : W / 2, H - pad - (mx === mn ? 0.5 : (x - mn) / (mx - mn)) * (H - 2 * pad)]; }
+      var last = pt(v[v.length - 1], v.length - 1);
+      return '<div class="ar-mini"><span>' + lib + '</span><b style="color:var(' + col + ')">' + f(v[v.length - 1]) + '</b><svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true">' + (v.length > 1 ? '<polyline points="' + v.map(function (x, j) { return pt(x, j).join(','); }).join(' ') + '" fill="none" stroke="var(' + col + ')" stroke-width="1.6" vector-effect="non-scaling-stroke"/>' : '') + '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="3" fill="var(--ar-or)"/></svg></div>'; }
+    return '<div class="ar-cexo"><b>' + esc(e.nom) + '</b><div class="ar-trio">' + mini(0, 'Poids', '--texte', function (x) { return armeKg(x) + ' kg'; }) + mini(1, 'Reps moy.', '--ar-effort', function (x) { return armeKg(Math.round(x * 10) / 10); }) + mini(2, 'Récup moy.', '--ar-recup', armeT) + '</div></div>';
+  }).join('');
+  html += '<button class="plein" id="ar-retour">Retour à la salle d’arme</button>';
+  z.innerHTML = html;
+  $('ar-retour').onclick = function () { ARME.c = null; vueSalle(); };
+}
+
+/** Carte « combat du jour » sur la page Aujourd'hui (jours mémorisés à la dernière ouverture de la salle d'arme). */
+function blocCombatDuJour() {
+  var jours = armeLire('arme-jours') || [], j = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'][new Date().getDay()];
+  var c = jours.filter(function (x) { return x[0] === j; })[0]; if (!c) return '';
+  return '<button class="carte arme-jour" onclick="ouvrirSalle()"><span>⚔ <b>Combat ' + esc(c[1]) + '</b> aujourd’hui</span><em>Entrer en salle d’arme ›</em></button>';
 }
 
 // =================== RITUELS (25/11) : les Rites de l'aube (en tête des quêtes du jour) et les Rituels du crépuscule (en fin) ===================
