@@ -11,17 +11,17 @@
  "lang": "fr",
  "icons": [
   {
-   "src": "icone-192.png",
+   "src": "icone-flamme-192.png",
    "sizes": "192x192",
    "type": "image/png"
   },
   {
-   "src": "icone-512.png",
+   "src": "icone-flamme-512.png",
    "sizes": "512x512",
    "type": "image/png"
   },
   {
-   "src": "icone-512.png",
+   "src": "icone-flamme-512.png",
    "sizes": "512x512",
    "type": "image/png",
    "purpose": "maskable"
@@ -34,7 +34,7 @@
    "url": "./?vue=jour",
    "icons": [
     {
-     "src": "icone-192.png",
+     "src": "icone-flamme-192.png",
      "sizes": "192x192"
     }
    ]
@@ -45,7 +45,7 @@
    "url": "./?vue=taches&saisie=1",
    "icons": [
     {
-     "src": "icone-192.png",
+     "src": "icone-flamme-192.png",
      "sizes": "192x192"
     }
    ]
@@ -56,7 +56,7 @@
    "url": "./?vue=sms",
    "icons": [
     {
-     "src": "icone-192.png",
+     "src": "icone-flamme-192.png",
      "sizes": "192x192"
     }
    ]
@@ -67,7 +67,7 @@
    "url": "./?vue=presages",
    "icons": [
     {
-     "src": "icone-192.png",
+     "src": "icone-flamme-192.png",
      "sizes": "192x192"
     }
    ]
