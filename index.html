@@ -1159,6 +1159,7 @@ if (!CLE) document.addEventListener('DOMContentLoaded', function () {
   };
 });
 if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+if ('serviceWorker' in navigator && navigator.serviceWorker.controller) navigator.serviceWorker.addEventListener('controllerchange', function () { if (!window.__recharge) { window.__recharge = true; location.reload(); } });
 </script>
 <script>
 var LIBELLES = { 'Prêt à envoyer': 'Sceller et envoyer', 'Ignorer': 'Jeter au feu', 'Valider': 'Accepter', 'Refuser': 'Éconduire', 'Lu ✓': 'Missive lue', 'Répondre': 'Répondre' };
@@ -1180,7 +1181,7 @@ function diagnostic_() {
     var v = document.querySelector('.vue.actif'), vide = !v || !v.innerText.trim();
     if (!vide && !DIAG_ERR.length) return;
     var r = v ? v.getBoundingClientRect() : null, o = document.querySelector('.rituel-ecran'), info = [
-      'Version appli : v54', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
+      'Version appli : v55', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
       'Taille : ' + (r ? Math.round(r.width) + '×' + Math.round(r.height) : '?') + ' · classes : ' + document.documentElement.className, 'Rituel ouvert : ' + (o ? 'oui (' + o.dataset.m + ')' : 'non'),
       'Données : ' + (D ? Object.keys(D).join(', ') : 'aucune') + (D && D.jour ? '' : ' · jour absent'), 'Erreurs : ' + (DIAG_ERR.length ? DIAG_ERR.slice(-5).join(' | ') : 'aucune')];
     var b = document.getElementById('diag') || document.createElement('div'); b.id = 'diag';
@@ -2046,7 +2047,7 @@ function tableau(section, n) {
 // La journée en cours ne peut que faire monter : on retient la meilleure des deux moyennes
 // (les N derniers jours complets, ou les N−1 derniers + aujourd'hui).
 function etatRenommee() {
-  var j = D.xpJours || [], N = D.nbJours || 7, P = D.palier || 20;   // j : XP des N derniers jours complets + aujourd'hui (dernier)
+  var Dx = D || {}, j = Dx.xpJours || [], N = Dx.nbJours || 7, P = Dx.palier || 20;   // j : XP des N derniers jours complets + aujourd'hui (dernier)
   var somme = function (a) { return a.reduce(function (s, x) { return s + x; }, 0); };
   var complets = j.slice(0, -1), auj = j[j.length - 1] || 0;
   var moyA = somme(complets.slice(-N)) / N, moyB = (somme(complets.slice(-(N - 1))) + auj) / N, moy = Math.max(moyA, moyB);
