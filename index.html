@@ -1170,10 +1170,12 @@ function appel(fn, args, ok, ko) {
   var r = google.script.run.withSuccessHandler(ok || function () {}).withFailureHandler(function (e) { toast('⚠️ ' + (e && e.message || e)); if (ko) ko(e); charger(); });
   r[fn].apply(r, [CLE].concat(args || []));
 }
+// 26/11 : toute erreur d'affichage est montrée à l'écran (au lieu d'une page vide)
+window.addEventListener('error', function (ev) { try { var v = document.querySelector('.vue.actif') || $('v-jour'); if (v && !v.querySelector('.erreur-js')) v.insertAdjacentHTML('afterbegin', '<div class="vide erreur-js">⚠️ Erreur d’affichage : ' + esc(String(ev.message || ev.error || '?')) + (ev.lineno ? ' (ligne ' + ev.lineno + ')' : '') + '</div>'); } catch (x) {} });
 function charger() {
   $('rafraichir').disabled = true;
   google.script.run.withSuccessHandler(function (d) { D = d; $('rafraichir').disabled = false; afficher(); })
-    .withFailureHandler(function (e) { $('rafraichir').disabled = false; $('v-taches').innerHTML = '<div class="vide">⚠️ ' + esc(e.message || e) + '</div>'; })
+    .withFailureHandler(function (e) { $('rafraichir').disabled = false; var m = '<div class="vide">⚠️ Le Journal n’a pas pu charger : ' + esc(e.message || e) + '</div>'; $('v-taches').innerHTML = m; $('v-jour').innerHTML = m; })
     .appDonnees(CLE);
 }
 function afficher() {
