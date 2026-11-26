@@ -1187,7 +1187,7 @@ function diagnostic_() {
     var v = document.querySelector('.vue.actif'), vide = !v || !v.innerText.trim();
     if (!vide && !DIAG_ERR.length) return;
     var r = v ? v.getBoundingClientRect() : null, o = document.querySelector('.rituel-ecran'), info = [
-      'Version appli : v60', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
+      'Version appli : v61', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
       'Taille : ' + (r ? Math.round(r.width) + '×' + Math.round(r.height) : '?') + ' · classes : ' + document.documentElement.className, 'Rituel ouvert : ' + (o ? 'oui (' + o.dataset.m + ')' : 'non'),
       'Données : ' + (D ? Object.keys(D).join(', ') : 'aucune') + (D && D.jour ? '' : ' · jour absent'), 'Erreurs : ' + (DIAG_ERR.length ? DIAG_ERR.slice(-5).join(' | ') : 'aucune')];
     var b = document.getElementById('diag') || document.createElement('div'); b.id = 'diag';
@@ -4084,7 +4084,7 @@ function nqChamps_() {
   var auj = isoJ(new Date());
   return '<div class="nq-dates"><label>🗓 Ouverture<input type="date" id="nv-debut" value="' + auj + '"></label>'
     + '<label>⏳ Date butoir<input type="date" id="nv-ech"></label></div>'
-    + '<label class="nq-imp">⭐ Importance<select id="nv-xp"><option value="">deviné (selon le chapitre)</option><option value="30">Capitale · 30 XP</option><option value="20">Haute · 20 XP</option><option value="10">Normale · 10 XP</option><option value="5">Petite · 5 XP</option></select></label>'
+    + '<label class="nq-imp">⭐ Importance<select id="nv-xp"><option value="">deviné (selon le chapitre)</option><option value="30">👑 Régalienne · 30 XP</option><option value="20">⚔️ Cruciale · 20 XP</option><option value="10">📜 Banale · 10 XP</option><option value="5">🪶 Broutille · 5 XP</option></select></label>'
     + '<label class="nq-ev"><input type="checkbox" id="nv-ev"> 📅 Proposer aussi un événement dans l’agenda</label>'
     + '<div class="nq-ev-zone" id="nv-ev-zone" hidden><input type="date" id="nv-ev-date" value="' + auj + '"><input type="time" id="nv-ev-h" value="09:00">'
     + '<select id="nv-ev-duree"><option value="30">30 min</option><option value="60" selected>1 h</option><option value="90">1 h 30</option><option value="120">2 h</option></select></div>';
