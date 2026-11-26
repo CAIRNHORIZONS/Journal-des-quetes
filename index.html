@@ -812,6 +812,9 @@ html body .rail .r-ico.campagne{width:40px;height:40px;border-radius:50%!importa
 .nq-dates input,.nq-ev-zone input,.nq-ev-zone select{font:inherit;font-size:14px;padding:5px 6px;border:1px solid var(--trait);border-radius:8px;background:var(--carte);color:var(--texte);min-width:0}
 .nq-ev{display:flex;align-items:center;gap:6px;font-size:13px;margin:6px 0 2px}.nq-ev-zone{display:flex;gap:6px;flex-wrap:wrap}.nq-ev-zone[hidden]{display:none}
 .nq-imp{display:flex;align-items:center;gap:8px;font-size:13px;margin:6px 0 2px;color:var(--doux)}.nq-imp select{flex:1;font:inherit;font-size:14px;padding:5px 6px;border:1px solid var(--trait);border-radius:8px;background:var(--carte);color:var(--texte)}
+/* 26/11 : bouton « Inscrire » tout en bas de la fenêtre ; parchemin qui s'envole */
+.nq-bas{display:flex;margin-top:12px}.nq-bas #nv-ok{flex:1!important;width:100%;padding:12px}
+.nq-envol{position:fixed;z-index:60;font-size:28px;pointer-events:none;will-change:transform,opacity}
 :root.nuit{--fond:#17110b;--carte:#2a1f14;--texte:#f0e2c2;--doux:#c3a87c;--trait:#5b4429;--bleu:#e0b25a;--bleu-clair:#3a2b18;--rouge:#e0715e;--rouge-clair:#3b1a14;--vert:#9cbf6e;--vert-clair:#25301a;--orange:#f0b955;--orange-clair:#3b2c12;--or:#d9a441;--encre:#f0e2c2;--neutre:#d9c9a8}
 /* ===== C : manuscrit enluminé. Plus de cartes : une page de parchemin, enluminures, lettrines, sceaux de cire ===== */
 html:is([data-esth="C"],[data-esth="Cn"]){--texte:#3b2a18!important;--doux:#7a6448!important;--carte:#f3e5c4!important;--fond:#ead7ac!important;--trait:#c4a66e!important}
@@ -1187,7 +1190,7 @@ function diagnostic_() {
     var v = document.querySelector('.vue.actif'), vide = !v || !v.innerText.trim();
     if (!vide && !DIAG_ERR.length) return;
     var r = v ? v.getBoundingClientRect() : null, o = document.querySelector('.rituel-ecran'), info = [
-      'Version appli : v63', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
+      'Version appli : v64', 'Vue : ' + VUE + ' / section active : ' + (v ? v.id : 'aucune'), 'Texte de la page : ' + (v ? v.innerText.trim().length : 0) + ' car. · html ' + (v ? v.innerHTML.length : 0),
       'Taille : ' + (r ? Math.round(r.width) + '×' + Math.round(r.height) : '?') + ' · classes : ' + document.documentElement.className, 'Rituel ouvert : ' + (o ? 'oui (' + o.dataset.m + ')' : 'non'),
       'Données : ' + (D ? Object.keys(D).join(', ') : 'aucune') + (D && D.jour ? '' : ' · jour absent'), 'Erreurs : ' + (DIAG_ERR.length ? DIAG_ERR.slice(-5).join(' | ') : 'aucune')];
     var b = document.getElementById('diag') || document.createElement('div'); b.id = 'diag';
@@ -1762,7 +1765,7 @@ function vueTaches() {
     var txt = $('nv-tache').value.trim(); if (!txt) return;
     var sec = $('nv-section').value, nqo = nqLire_(); $('nv-tache').value = ''; $('nv-ok').disabled = true; nqFermer_();
     appel('appAjouterTache', [txt, sec, nqo && nqo.xp ? nqo.xp : ''], function (t) {
-      $('nv-ok').disabled = false; if (t) nqConfirmer_();
+      $('nv-ok').disabled = false; if (t) nqConfirmer_(t, nqo);
       if (t && t.presage) { toast(t.msg); charger(); return; }
       D.taches.push(t); afficher(); nqApres_(t, nqo); if (t.recurrence) toast('Quête récurrente inscrite (' + t.recurrence.replace(':', ' ') + ') 🔁');
       toast('Quête inscrite au chapitre « ' + t.section + ' »' + (t.echeance ? ' pour ' + t.echeance : '') + (t.aVenir ? ' (dès ' + t.debut + ')' : ''));
@@ -4088,10 +4091,12 @@ function nqChamps_() {
     + '<label class="nq-imp">⭐ Importance<select id="nv-xp"><option value="">deviné (selon le chapitre)</option><option value="30">👑 Régalienne · 30 XP</option><option value="20">⚔️ Cruciale · 20 XP</option><option value="10">📜 Banale · 10 XP</option><option value="5">🪶 Broutille · 5 XP</option></select></label>'
     + '<label class="nq-ev"><input type="checkbox" id="nv-ev"> 📅 Proposer aussi un événement dans l’agenda</label>'
     + '<div class="nq-ev-zone" id="nv-ev-zone" hidden><input type="date" id="nv-ev-date" value="' + auj + '"><input type="time" id="nv-ev-h" value="09:00">'
-    + '<select id="nv-ev-duree"><option value="30">30 min</option><option value="60" selected>1 h</option><option value="90">1 h 30</option><option value="120">2 h</option></select></div>';
+    + '<select id="nv-ev-duree"><option value="15">15 min</option><option value="30" selected>30 min</option><option value="60">1 h</option></select></div>'
+    + '<div class="nq-bas" id="nq-bas"></div>';
 }
 function nqBrancher_() {
   var d = $('nv-debut'), e = $('nv-ech'), cb = $('nv-ev'); if (!d || !cb) return;
+  if ($('nq-bas') && $('nv-ok')) $('nq-bas').appendChild($('nv-ok')); // 26/11 : « Inscrire » en bas, après les réglages
   [d, e].forEach(function (x) { x.onchange = function () { x.dataset.touche = '1'; if ($('nv-ev-date') && !$('nv-ev-date').dataset.touche) $('nv-ev-date').value = e.value || d.value; }; });
   $('nv-ev-date').onchange = function () { this.dataset.touche = '1'; };
   cb.onchange = function () { $('nv-ev-zone').hidden = !cb.checked; };
@@ -4099,7 +4104,7 @@ function nqBrancher_() {
 function nqLire_() { // à lire AVANT l'envoi (le formulaire est vidé ensuite)
   var d = $('nv-debut'), e = $('nv-ech'); if (!d) return null;
   return { xp: $('nv-xp') ? +$('nv-xp').value || 0 : 0, debut: d.dataset.touche || e.dataset.touche ? d.value : null, ech: d.dataset.touche || e.dataset.touche ? e.value : null,
-    ev: $('nv-ev').checked ? { date: $('nv-ev-date').value, h: $('nv-ev-h').value || '09:00', duree: +$('nv-ev-duree').value || 60 } : null };
+    ev: $('nv-ev').checked ? { date: $('nv-ev-date').value, h: $('nv-ev-h').value || '09:00', duree: +$('nv-ev-duree').value || 30 } : null };
 }
 function nqApres_(t, o) {
   if (!o || !t || !t.n) return;
@@ -4115,21 +4120,73 @@ function nqApres_(t, o) {
 // 26/11 (Cairn) : quête envoyée → la fenêtre se referme tout de suite ; quand le Journal confirme, le téléphone vibre
 // et on entend un parchemin froissé (coupé avec « Bruit du sceau » dans les réglages).
 function nqFermer_() { document.documentElement.classList.remove('saisie-ouverte'); try { $('nv-tache').blur(); } catch (x) {} }
-function nqConfirmer_() {
-  try { navigator.vibrate && navigator.vibrate([40, 70, 40]); } catch (x) {}
+function nqConfirmer_(t, o) {
+  var xp = +(o && o.xp) || +(t && t.xp) || 10;
+  try { navigator.vibrate && navigator.vibrate(xp >= 30 ? [60, 60, 60, 60, 120] : [40, 70, 40]); } catch (x) {}
+  nqEnvol_();
   if (typeof MS_SON !== 'undefined' && !MS_SON) return;
   try {
     var A = window.AudioContext || window.webkitAudioContext; if (!A) return;
-    var ac = nqConfirmer_.ac = nqConfirmer_.ac || new A(), t0 = ac.currentTime, sr = ac.sampleRate;
-    var b = ac.createBuffer(1, Math.floor(sr * .55), sr), d = b.getChannelData(0);
-    // froissement : petits craquements de bruit, irréguliers, qui s'éteignent
-    for (var k = 0; k < 26; k++) {
-      var deb = Math.floor((Math.pow(Math.random(), 1.4) * .5) * sr), long = Math.floor((.006 + Math.random() * .025) * sr), amp = .3 + Math.random() * .7;
-      for (var i = 0; i < long && deb + i < d.length; i++) d[deb + i] += (Math.random() * 2 - 1) * amp * Math.pow(1 - i / long, 2);
-    }
-    var s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
-    s.buffer = b; f.type = 'bandpass'; f.frequency.value = 2600; f.Q.value = .7; g.gain.value = .35;
-    s.connect(f).connect(g).connect(ac.destination); s.start(t0);
+    var ac = nqConfirmer_.ac = nqConfirmer_.ac || new A(); if (ac.state === 'suspended') ac.resume();
+    if (xp >= 30) nqCor_(ac); else if (xp <= 5) nqPlume_(ac); else { nqFroisse_(ac); if (xp >= 20) nqLame_(ac); }
+  } catch (x) {}
+}
+// Banale (10) : parchemin froissé
+function nqFroisse_(ac) {
+  var sr = ac.sampleRate, b = ac.createBuffer(1, Math.floor(sr * .55), sr), d = b.getChannelData(0);
+  for (var k = 0; k < 26; k++) {
+    var deb = Math.floor((Math.pow(Math.random(), 1.4) * .5) * sr), long = Math.floor((.006 + Math.random() * .025) * sr), amp = .3 + Math.random() * .7;
+    for (var i = 0; i < long && deb + i < d.length; i++) d[deb + i] += (Math.random() * 2 - 1) * amp * Math.pow(1 - i / long, 2);
+  }
+  var s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = b; f.type = 'bandpass'; f.frequency.value = 2600; f.Q.value = .7; g.gain.value = .35;
+  s.connect(f).connect(g).connect(ac.destination); s.start(ac.currentTime);
+}
+// Broutille (5) : deux traits de plume sur le parchemin
+function nqPlume_(ac) {
+  var sr = ac.sampleRate, b = ac.createBuffer(1, Math.floor(sr * .5), sr), d = b.getChannelData(0);
+  [[0, .16], [.24, .2]].forEach(function (tr) {
+    var deb = Math.floor(tr[0] * sr), long = Math.floor(tr[1] * sr);
+    for (var i = 0; i < long; i++) { var x = i / long; d[deb + i] += (Math.random() * 2 - 1) * Math.sin(Math.PI * x) * (.6 + .4 * Math.sin(x * 60)); }
+  });
+  var s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = b; f.type = 'highpass'; f.frequency.value = 4500; g.gain.value = .28;
+  s.connect(f).connect(g).connect(ac.destination); s.start(ac.currentTime);
+}
+// Cruciale (20) : froissé + lame qui tinte
+function nqLame_(ac) {
+  var t = ac.currentTime + .25;
+  [1320, 1980, 2970].forEach(function (fq, k) {
+    var o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = fq;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12 / (k + 1), t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .9);
+    o.connect(g).connect(ac.destination); o.start(t); o.stop(t + 1);
+  });
+}
+// Régalienne (30) : cor de chasse (appel en deux notes)
+function nqCor_(ac) {
+  var t0 = ac.currentTime, f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1400; f.connect(ac.destination);
+  [[0, .18, 349], [.2, .18, 349], [.42, .55, 523]].forEach(function (n) {
+    var t = t0 + n[0], o = ac.createOscillator(), g = ac.createGain(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(n[2] * .97, t); o.frequency.exponentialRampToValueAtTime(n[2], t + .05);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2, t + .04); g.gain.setValueAtTime(.2, t + n[1] - .06); g.gain.exponentialRampToValueAtTime(.0001, t + n[1]);
+    o.connect(g).connect(f); o.start(t); o.stop(t + n[1] + .02);
+  });
+}
+// le petit parchemin du bouton « + » s'enroule et s'envole vers la liste des quêtes
+function nqEnvol_() {
+  try {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var fab = document.getElementById('fab-quete'); if (!fab || !document.body.animate) return;
+    var r = fab.getBoundingClientRect(), v = document.querySelector('.vue.actif'), c = v ? v.getBoundingClientRect() : { left: 0, top: 80, width: innerWidth };
+    var p = document.createElement('div'); p.className = 'nq-envol'; p.textContent = '📜';
+    p.style.left = (r.left + r.width / 2 - 14) + 'px'; p.style.top = (r.top + r.height / 2 - 14) + 'px'; document.body.appendChild(p);
+    var dx = (c.left + c.width / 2) - (r.left + r.width / 2), dy = Math.max(c.top, 70) + 60 - (r.top + r.height / 2);
+    p.animate([
+      { transform: 'translate(0,0) scale(1) rotate(0)', opacity: 1 },
+      { transform: 'translate(0,-14px) scale(.7,1.1) rotate(-20deg)', opacity: 1, offset: .2 },
+      { transform: 'translate(' + dx * .5 + 'px,' + (dy * .5 - 60) + 'px) scale(.8) rotate(200deg)', opacity: 1, offset: .6 },
+      { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.4) rotate(360deg)', opacity: 0 }
+    ], { duration: 900, easing: 'cubic-bezier(.4,0,.3,1)' }).onfinish = function () { p.remove(); };
   } catch (x) {}
 }
 
