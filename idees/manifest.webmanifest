@@ -1,6 +1,6 @@
 {
  "name": "Boîte à idées",
- "short_name": "Idées",
+ "short_name": "Boîte à idées",
  "description": "Dépose une idée pour Claude en deux secondes",
  "id": "./",
  "start_url": "./",

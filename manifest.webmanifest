@@ -1,6 +1,6 @@
 {
  "name": "Journal des quêtes",
- "short_name": "Quêtes",
+ "short_name": "Journal",
  "description": "Mes quêtes, missives et requêtes du jour",
  "start_url": "./?vue=jour",
  "scope": "./",
