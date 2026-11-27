@@ -52,12 +52,13 @@ summary{font:500 16px Cinzel,serif;color:var(--doux);cursor:pointer;min-height:3
 .cle{display:flex;flex-direction:column;gap:10px}
 .cle input{font:18px "EB Garamond",serif;padding:10px;border:1px solid var(--filet);border-radius:8px;background:var(--velin);color:var(--encre)}
 .cle button{min-height:48px;border-radius:10px;border:0;background:var(--sang);color:#f6ebcf;font:700 16px Cinzel,serif}
+/* 27/11 : fenêtre réduite (vue contextuelle Samsung, écran partagé) : seulement le texte, le micro et « Déposer » */
+@media (max-height:520px),(max-width:300px){h1,details,.attente{display:none}main{padding:6px;gap:6px}textarea{min-height:0;height:calc(100vh - 92px);font-size:17px}.micro,.deposer{min-height:52px}.micro{width:64px;font-size:24px}.deposer{font-size:15px}}
 </style>
 </head>
 <body>
 <main id="app">
   <h1><img src="icone-192.png" alt="">Boîte à idées<small id="compte"></small></h1>
-  <div class="types" id="types"></div>
   <div class="parchemin">
     <textarea id="texte" placeholder="Une idée, une demande pour Claude, une quête à créer…"></textarea>
     <span class="ecoute" id="ecoute" hidden>j’écoute…</span>
@@ -74,7 +75,8 @@ summary{font:500 16px Cinzel,serif;color:var(--doux);cursor:pointer;min-height:3
 <script>
 // Même serveur que le Journal des quêtes : fonctions appPenseBete / appPenseBetes (onglet « Pense-bêtes » de la to-do list)
 var API = 'https://script.google.com/macros/s/AKfycbyJnnZpvxjD49iS-2nT9j0VMxLHY9k9exzrR4W17hedh1TV29pyT0rIRAe9GUOnOFHi/exec';
-var TYPES = [['Automatisation', '⚙️'], ['Quête', '📜'], ['Natation', '🏊'], ['Salle d’arme', '⚔️'], ['CGPI', '💼'], ['Autre', '✨']];
+// 27/11 : plus de catégories à choisir (Cairn dépose en vrac, Claude trie). Préfixe fixe pour garder le format de l'onglet.
+var PREFIXE = '[Vrac] ';
 function $(i) { return document.getElementById(i); }
 function lire(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
 function ecrire(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
@@ -93,13 +95,6 @@ function appeler(fn, args, ok, ko) {
     .then(function (r) { return r.json(); })
     .then(function (d) { if (d.ok) ok(d.r); else ko(new Error(d.erreur || 'Erreur'), true); })
     .catch(function () { ko(new Error('Pas de réseau'), false); });
-}
-
-// ---------- Type ----------
-var type = lire('idee-type', 'Automatisation');
-function dessinerTypes() {
-  $('types').innerHTML = TYPES.map(function (t) { return '<button data-t="' + t[0] + '"' + (t[0] === type ? ' class="actif"' : '') + '>' + t[1] + ' ' + t[0] + '</button>'; }).join('');
-  [].forEach.call($('types').children, function (b) { b.onclick = function () { type = b.dataset.t; ecrire('idee-type', type); dessinerTypes(); }; });
 }
 
 // ---------- Brouillon gardé ----------
@@ -127,9 +122,15 @@ document.addEventListener('visibilitychange', function () { if (!document.hidden
 
 // ---------- Déposer ----------
 $('deposer').onclick = function () {
-  arreterMicro();
+  // 27/11 : si la dictée tourne encore, on la coupe SANS attendre ses derniers mots (sinon ils réécrivaient le texte
+  // dans la zone après l'envoi : l'idée semblait ne pas partir, on rappuyait, et elle partait en double).
+  couperMicro();
   var t = zone.value.trim(); if (!t) { toast('Écris ou dicte d’abord ton idée'); zone.focus(); return; }
-  var f = file(); f.push('[' + type + '] ' + t); ecrire('idee-attente', JSON.stringify(f));
+  var f = file(), x = PREFIXE + t;
+  var der = lire('idee-derniere', ''), maintenant = Date.now();
+  if (f.indexOf(x) !== -1 || (der === x && maintenant - (+lire('idee-derniere-t', 0)) < 120000)) { zone.value = ''; ecrire('idee-brouillon', null); toast('📜 Cette idée est déjà dans la boîte'); return; }
+  ecrire('idee-derniere', x); ecrire('idee-derniere-t', String(maintenant));
+  f.push(x); ecrire('idee-attente', JSON.stringify(f));
   zone.value = ''; ecrire('idee-brouillon', null);
   var p = document.createElement('div'); p.className = 'vole'; p.textContent = '📜';
   var r = $('deposer').getBoundingClientRect(); p.style.left = (r.left + r.width / 2 - 20) + 'px'; p.style.top = (r.top - 10) + 'px';
@@ -153,6 +154,7 @@ function chargerListe() { appeler('appPenseBetes', [''], afficherListe, function
 // ---------- Dictée ----------
 var Reco = window.SpeechRecognition || window.webkitSpeechRecognition, reco = null, base = '';
 function arreterMicro() { if (reco) { try { reco.stop(); } catch (e) {} } }
+function couperMicro() { if (!reco) return; var r = reco; r.onresult = null; r.onerror = null; reco = null; $('micro').classList.remove('on'); $('ecoute').hidden = true; try { r.abort(); } catch (e) {} }
 function lancerMicro() {
   if (!Reco) { zone.focus(); toast('Dictée directe indisponible ici : utilise le micro du clavier'); return; }
   if (reco) { arreterMicro(); return; }
@@ -164,7 +166,8 @@ function lancerMicro() {
     zone.value = base + fin + prov; ecrire('idee-brouillon', zone.value);
   };
   reco.onerror = function (e) { if (e.error === 'not-allowed') toast('Autorise le micro pour dicter'); };
-  reco.onend = function () { reco = null; $('micro').classList.remove('on'); $('ecoute').hidden = true; };
+  var moi = reco;
+  reco.onend = function () { if (reco !== moi) return; reco = null; $('micro').classList.remove('on'); $('ecoute').hidden = true; };
   try { reco.start(); $('micro').classList.add('on'); $('ecoute').hidden = false; vibrer(20); } catch (e) { reco = null; }
 }
 $('micro').onclick = lancerMicro;
@@ -178,7 +181,7 @@ function demanderCle() {
 
 if (!CLE) demanderCle();
 else {
-  dessinerTypes(); majAttente(); viderFile(); chargerListe();
+  majAttente(); viderFile(); chargerListe();
   if (/[?&]micro=1/.test(location.search)) { if (history.replaceState) history.replaceState(null, '', location.pathname); setTimeout(lancerMicro, 300); }
   else if (!zone.value) zone.focus();
 }
