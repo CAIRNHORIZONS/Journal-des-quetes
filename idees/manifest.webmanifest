@@ -1,0 +1,21 @@
+{
+ "name": "Boîte à idées",
+ "short_name": "Idées",
+ "description": "Dépose une idée pour Claude en deux secondes",
+ "id": "./",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#ead7ac",
+ "theme_color": "#24180d",
+ "lang": "fr",
+ "icons": [
+  { "src": "icone-192.png", "sizes": "192x192", "type": "image/png" },
+  { "src": "icone-512.png", "sizes": "512x512", "type": "image/png" },
+  { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+ ],
+ "shortcuts": [
+  { "name": "Dicter une idée", "short_name": "Dicter", "url": "./?micro=1", "icons": [{ "src": "icone-192.png", "sizes": "192x192" }] }
+ ]
+}
